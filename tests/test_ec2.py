@@ -3,7 +3,7 @@ from moto import mock_ec2
 from moto.ec2 import ec2_backends
 from moto.ec2.models import AMIS
 
-from tools.ec2 import launch
+from tools.ec2 import launch, describe
 
 
 @pytest.fixture(scope="module")
@@ -21,9 +21,19 @@ def mock_aws_configs():
 
 
 def test_launch(mock_aws_configs):
-    print(launch("default", "alice@testlab.io", config=mock_aws_configs))
+    print(launch("alice", "alice@testlab.io", config=mock_aws_configs))
 
 
 def test_launch_has_userdata(mock_aws_configs):
     mock_aws_configs["userdata"] = {"gami": "conf/userdata/amzn-install-docker.yaml"}
     print(launch("userdata", "alice@testlab.io", config=mock_aws_configs))
+
+
+def test_describe(mock_aws_configs):
+    launch("alice", "alice@testlab.io", config=mock_aws_configs)
+    launch("sam", "sam@testlab.io", config=mock_aws_configs)
+
+    instances = describe(mock_aws_configs)
+    print(instances)
+
+    assert len(instances) == 2

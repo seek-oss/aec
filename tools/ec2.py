@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-from typing import Dict, Any
+from typing import Dict, Any, List
 
 import fire
 import boto3
@@ -17,7 +17,7 @@ def launch(name, owner, volume_size=100, ami_name='gami', instance_type='t2.medi
     :param volume_size: ebs volume size (GB)
     :param ami_name: ami name (looked up in the config)
     :param instance_type: instance type
-    :param config: config
+    :param config: config, see config.example
     :return:
     """
     if config is None:
@@ -63,6 +63,37 @@ def launch(name, owner, volume_size=100, ami_name='gami', instance_type='t2.medi
             'LaunchTime': instance['LaunchTime'],
             'ImageId': instance['ImageId'],
             'InstanceId': instance['InstanceId']}
+
+
+def describe(config=None) -> Dict[str, Any]:
+    """
+    List all the EC2 instances in the region
+
+    :param config: config, see config.example
+    :return:
+    """
+    if config is None:
+        config = user_config[user_config['default']]
+
+    ec2_client = boto3.client('ec2', region_name=config['region'])
+
+    response = ec2_client.describe_instances()
+
+    instances = [{
+        'State': i['State']['Name'],
+        'Name': first_or_else([t['Value'] for t in i['Tags'] if t['Key'] == 'Name'], None),
+        'Type': i['InstanceType'],
+        'PrivateDnsName': i['PrivateDnsName'],
+        'LaunchTime': i['LaunchTime'],
+        'ImageId': i['ImageId'],
+        'InstanceId': i['InstanceId']
+    } for r in response['Reservations'] for i in r['Instances']]
+
+    return instances
+
+
+def first_or_else(l: List[Any], default: Any) -> Any:
+    return l[0] if len(l) > 0 else default
 
 
 def read_file(filepath) -> str:
