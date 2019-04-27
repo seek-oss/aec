@@ -3,7 +3,7 @@ from moto import mock_ec2
 from moto.ec2 import ec2_backends
 from moto.ec2.models import AMIS
 
-from tools.instance import launch
+from tools.ec2 import launch
 
 
 @pytest.fixture(scope="module")
