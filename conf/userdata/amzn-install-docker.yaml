@@ -1,9 +1,11 @@
 #cloud-config
 # Refresh the locally cached package listing from the network repository
 repo_update: true
-# apply all available upgrades (default is security)
+# apply security upgrades, which is the default anyway
+# see https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/amazon-linux-ami-basics.html#security-updates
 repo_upgrade: security
 
+# install docker as per https://docs.aws.amazon.com/AmazonECS/latest/developerguide/docker-basics.html#install_docker
 groups:
   - docker: ec2-user
 
