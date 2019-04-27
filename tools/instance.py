@@ -1,36 +1,20 @@
 #!/usr/bin/env python
+import sys
+from typing import Dict, Any
 
 import fire
 import boto3
-
-defaults = {
-    "syd":
-        {
-            "region": "ap-southeast-2",
-            "amis": {"amazon_linux_2": "ami-04481c741a0311bbb",
-                    "ubuntu": "ami-0b76c3b150c6b1423"
-                    # TODO: automatically determine latest image
-                    },
-
-            "key_name": "my-key",
-
-            "security_group": "sg-12345678901234567",
-
-            # TODO: multiple subnets
-            "subnet": "subnet-12345678",
+import pytoml as toml
+import os.path
 
 
-            "iam_instance_profile_arn": "arn:aws:iam::123456789012:instance-profile/ec2_my_default"
-        }
-}
+def launch(name, owner, volume_size=100, ami_name="gami", instance_type="t2.medium", config=None) -> Dict[str, Any]:
+    if config is None:
+        config = user_config[user_config["default"]]
 
+    ec2_client = boto3.client('ec2', region_name=config["region"])
 
-def launch(name, owner, volume_size=100, ami_name="gami", instance_type="t2.medium", region="ap-southeast-2",
-           configs=configs):
-    ec2_client = boto3.client('ec2', region_name=region)
-
-    config = configs[region]
-
+    # TODO: support multiple subnets
     response = ec2_client.run_instances(
         ImageId=config['amis'][ami_name],
         MaxCount=1, MinCount=1,
@@ -65,5 +49,16 @@ def launch(name, owner, volume_size=100, ami_name="gami", instance_type="t2.medi
             'InstanceId': instance['InstanceId']}
 
 
+def load_user_config() -> Dict[str, Any]:
+    filepath = os.path.expanduser('~/.aww/config')
+    if not os.path.isfile(filepath):
+        print(f"WARNING: No file {filepath}", file=sys.stderr)
+        return
+
+    with open(filepath, 'rb') as config_file:
+        return toml.load(config_file)
+
+
 if __name__ == '__main__':
+    user_config = load_user_config()
     fire.Fire()

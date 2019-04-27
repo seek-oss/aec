@@ -21,4 +21,4 @@ def mock_aws_configs():
 
 
 def test_launch(mock_aws_configs):
-    launch("test", "alice@testlab.io", config=mock_aws_configs)
+    print(launch("test", "alice@testlab.io", config=mock_aws_configs))
