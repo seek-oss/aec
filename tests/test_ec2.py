@@ -21,4 +21,9 @@ def mock_aws_configs():
 
 
 def test_launch(mock_aws_configs):
-    print(launch("test", "alice@testlab.io", config=mock_aws_configs))
+    print(launch("default", "alice@testlab.io", config=mock_aws_configs))
+
+
+def test_launch_has_userdata(mock_aws_configs):
+    mock_aws_configs["userdata"] = {"gami": "conf/userdata/amzn-install-docker.yaml"}
+    print(launch("userdata", "alice@testlab.io", config=mock_aws_configs))

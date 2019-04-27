@@ -20,3 +20,8 @@ help:
 ## run tests
 test:
 	$(venv)/bin/pytest
+
+## install config files (if they don't already exist)
+install:
+	mkdir -p ~/.aww/
+	cp -rn conf/* ~/.aww/ || true

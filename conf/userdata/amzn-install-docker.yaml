@@ -1,0 +1,11 @@
+#cloud-config
+# Refresh the locally cached package listing from the network repository
+repo_update: true
+# apply all available upgrades (default is security)
+repo_upgrade: security
+
+runcmd:
+  - amazon-linux-extras install docker
+
+groups:
+  - docker: ec2-user
