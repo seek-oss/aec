@@ -1,4 +1,4 @@
-# example config, update this for your account
+# example config, update this for your account and cp to ~/.aww/config
 
 # default profile
 default = "syd"

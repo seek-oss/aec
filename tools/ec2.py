@@ -50,7 +50,7 @@ def launch(name, owner, volume_size=100, ami_name='gami', instance_type='t2.medi
     if config.get('userdata', None) and config['userdata'].get(ami_name, None):
         kwargs['UserData'] = read_file(config['userdata'][ami_name])
 
-    print(f"Launching a {instance_type} in {config['region']} ... ")
+    print(f"Launching a {instance_type} in {config['region']} with name {name} ... ")
     response = ec2_client.run_instances(**kwargs)
 
     instance = response['Instances'][0]
