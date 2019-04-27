@@ -3,9 +3,10 @@
 import fire
 import boto3
 
-configs = {
-    "ap-southeast-2":
+defaults = {
+    "syd":
         {
+            "region": "ap-southeast-2",
             "amis": {"amazon_linux_2": "ami-04481c741a0311bbb",
                     "ubuntu": "ami-0b76c3b150c6b1423"
                     # TODO: automatically determine latest image
@@ -24,7 +25,7 @@ configs = {
 }
 
 
-def launch(name, owner, volume_size=100, ami_name="amazon_linux_2", instance_type="t2.medium", region="ap-southeast-2",
+def launch(name, owner, volume_size=100, ami_name="gami", instance_type="t2.medium", region="ap-southeast-2",
            configs=configs):
     ec2_client = boto3.client('ec2', region_name=region)
 
