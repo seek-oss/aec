@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import sys
-from typing import Dict, Any, List
+from typing import Dict, Any, List, AnyStr
 
 import fire
 import boto3
@@ -65,10 +65,33 @@ def launch(name, owner, volume_size=100, ami_name='gami', instance_type='t2.medi
             'InstanceId': instance['InstanceId']}
 
 
-def describe(config=None) -> Dict[str, Any]:
+def stop(name, config=None) -> List[Dict[str, Any]]:
     """
-    List all the EC2 instances in the region
+    Stop EC2 instance(s)
 
+    :param name:
+    :param config:
+    :return:
+    """
+    if config is None:
+        config = user_config[user_config['default']]
+
+    ec2_client = boto3.client('ec2', region_name=config['region'])
+
+    instances = describe(name, config)
+    response = ec2_client.stop_instances(InstanceIds=[instance['InstanceId'] for instance in instances])
+
+    return [{
+        'State': i['CurrentState']['Name'],
+        'InstanceId': i['InstanceId']
+    } for i in response['StoppingInstances']]
+
+
+def describe(name=None, config=None) -> List[Dict[str, Any]]:
+    """
+    List EC2 instances in the region
+
+    :param name: name of the instance, if None, then list all instances
     :param config: config, see config.example
     :return:
     """
@@ -77,7 +100,8 @@ def describe(config=None) -> Dict[str, Any]:
 
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
-    response = ec2_client.describe_instances()
+    filters = [] if name is None else [{"Name": "tag:Name", "Values": [name]}]
+    response = ec2_client.describe_instances(Filters=filters)
 
     instances = [{
         'State': i['State']['Name'],
@@ -96,7 +120,7 @@ def first_or_else(l: List[Any], default: Any) -> Any:
     return l[0] if len(l) > 0 else default
 
 
-def read_file(filepath) -> str:
+def read_file(filepath) -> AnyStr:
     with open(os.path.expanduser(filepath)) as file:
         return file.read()
 
@@ -105,7 +129,7 @@ def load_user_config() -> Dict[str, Any]:
     filepath = os.path.expanduser('~/.aww/config')
     if not os.path.isfile(filepath):
         print(f"WARNING: No file {filepath}", file=sys.stderr)
-        return
+        return {}
 
     with open(filepath) as config_file:
         return toml.load(config_file)

@@ -3,10 +3,10 @@ from moto import mock_ec2
 from moto.ec2 import ec2_backends
 from moto.ec2.models import AMIS
 
-from tools.ec2 import launch, describe
+from tools.ec2 import launch, describe, stop
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def mock_aws_configs():
     mock = mock_ec2()
     mock.start()
@@ -33,7 +33,27 @@ def test_describe(mock_aws_configs):
     launch("alice", "alice@testlab.io", config=mock_aws_configs)
     launch("sam", "sam@testlab.io", config=mock_aws_configs)
 
-    instances = describe(mock_aws_configs)
+    instances = describe(config=mock_aws_configs)
     print(instances)
 
     assert len(instances) == 2
+    assert instances[0]["Name"] == "alice"
+    assert instances[1]["Name"] == "sam"
+
+
+def test_describe_by_name(mock_aws_configs):
+    launch("alice", "alice@testlab.io", config=mock_aws_configs)
+
+    instances = describe(name="alice", config=mock_aws_configs)
+    print(instances)
+
+    assert len(instances) == 1
+    assert instances[0]["Name"] == "alice"
+
+
+def test_stop(mock_aws_configs):
+    launch("alice", "alice@testlab.io", config=mock_aws_configs)
+
+    response = stop(name="alice", config=mock_aws_configs)
+
+    print(response)

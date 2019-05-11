@@ -10,7 +10,7 @@ $(venv): requirements.txt requirements.dev.txt
 	$(if $(value VIRTUAL_ENV),$(error Cannot create a virtualenv when running in a virtualenv. Please deactivate the current virtual env $(VIRTUAL_ENV)),)
 	python3 -m venv --clear $(venv) && $(venv)/bin/pip install -r requirements.txt && $(venv)/bin/pip install -r requirements.dev.txt
 
-## set up python virtual env and install requirements
+## set up python virtual env (named tools) and install requirements
 venv: $(venv)
 
 ## display this help message
