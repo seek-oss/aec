@@ -84,7 +84,7 @@ def describe(name=None, config=None) -> List[Dict[str, Any]]:
 
     instances = [{
         'State': i['State']['Name'],
-        'Name': first_or_else([t['Value'] for t in i['Tags'] if t['Key'] == 'Name'], None),
+        'Name': first_or_else([t['Value'] for t in i.get('Tags', []) if t['Key'] == 'Name'], None),
         'Type': i['InstanceType'],
         'PrivateDnsName': i['PrivateDnsName'],
         'LaunchTime': i['LaunchTime'],
