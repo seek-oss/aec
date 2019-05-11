@@ -3,7 +3,7 @@ from moto import mock_ec2
 from moto.ec2 import ec2_backends
 from moto.ec2.models import AMIS
 
-from tools.ec2 import launch, describe, stop
+from tools.ec2 import launch, describe, stop, terminate
 
 
 @pytest.fixture
@@ -55,5 +55,13 @@ def test_stop(mock_aws_configs):
     launch("alice", "alice@testlab.io", config=mock_aws_configs)
 
     response = stop(name="alice", config=mock_aws_configs)
+
+    print(response)
+
+
+def test_terminate(mock_aws_configs):
+    launch("alice", "alice@testlab.io", config=mock_aws_configs)
+
+    response = terminate(name="alice", config=mock_aws_configs)
 
     print(response)

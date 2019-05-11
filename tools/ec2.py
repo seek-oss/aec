@@ -66,28 +66,6 @@ def launch(name, owner, volume_size=100, ami_name='gami', instance_type='t2.medi
             'InstanceId': instance['InstanceId']}
 
 
-def stop(name, config=None) -> List[Dict[str, Any]]:
-    """
-    Stop EC2 instance(s)
-
-    :param name:
-    :param config:
-    :return:
-    """
-    if config is None:
-        config = user_config[user_config['default']]
-
-    ec2_client = boto3.client('ec2', region_name=config['region'])
-
-    instances = describe(name, config)
-    response = ec2_client.stop_instances(InstanceIds=[instance['InstanceId'] for instance in instances])
-
-    return [{
-        'State': i['CurrentState']['Name'],
-        'InstanceId': i['InstanceId']
-    } for i in response['StoppingInstances']]
-
-
 def describe(name=None, config=None) -> List[Dict[str, Any]]:
     """
     List EC2 instances in the region
@@ -115,6 +93,50 @@ def describe(name=None, config=None) -> List[Dict[str, Any]]:
     } for r in response['Reservations'] for i in r['Instances']]
 
     return instances
+
+
+def stop(name, config=None) -> List[Dict[str, Any]]:
+    """
+    Stop EC2 instance(s)
+
+    :param name:
+    :param config:
+    :return:
+    """
+    if config is None:
+        config = user_config[user_config['default']]
+
+    ec2_client = boto3.client('ec2', region_name=config['region'])
+
+    instances = describe(name, config)
+    response = ec2_client.stop_instances(InstanceIds=[instance['InstanceId'] for instance in instances])
+
+    return [{
+        'State': i['CurrentState']['Name'],
+        'InstanceId': i['InstanceId']
+    } for i in response['StoppingInstances']]
+
+
+def terminate(name, config=None) -> List[Dict[str, Any]]:
+    """
+    Terminate EC2 instance(s)
+
+    :param name:
+    :param config:
+    :return:
+    """
+    if config is None:
+        config = user_config[user_config['default']]
+
+    ec2_client = boto3.client('ec2', region_name=config['region'])
+
+    instances = describe(name, config)
+    response = ec2_client.terminate_instances(InstanceIds=[instance['InstanceId'] for instance in instances])
+
+    return [{
+        'State': i['CurrentState']['Name'],
+        'InstanceId': i['InstanceId']
+    } for i in response['TerminatingInstances']]
 
 
 def first_or_else(l: List[Any], default: Any) -> Any:
