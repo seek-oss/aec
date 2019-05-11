@@ -13,7 +13,7 @@ def mock_aws_configs():
     region = 'ap-southeast-2'
 
     return {"region": region,
-            "amis": {"gami": AMIS[0]["ami_id"]},
+            "amis": {"gami": {"id": AMIS[0]["ami_id"], "root_device": "/dev/xvda"}},
             "key_name": "test_key",
             "security_group": "default",
             "subnet": next(ec2_backends[region].get_all_subnets()).id,

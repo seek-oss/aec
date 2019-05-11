@@ -6,9 +6,14 @@ default = "syd"
 [syd]
 region = "ap-southeast-2"
 key_name = "my-key"
-security_group="sg-12345678901234567"
-subnet="subnet-12345678"
-iam_instance_profile_arn="arn:aws:iam::123456789012:instance-profile/ec2_my_default"
+security_group = "sg-12345678901234567
+subnet = "subnet-12345678"
+iam_instance_profile_arn = "arn:aws:iam::123456789012:instance-profile/ec2_my_default"
 
-amis = { amazon_linux_2 = "ami-04481c741a0311bbb", ubuntu = "ami-0b76c3b150c6b1423"}
+[syd.amis]
+amazon_linux_2 = { id = "ami-04481c741a0311bbb", root_device = "/dev/xvda" }
+ubuntu = { id = "ami-0b76c3b150c6b1423", root_device = "/dev/sda1" }
+
+[syd.userdata]
+amazon_linux_2 = "~/.aww/userdata/amzn-install-docker.yaml"
 

@@ -25,9 +25,10 @@ def launch(name, owner, volume_size=100, ami_name='gami', instance_type='t2.medi
 
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
+    ami = config['amis'][ami_name]
     # TODO: support multiple subnets
     kwargs = {
-        'ImageId': config['amis'][ami_name],
+        'ImageId': ami['id'],
         'MaxCount': 1, 'MinCount': 1,
         'KeyName': config['key_name'],
         'InstanceType': instance_type,
@@ -43,7 +44,7 @@ def launch(name, owner, volume_size=100, ami_name='gami', instance_type='t2.medi
              'Groups': [config['security_group']]}
         ],
         'BlockDeviceMappings': [
-            {'DeviceName': '/dev/xvda',
+            {'DeviceName': ami['root_device'],
              'Ebs': {'VolumeSize': volume_size, 'DeleteOnTermination': True, 'VolumeType': 'gp2'}}
         ]
     }
