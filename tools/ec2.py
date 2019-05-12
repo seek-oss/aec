@@ -10,7 +10,7 @@ import os.path
 
 def launch(name, owner, volume_size=100, ami_name='gami', instance_type='t2.medium', config=None) -> Dict[str, Any]:
     """
-    Launch an EC2 instance
+    Launch a tagged EC2 instance with an EBS volume
 
     :param name: name tag
     :param owner: owner tag
@@ -34,6 +34,7 @@ def launch(name, owner, volume_size=100, ami_name='gami', instance_type='t2.medi
         'InstanceType': instance_type,
         'IamInstanceProfile': {"Arn": config['iam_instance_profile_arn']},
         'TagSpecifications': [
+            # TODO read owner and any other tags from the config file
             {'ResourceType': 'instance', 'Tags': [{'Key': 'Name', 'Value': name}, {'Key': 'Owner', 'Value': owner}]},
             {'ResourceType': 'volume', 'Tags': [{'Key': 'Name', 'Value': name}, {'Key': 'Owner', 'Value': owner}]}
         ],
