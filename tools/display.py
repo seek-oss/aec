@@ -9,7 +9,7 @@ def as_table(keys: List[str], dicts: List[Dict[str, Any]]) -> List[List[str]]:
     :param dicts: list of dictionaries
     :return:
     """
-    return [keys] + [[str(d.get(f, "")) for f in keys] for d in dicts]
+    return [keys] + [[str(d.get(f, "")) if d.get(f, "") is not None else None for f in keys] for d in dicts]
 
 
 def pretty(table: List[List[str]]) -> str:
@@ -23,8 +23,9 @@ def pretty(table: List[List[str]]) -> str:
     col_width = [0] * len(table[0])
     for row in table:
         for idx, col in enumerate(row):
-            if len(col) > col_width[idx]:
+            if col is not None and len(col) > col_width[idx]:
                 col_width[idx] = len(col)
 
     return "\n".join(
-        ["".join(["".join(col.ljust(col_width[idx] + padding) for idx, col in enumerate(row))]) for row in table])
+        ["".join(["".join((col if col is not None else "").ljust(col_width[idx] + padding)
+                          for idx, col in enumerate(row))]) for row in table])
