@@ -1,5 +1,4 @@
 import boto3
-import click
 import pytest
 from moto import mock_ec2
 from moto.ec2 import ec2_backends
@@ -59,8 +58,7 @@ def test_describe_instance_without_tags(mock_aws_configs):
     ec2_client = boto3.client('ec2', region_name=mock_aws_configs['region'])
     ec2_client.run_instances(MaxCount=1, MinCount=1)
 
-    print(describe.callback)
-    instances = describe.invoke(ctx=MockContext(obj={'config': mock_aws_configs}))
+    instances = describe.__wrapped__(config=mock_aws_configs)
     print(instances)
 
     assert len(instances) == 1

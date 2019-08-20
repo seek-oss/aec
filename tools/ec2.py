@@ -1,41 +1,20 @@
 #!/usr/bin/env python
-import json
 import os.path
 from typing import AnyStr
 
 import boto3
-import click
+from argh import arg
 
+from cli import cli
 from config import *
 from display import *
 
 
-@click.group()
-@click.option("--profile", help="Profile in the config file to use", default="default")
-@click.pass_context
-def ec2(ctx, profile: str):
-    ctx.obj["config"] = load_config(profile)
-
-
-# called after a command is run to print out the results in a pretty format
-@ec2.resultcallback()
-def print_result(result, **kwargs):
-    if isinstance(result, list):
-        print(pretty(as_table(result)))
-    elif isinstance(result, dict):
-        json.dump(result, sys.stdout)
-    else:
-        # print(type(result))
-        print(result)
-
-
-@ec2.command()
-@click.pass_context
-def describe_images(ctx) -> List[Dict[str, Any]]:
+@cli
+def describe_images(config) -> List[Dict[str, Any]]:
     """
     List AMIs owned by your account
     """
-    config = ctx.obj['config']
 
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
@@ -51,9 +30,6 @@ def describe_images(ctx) -> List[Dict[str, Any]]:
     return sorted(images, key=lambda i: i['CreationDate'], reverse=True)
 
 
-@ec2.command()
-@click.argument('name')
-@click.pass_context
 def launch(ctx, name, owner, volume_size: int = 100, ami_name='gami', instance_type='t2.medium') -> Dict[str, Any]:
     """
     Launch a tagged EC2 instance with an EBS volume
@@ -111,15 +87,12 @@ def launch(ctx, name, owner, volume_size: int = 100, ami_name='gami', instance_t
             'InstanceId': instance['InstanceId']}
 
 
-@ec2.command()
-@click.option('--name', default=None, help='filter instances to only those with this Name tag')
-@click.pass_context
-def describe(ctx, name=None) -> List[Dict[str, any]]:
+@arg('--name', help='Filter to hosts with this Name tag', default=None)
+@cli
+def describe(config, name=None) -> List[Dict[str, any]]:
     """
     List EC2 instances in the region
     """
-    config = ctx.obj['config']
-
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
     filters = [] if name is None else [{"Name": "tag:Name", "Values": [name]}]
@@ -135,7 +108,7 @@ def describe(ctx, name=None) -> List[Dict[str, any]]:
         'InstanceId': i['InstanceId']
     } for r in response['Reservations'] for i in r['Instances']]
 
-    return instances
+    return sorted(instances, key=lambda i: i['State']+str(i['Name']))
 
 
 def stop(name, config=None) -> List[Dict[str, Any]]:

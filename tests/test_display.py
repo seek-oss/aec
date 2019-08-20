@@ -2,7 +2,7 @@ import datetime
 
 from dateutil.tz import tzutc
 
-from tools.display import as_table, pretty
+from tools.display import as_table, pretty_table
 
 
 def test_as_table():
@@ -27,7 +27,7 @@ def test_pretty():
     expected = (f"a           b           c  \n"
                 f"aaaaaaaaaa  b           c  \n"
                 f"a           bbbbbbbbbb  c  ")
-    actual = pretty(table)
+    actual = pretty_table(table)
     assert actual == expected
 
 
@@ -35,5 +35,5 @@ def test_pretty_with_none():
     table = [['a', 'b', 'c'], [None, 'e', 'f']]
     expected = (f"a  b  c  \n"
                 f"   e  f  ")
-    actual = pretty(table)
+    actual = pretty_table(table)
     assert actual == expected

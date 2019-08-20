@@ -8,7 +8,15 @@ config_filepath = os.path.expanduser('~/.aww/config')
 
 
 def load_config(profile: str = "default"):
+    """
+    Load profile from the config file.
+
+    :param profile: If default, use the value of the default key in the config file
+    :return:
+    """
     config = load_user_config_file()
+
+    # set profile to the value of the default key
     if profile == "default":
         profile = config[profile]
 

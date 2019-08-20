@@ -14,7 +14,9 @@ def as_table(dicts: List[Dict[str, Any]], keys: List[str] = None) -> List[List[s
     return [keys] + [[str(d.get(f, "")) if d.get(f, "") is not None else None for f in keys] for d in dicts]
 
 
-def pretty(table: List[List[str]]) -> str:
+
+
+def pretty_table(table: List[List[str]]) -> str:
     """
     Formats a table as a pretty string for printing
 
