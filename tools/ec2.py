@@ -1,14 +1,60 @@
 #!/usr/bin/env python
-import sys
-from typing import Dict, Any, List, AnyStr
-
-import fire
-import boto3
-import pytoml as toml
+import json
 import os.path
+from typing import AnyStr
+
+import boto3
+import click
+
+from config import *
+from display import *
 
 
-def launch(name, owner, volume_size=100, ami_name='gami', instance_type='t2.medium', config=None) -> Dict[str, Any]:
+@click.group()
+@click.option("--profile", help="Profile in the config file to use", default="default")
+@click.pass_context
+def ec2(ctx, profile: str):
+    ctx.obj["config"] = load_config(profile)
+
+
+# called after a command is run to print out the results in a pretty format
+@ec2.resultcallback()
+def print_result(result, **kwargs):
+    if isinstance(result, list):
+        print(pretty(as_table(result)))
+    elif isinstance(result, dict):
+        json.dump(result, sys.stdout)
+    else:
+        # print(type(result))
+        print(result)
+
+
+@ec2.command()
+@click.pass_context
+def describe_images(ctx) -> List[Dict[str, Any]]:
+    """
+    List AMIs owned by your account
+    """
+    config = ctx.obj['config']
+
+    ec2_client = boto3.client('ec2', region_name=config['region'])
+
+    response = ec2_client.describe_images(Owners=['self'])
+
+    images = [{
+        'ImageId': i['ImageId'],
+        'Name': i['Name'],
+        'Description': i.get('Description', None),
+        'CreationDate': i['CreationDate']
+    } for i in response['Images']]
+
+    return sorted(images, key=lambda i: i['CreationDate'], reverse=True)
+
+
+@ec2.command()
+@click.argument('name')
+@click.pass_context
+def launch(ctx, name, owner, volume_size: int = 100, ami_name='gami', instance_type='t2.medium') -> Dict[str, Any]:
     """
     Launch a tagged EC2 instance with an EBS volume
 
@@ -20,9 +66,7 @@ def launch(name, owner, volume_size=100, ami_name='gami', instance_type='t2.medi
     :param config: config, see config.example
     :return:
     """
-    if config is None:
-        config = user_config[user_config['default']]
-
+    config = ctx.obj['config']
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
     ami = config['amis'][ami_name]
@@ -67,16 +111,14 @@ def launch(name, owner, volume_size=100, ami_name='gami', instance_type='t2.medi
             'InstanceId': instance['InstanceId']}
 
 
-def describe(name=None, config=None) -> List[Dict[str, Any]]:
+@ec2.command()
+@click.option('--name', default=None, help='filter instances to only those with this Name tag')
+@click.pass_context
+def describe(ctx, name=None) -> List[Dict[str, any]]:
     """
     List EC2 instances in the region
-
-    :param name: name of the instance, if None, then list all instances
-    :param config: config, see config.example
-    :return:
     """
-    if config is None:
-        config = user_config[user_config['default']]
+    config = ctx.obj['config']
 
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
@@ -104,6 +146,7 @@ def stop(name, config=None) -> List[Dict[str, Any]]:
     :param config:
     :return:
     """
+
     if config is None:
         config = user_config[user_config['default']]
 
@@ -147,18 +190,3 @@ def first_or_else(l: List[Any], default: Any) -> Any:
 def read_file(filepath) -> AnyStr:
     with open(os.path.expanduser(filepath)) as file:
         return file.read()
-
-
-def load_user_config() -> Dict[str, Any]:
-    filepath = os.path.expanduser('~/.aww/config')
-    if not os.path.isfile(filepath):
-        print(f"WARNING: No file {filepath}", file=sys.stderr)
-        return {}
-
-    with open(filepath) as config_file:
-        return toml.load(config_file)
-
-
-if __name__ == '__main__':
-    user_config = load_user_config()
-    fire.Fire()

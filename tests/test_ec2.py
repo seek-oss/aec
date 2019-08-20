@@ -1,4 +1,5 @@
 import boto3
+import click
 import pytest
 from moto import mock_ec2
 from moto.ec2 import ec2_backends
@@ -42,13 +43,24 @@ def test_describe(mock_aws_configs):
     assert instances[1]["Name"] == "sam"
 
 
-# this test makes sure we can describe terminated instances which don't have tags
+class MockContext(object):
+    def __init__(self, obj):
+        self.obj = obj
+        self.params = {}
+
+    def invoke(self, callback, **args):
+        return callback(args)
+
+    # this test makes sure we can describe terminated instances which don't have tags
+
+
 def test_describe_instance_without_tags(mock_aws_configs):
     # create instance without tags
     ec2_client = boto3.client('ec2', region_name=mock_aws_configs['region'])
     ec2_client.run_instances(MaxCount=1, MinCount=1)
 
-    instances = describe(config=mock_aws_configs)
+    print(describe.callback)
+    instances = describe.invoke(ctx=MockContext(obj={'config': mock_aws_configs}))
     print(instances)
 
     assert len(instances) == 1
