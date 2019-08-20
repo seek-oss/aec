@@ -30,22 +30,24 @@ def describe_images(config) -> List[Dict[str, Any]]:
     return sorted(images, key=lambda i: i['CreationDate'], reverse=True)
 
 
-def launch(ctx, name, owner, volume_size: int = 100, ami_name='gami', instance_type='t2.medium') -> Dict[str, Any]:
+@arg('name', help='Name tag')
+@arg('owner', help='Owner tag')
+@arg('--volume_size', help='ebs volume size (GB)', default=100)
+@arg('--ami_name', help='ami name used to lookup the ami id in  config)', default='gami')
+@arg('--instance_type', help='instance type', default='t2.medium')
+@cli
+def launch(config, name, owner, volume_size: int = 100, ami_name='gami', instance_type='t2.medium') -> Dict[str, Any]:
     """
     Launch a tagged EC2 instance with an EBS volume
-
-    :param name: name tag
-    :param owner: owner tag
-    :param volume_size: ebs volume size (GB)
-    :param ami_name: ami name (looked up in the config)
-    :param instance_type: instance type
-    :param config: config, see config.example
-    :return:
     """
-    config = ctx.obj['config']
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
-    ami = config['amis'][ami_name]
+    try:
+        ami = config['amis'][ami_name]
+    except KeyError:
+        print(f"Missing ami {ami_name} in {config['amis']}", file=sys.stderr)
+        exit(1)
+
     # TODO: support multiple subnets
     kwargs = {
         'ImageId': ami['id'],
@@ -108,10 +110,10 @@ def describe(config, name=None) -> List[Dict[str, any]]:
         'InstanceId': i['InstanceId']
     } for r in response['Reservations'] for i in r['Instances']]
 
-    return sorted(instances, key=lambda i: i['State']+str(i['Name']))
+    return sorted(instances, key=lambda i: i['State'] + str(i['Name']))
 
 
-def stop(name, config=None) -> List[Dict[str, Any]]:
+def stop(config, name) -> List[Dict[str, Any]]:
     """
     Stop EC2 instance(s)
 
@@ -119,13 +121,9 @@ def stop(name, config=None) -> List[Dict[str, Any]]:
     :param config:
     :return:
     """
-
-    if config is None:
-        config = user_config[user_config['default']]
-
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
-    instances = describe(name, config)
+    instances = describe(config, name)
     response = ec2_client.stop_instances(InstanceIds=[instance['InstanceId'] for instance in instances])
 
     return [{
@@ -134,7 +132,7 @@ def stop(name, config=None) -> List[Dict[str, Any]]:
     } for i in response['StoppingInstances']]
 
 
-def terminate(name, config=None) -> List[Dict[str, Any]]:
+def terminate(config, name) -> List[Dict[str, Any]]:
     """
     Terminate EC2 instance(s)
 
@@ -142,12 +140,9 @@ def terminate(name, config=None) -> List[Dict[str, Any]]:
     :param config:
     :return:
     """
-    if config is None:
-        config = user_config[user_config['default']]
-
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
-    instances = describe(name, config)
+    instances = describe(config, name)
     response = ec2_client.terminate_instances(InstanceIds=[instance['InstanceId'] for instance in instances])
 
     return [{

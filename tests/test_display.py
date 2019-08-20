@@ -19,7 +19,7 @@ def test_as_table_with_datetime():
 
 
 def test_as_table_with_none():
-    assert as_table([{'a': 1, 'b': None}]) == [['a', 'b'], ['1', None], ['a', 'b']]
+    assert as_table([{'a': 1, 'b': None}]) == [['a', 'b'], ['1', None]]
 
 
 def test_pretty():
