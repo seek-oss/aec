@@ -35,9 +35,10 @@ def cli(func):
         result = func(*args, **kwargs)
 
         if isinstance(result, list):
-            return pretty_table(as_table(result))
+            prettified = pretty_table(as_table(result))
+            return prettified if prettified else "No results"
         elif isinstance(result, dict):
-            return json.dumps(result)
+            return json.dumps(result, default=str)
         else:
             return result
 

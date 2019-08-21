@@ -9,6 +9,9 @@ def as_table(dicts: List[Dict[str, Any]], keys: List[str] = None) -> List[List[s
     :param dicts: list of dictionaries
     :return:
     """
+    if not dicts:
+        return []
+
     if keys is None:
         keys = list(dicts[0].keys())
     return [keys] + [[str(d.get(f, "")) if d.get(f, "") is not None else None for f in keys] for d in dicts]
@@ -21,6 +24,9 @@ def pretty_table(table: List[List[str]]) -> str:
     :param table:
     :return:
     """
+    if not table:
+        return ""
+
     padding = 2
     col_width = [0] * len(table[0])
     for row in table:

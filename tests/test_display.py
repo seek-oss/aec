@@ -22,6 +22,10 @@ def test_as_table_with_none():
     assert as_table([{'a': 1, 'b': None}]) == [['a', 'b'], ['1', None]]
 
 
+def test_as_table_empty_list():
+    assert as_table([]) == []
+
+
 def test_pretty():
     table = [['a', 'b', 'c'], ['aaaaaaaaaa', 'b', 'c'], ['a', 'bbbbbbbbbb', 'c']]
     expected = (f"a           b           c  \n"
@@ -35,5 +39,12 @@ def test_pretty_with_none():
     table = [['a', 'b', 'c'], [None, 'e', 'f']]
     expected = (f"a  b  c  \n"
                 f"   e  f  ")
+    actual = pretty_table(table)
+    assert actual == expected
+
+
+def test_pretty_with_empty_table():
+    table = []
+    expected = ""
     actual = pretty_table(table)
     assert actual == expected
