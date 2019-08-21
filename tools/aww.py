@@ -2,12 +2,12 @@
 
 import argh
 
-from ec2 import describe_images, describe, launch
+import ec2
 
 
 def main():
     parser = argh.ArghParser()
-    parser.add_commands([describe_images, describe, launch])
+    parser.add_commands([ec2.describe_images, ec2.describe, ec2.launch, ec2.start, ec2.stop, ec2.terminate])
     parser.dispatch()
 
 

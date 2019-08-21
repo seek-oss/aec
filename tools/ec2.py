@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import os.path
-from typing import AnyStr
+from typing import AnyStr, Union
 
 import boto3
 from argh import arg
@@ -10,19 +10,23 @@ from config import *
 from display import *
 
 
+@arg('--owners', help='filter to AMIs owned by these accounts', default='self', nargs='*')
 @cli
-def describe_images(config) -> List[Dict[str, Any]]:
+def describe_images(config, owners: Union[str, List[str]]) -> List[Dict[str, Any]]:
     """
     List AMIs owned by your account
     """
 
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
-    response = ec2_client.describe_images(Owners=['self'])
+    if isinstance(owners, str):
+        owners = [owners]
+
+    response = ec2_client.describe_images(Owners=owners)
 
     images = [{
         'ImageId': i['ImageId'],
-        'Name': i['Name'],
+        'Name': i.get('Name', None),
         'Description': i.get('Description', None),
         'CreationDate': i['CreationDate']
     } for i in response['Images']]
@@ -33,10 +37,11 @@ def describe_images(config) -> List[Dict[str, Any]]:
 @arg('name', help='Name tag')
 @arg('owner', help='Owner tag')
 @arg('--volume_size', help='ebs volume size (GB)', default=100)
-@arg('--ami_name', help='ami name used to lookup the ami id in  config)', default='gami')
+@arg('--ami_name', help='ami name used to lookup the ami id in config)', default='gami')
 @arg('--instance_type', help='instance type', default='t2.medium')
 @cli
-def launch(config, name, owner, volume_size: int = 100, ami_name='gami', instance_type='t2.medium') -> Dict[str, Any]:
+def launch(config, name, owner, volume_size: int = 100, ami_name='gami', instance_type='t2.medium') -> \
+        List[Dict[str, Any]]:
     """
     Launch a tagged EC2 instance with an EBS volume
     """
@@ -74,7 +79,8 @@ def launch(config, name, owner, volume_size: int = 100, ami_name='gami', instanc
     if config.get('userdata', None) and config['userdata'].get(ami_name, None):
         kwargs['UserData'] = read_file(config['userdata'][ami_name])
 
-    print(f"Launching a {instance_type} in {config['region']} with name {name} ... ")
+    print(
+        f"Launching a {instance_type} in {config['region']} with name {name} using the {ami_name} ami {ami['id']}... ")
     response = ec2_client.run_instances(**kwargs)
 
     instance = response['Instances'][0]
@@ -82,16 +88,17 @@ def launch(config, name, owner, volume_size: int = 100, ami_name='gami', instanc
     waiter = ec2_client.get_waiter('instance_running')
     waiter.wait(InstanceIds=[instance['InstanceId']])
 
-    return {'InstanceType': instance['InstanceType'],
-            'PrivateDnsName': instance['PrivateDnsName'],
-            'LaunchTime': instance['LaunchTime'],
-            'ImageId': instance['ImageId'],
-            'InstanceId': instance['InstanceId']}
+    return [{'InstanceType': instance['InstanceType'],
+             'PrivateDnsName': instance['PrivateDnsName'],
+             'PublicDnsName': instance['PublicDnsName'],
+             'LaunchTime': instance['LaunchTime'],
+             'ImageId': instance['ImageId'],
+             'InstanceId': instance['InstanceId']}]
 
 
 @arg('--name', help='Filter to hosts with this Name tag', default=None)
 @cli
-def describe(config, name=None) -> List[Dict[str, any]]:
+def describe(config, name=None) -> List[Dict[str, Any]]:
     """
     List EC2 instances in the region
     """
@@ -105,6 +112,7 @@ def describe(config, name=None) -> List[Dict[str, any]]:
         'Name': first_or_else([t['Value'] for t in i.get('Tags', []) if t['Key'] == 'Name'], None),
         'Type': i['InstanceType'],
         'PrivateDnsName': i['PrivateDnsName'],
+        'PublicDnsName': i['PublicDnsName'],
         'LaunchTime': i['LaunchTime'],
         'ImageId': i['ImageId'],
         'InstanceId': i['InstanceId']
@@ -113,13 +121,31 @@ def describe(config, name=None) -> List[Dict[str, any]]:
     return sorted(instances, key=lambda i: i['State'] + str(i['Name']))
 
 
+@arg('name', help='Name tag of instance')
+@cli
+def start(config, name) -> List[Dict[str, Any]]:
+    """
+    Start EC2 instance(s)
+    """
+    ec2_client = boto3.client('ec2', region_name=config['region'])
+
+    print(f"Starting instance(s) with the name {name} ... ")
+
+    instances = describe(config, name)
+    instance_ids = [instance['InstanceId'] for instance in instances]
+    ec2_client.start_instances(InstanceIds=instance_ids)
+
+    waiter = ec2_client.get_waiter('instance_running')
+    waiter.wait(InstanceIds=instance_ids)
+
+    return describe(config, name)
+
+
+@arg('name', help='Name tag')
+@cli
 def stop(config, name) -> List[Dict[str, Any]]:
     """
     Stop EC2 instance(s)
-
-    :param name:
-    :param config:
-    :return:
     """
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
@@ -132,13 +158,11 @@ def stop(config, name) -> List[Dict[str, Any]]:
     } for i in response['StoppingInstances']]
 
 
+@arg('name', help='Name tag of instance')
+@cli
 def terminate(config, name) -> List[Dict[str, Any]]:
     """
     Terminate EC2 instance(s)
-
-    :param name:
-    :param config:
-    :return:
     """
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
