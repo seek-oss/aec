@@ -4,11 +4,11 @@
 default = "syd"
 
 [syd]
+owner = "alice@little.co"
 region = "ap-southeast-2"
 key_name = "my-key"
-security_group = "sg-12345678901234567
-subnet = "subnet-12345678"
 iam_instance_profile_arn = "arn:aws:iam::123456789012:instance-profile/ec2_my_default"
+vpc = { name = "public A", subnet = "subnet-12345678",  security_group = "sg-12345678901234567" }
 
 [syd.amis]
 amazon_linux_2 = { id = "ami-04481c741a0311bbb", root_device = "/dev/xvda" }

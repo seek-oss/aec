@@ -35,18 +35,22 @@ def describe_images(config, owners: Union[str, List[str]]) -> List[Dict[str, Any
 
 
 @arg('name', help='Name tag')
-@arg('owner', help='Owner tag')
 @arg('--volume_size', help='ebs volume size (GB)', default=100)
 @arg('--ami_name', help='ami name used to lookup the ami id in config)', default='gami')
 @arg('--instance_type', help='instance type', default='t2.medium')
 @cli
-def launch(config, name, owner, volume_size: int = 100, ami_name='gami', instance_type='t2.medium') -> \
+def launch(config, name, volume_size: int = 100, ami_name='gami', instance_type='t2.medium') -> \
         List[Dict[str, Any]]:
     """
     Launch a tagged EC2 instance with an EBS volume
     """
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
+    try:
+        owner = config['owner']
+    except KeyError:
+        print(f"Missing owner in {config}", file=sys.stderr)
+        exit(1)
     try:
         ami = config['amis'][ami_name]
     except KeyError:
@@ -68,8 +72,8 @@ def launch(config, name, owner, volume_size: int = 100, ami_name='gami', instanc
         'EbsOptimized': False if instance_type.startswith("t2") else True,
         'NetworkInterfaces': [
             {'DeviceIndex': 0, 'Description': 'Primary network interface', 'DeleteOnTermination': True,
-             'SubnetId': config['subnet'], 'Ipv6AddressCount': 0,
-             'Groups': [config['security_group']]}
+             'SubnetId': config['vpc']['subnet'], 'Ipv6AddressCount': 0,
+             'Groups': [config['vpc']['security_group']]}
         ],
         'BlockDeviceMappings': [
             {'DeviceName': ami['root_device'],
@@ -80,7 +84,8 @@ def launch(config, name, owner, volume_size: int = 100, ami_name='gami', instanc
         kwargs['UserData'] = read_file(config['userdata'][ami_name])
 
     print(
-        f"Launching a {instance_type} in {config['region']} with name {name} using the {ami_name} ami {ami['id']}... ")
+        f"Launching a {instance_type} in {config['region']} with name {name} using the {ami_name} {ami['id']} in "
+        f"vpc {config['vpc']['name']}... ")
     response = ec2_client.run_instances(**kwargs)
 
     instance = response['Instances'][0]
@@ -90,8 +95,6 @@ def launch(config, name, owner, volume_size: int = 100, ami_name='gami', instanc
 
     return [{'InstanceType': instance['InstanceType'],
              'PrivateDnsName': instance['PrivateDnsName'],
-             'PublicDnsName': instance['PublicDnsName'],
-             'LaunchTime': instance['LaunchTime'],
              'ImageId': instance['ImageId'],
              'InstanceId': instance['InstanceId']}]
 
@@ -111,8 +114,7 @@ def describe(config, name=None) -> List[Dict[str, Any]]:
         'State': i['State']['Name'],
         'Name': first_or_else([t['Value'] for t in i.get('Tags', []) if t['Key'] == 'Name'], None),
         'Type': i['InstanceType'],
-        'PrivateDnsName': i['PrivateDnsName'],
-        'PublicDnsName': i['PublicDnsName'],
+        'DnsName': i['PublicDnsName'] if i.get('PublicDnsName', None) != "" else i['PrivateDnsName'],
         'LaunchTime': i['LaunchTime'],
         'ImageId': i['ImageId'],
         'InstanceId': i['InstanceId']
