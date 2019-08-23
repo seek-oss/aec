@@ -15,6 +15,7 @@ def mock_aws_configs():
 
     return {"region": region,
             "owner": "alice@testlab.io",
+            "default_ami": "gami",
             "amis": {"gami": {"id": AMIS[0]["ami_id"], "root_device": "/dev/xvda"}},
             "key_name": "test_key",
             "vpc": {"name": "test vpc", "subnet": next(ec2_backends[region].get_all_subnets()).id,

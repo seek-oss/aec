@@ -36,10 +36,10 @@ def describe_images(config, owners: Union[str, List[str]]) -> List[Dict[str, Any
 
 @arg('name', help='Name tag')
 @arg('--volume_size', help='ebs volume size (GB)', default=100)
-@arg('--ami_name', help='ami name used to lookup the ami id in config)', default='gami')
+@arg('--ami_name', help='ami name, used to lookup the ami id in config')
 @arg('--instance_type', help='instance type', default='t2.medium')
 @cli
-def launch(config, name, volume_size: int = 100, ami_name='gami', instance_type='t2.medium') -> \
+def launch(config, name, volume_size: int = 100, ami_name=None, instance_type='t2.medium') -> \
         List[Dict[str, Any]]:
     """
     Launch a tagged EC2 instance with an EBS volume
@@ -51,6 +51,14 @@ def launch(config, name, volume_size: int = 100, ami_name='gami', instance_type=
     except KeyError:
         print(f"Missing owner in {config}", file=sys.stderr)
         exit(1)
+
+    try:
+        if not ami_name:
+            ami_name = config['default_ami']
+    except KeyError:
+        print(f"No ami_name argument or default specified in the config file", file=sys.stderr)
+        exit(1)
+
     try:
         ami = config['amis'][ami_name]
     except KeyError:
@@ -84,7 +92,7 @@ def launch(config, name, volume_size: int = 100, ami_name='gami', instance_type=
         kwargs['UserData'] = read_file(config['userdata'][ami_name])
 
     print(
-        f"Launching a {instance_type} in {config['region']} with name {name} using the {ami_name} {ami['id']} in "
+        f"Launching a {instance_type} in {config['region']} named {name} using the {ami_name} {ami['id']} in "
         f"vpc {config['vpc']['name']}... ")
     response = ec2_client.run_instances(**kwargs)
 
