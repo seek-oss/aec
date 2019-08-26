@@ -15,8 +15,6 @@ def mock_aws_configs():
 
     return {"region": region,
             "owner": "alice@testlab.io",
-            "default_ami": "gami",
-            "amis": {"gami": {"id": AMIS[0]["ami_id"], "root_device": "/dev/xvda"}},
             "key_name": "test_key",
             "vpc": {"name": "test vpc", "subnet": next(ec2_backends[region].get_all_subnets()).id,
                     "security_group": "default"},
@@ -24,17 +22,16 @@ def mock_aws_configs():
 
 
 def test_launch(mock_aws_configs):
-    print(launch(mock_aws_configs, "alice"))
+    print(launch(mock_aws_configs, "alice", AMIS[0]["ami_id"]))
 
 
 def test_launch_has_userdata(mock_aws_configs):
-    mock_aws_configs["userdata"] = {"gami": "conf/userdata/amzn-install-docker.yaml"}
-    print(launch(mock_aws_configs, "userdata"))
+    print(launch(mock_aws_configs, "test_userdata", AMIS[0]["ami_id"], userdata="conf/userdata/amzn-install-docker.yaml"))
 
 
 def test_describe(mock_aws_configs):
-    launch(mock_aws_configs, "alice")
-    launch(mock_aws_configs, "sam")
+    launch(mock_aws_configs, "alice", AMIS[0]["ami_id"])
+    launch(mock_aws_configs, "sam", AMIS[0]["ami_id"])
 
     instances = describe(config=mock_aws_configs)
     print(instances)
@@ -56,7 +53,7 @@ def test_describe_instance_without_tags(mock_aws_configs):
 
 
 def test_describe_by_name(mock_aws_configs):
-    launch(mock_aws_configs, "alice")
+    launch(mock_aws_configs, "alice", AMIS[0]["ami_id"])
 
     instances = describe(name="alice", config=mock_aws_configs)
     print(instances)
@@ -66,7 +63,7 @@ def test_describe_by_name(mock_aws_configs):
 
 
 def test_stop_start(mock_aws_configs):
-    launch(mock_aws_configs, "alice")
+    launch(mock_aws_configs, "alice", AMIS[0]["ami_id"])
 
     stop(mock_aws_configs, name="alice")
 
@@ -74,7 +71,7 @@ def test_stop_start(mock_aws_configs):
 
 
 def test_terminate(mock_aws_configs):
-    launch(mock_aws_configs, "alice")
+    launch(mock_aws_configs, "alice", AMIS[0]["ami_id"])
 
     response = terminate(mock_aws_configs, name="alice")
 

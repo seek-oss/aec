@@ -34,12 +34,20 @@ def describe_images(config, owners: Union[str, List[str]]) -> List[Dict[str, Any
     return sorted(images, key=lambda i: i['CreationDate'], reverse=True)
 
 
+root_devices = {
+    'amazon': '/dev/xvda',
+    'ubuntu': '/dev/sda1'
+}
+
+
 @arg('name', help='Name tag')
+@arg('ami', help='ami id')
+@arg('--dist', help='linux distribution', choices=['amazon', 'ubuntu'], default='amazon')
 @arg('--volume_size', help='ebs volume size (GB)', default=100)
-@arg('--ami_name', help='ami name, used to lookup the ami id in config')
 @arg('--instance_type', help='instance type', default='t2.medium')
+@arg('--userdata', help='path to user data file', default=None)
 @cli
-def launch(config, name, volume_size: int = 100, ami_name=None, instance_type='t2.medium') -> \
+def launch(config, name: str, ami: str, dist: str = 'amazon', volume_size: int = 100, instance_type='t2.medium', userdata=None) -> \
         List[Dict[str, Any]]:
     """
     Launch a tagged EC2 instance with an EBS volume
@@ -53,21 +61,14 @@ def launch(config, name, volume_size: int = 100, ami_name=None, instance_type='t
         exit(1)
 
     try:
-        if not ami_name:
-            ami_name = config['default_ami']
+        root_device = root_devices[dist]
     except KeyError:
-        print(f"No ami_name argument or default specified in the config file", file=sys.stderr)
-        exit(1)
-
-    try:
-        ami = config['amis'][ami_name]
-    except KeyError:
-        print(f"Missing ami {ami_name} in {config['amis']}", file=sys.stderr)
+        print(f"Unknown os {dist}", file=sys.stderr)
         exit(1)
 
     # TODO: support multiple subnets
     kwargs = {
-        'ImageId': ami['id'],
+        'ImageId': ami,
         'MaxCount': 1, 'MinCount': 1,
         'KeyName': config['key_name'],
         'InstanceType': instance_type,
@@ -84,15 +85,15 @@ def launch(config, name, volume_size: int = 100, ami_name=None, instance_type='t
              'Groups': [config['vpc']['security_group']]}
         ],
         'BlockDeviceMappings': [
-            {'DeviceName': ami['root_device'],
+            {'DeviceName': root_device,
              'Ebs': {'VolumeSize': volume_size, 'DeleteOnTermination': True, 'VolumeType': 'gp2'}}
         ]
     }
-    if config.get('userdata', None) and config['userdata'].get(ami_name, None):
-        kwargs['UserData'] = read_file(config['userdata'][ami_name])
+    if userdata:
+        kwargs['UserData'] = read_file(userdata)
 
     print(
-        f"Launching a {instance_type} in {config['region']} named {name} using the {ami_name} {ami['id']} in "
+        f"Launching a {instance_type} in {config['region']} named {name} using {ami} in "
         f"vpc {config['vpc']['name']}... ")
     response = ec2_client.run_instances(**kwargs)
 
