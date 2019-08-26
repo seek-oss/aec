@@ -42,7 +42,7 @@ root_devices = {
 
 @arg('name', help='Name tag')
 @arg('ami', help='ami id')
-@arg('--dist', help='linux distribution', choices=['amazon', 'ubuntu'], default='amazon')
+@arg('--dist', help='linux distribution', choices=root_devices.keys(), default='amazon')
 @arg('--volume_size', help='ebs volume size (GB)', default=100)
 @arg('--instance_type', help='instance type', default='t2.medium')
 @arg('--userdata', help='path to user data file', default=None)
@@ -54,17 +54,8 @@ def launch(config, name: str, ami: str, dist: str = 'amazon', volume_size: int =
     """
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
-    try:
-        owner = config['owner']
-    except KeyError:
-        print(f"Missing owner in {config}", file=sys.stderr)
-        exit(1)
-
-    try:
-        root_device = root_devices[dist]
-    except KeyError:
-        print(f"Unknown os {dist}", file=sys.stderr)
-        exit(1)
+    owner = config['owner']
+    root_device = root_devices[dist]
 
     # TODO: support multiple subnets
     kwargs = {

@@ -18,7 +18,14 @@ def load_config(profile: str = "default"):
 
     # set profile to the value of the default key
     if profile == "default":
-        profile = config[profile]
+        profile = config['default_profile']
+
+    # make top level keys available in the profile
+    try:
+        config[profile]['owner'] = config['owner']
+    except KeyError:
+        print(f"Please add an owner key to {config_filepath}", file=sys.stderr)
+        exit(1)
 
     try:
         return config[profile]
