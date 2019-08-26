@@ -4,7 +4,7 @@ import pytoml as toml
 import os.path
 from typing import Dict, Any
 
-config_filepath = os.path.expanduser('~/.asak/ec2.toml')
+config_filepath = os.path.expanduser('~/.aec/ec2.toml')
 
 # TODO add tests for this
 def load_config(profile: str = "default"):

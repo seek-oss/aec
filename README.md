@@ -1,23 +1,25 @@
-# AWS Swiss Army Knife
+# AWS Easy CLI
+
+_"Doesn't do much, easily"_
 
 CLI tools for doing things on AWS easier. Defaults for your account only need to be supplied once via a config file, which supports multiple profiles (eg: for different regions).
 
 Currently includes:
 
-* EC2 - list images, describe/launch/start/stop/terminate tagged instances with EBS volumes of any size.
+* EC2 - list images, describe/launch/start/stop/terminate instances with EBS volumes of any size, and your config tags.
 
 ## Install
 
-1. `make install` creates and installs the tools into a virtualenv located at `~/.virtualenvs/asak` 
-1. Install the example config by running `make install-config` or install your organisation's provided config into `~/.asak/`
-1. Modify the config file at `~/.awak/config` and update any values as needed (eg: `additional_tags`)
+1. `make install` creates and installs the tools into a virtualenv located at `~/.virtualenvs/aec` 
+1. Install the example config by running `make install-config` or install your organisation's provided config into `~/.aec/`
+1. Modify the config file at `~/.aec/config` and update any values as needed (eg: `additional_tags`)
 
-[virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) whilst not required is very useful for switching into the asak virtualenv. 
+[virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) whilst not required is very useful for switching into the aec virtualenv. 
 
 
 ## EC2 Usage
 
-Activate the virtualenv, eg: `source ~/.virtualenvs/asak/bin/activate` or `workon asak` (if you have virtualenvwrapper installed).
+Activate the virtualenv, eg: `source ~/.virtualenvs/aec/bin/activate` or `workon aec` (if you have virtualenvwrapper installed).
 
 To see the help, run `ec2 -h`
 
