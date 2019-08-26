@@ -6,7 +6,7 @@ from typing import Dict, Any
 
 config_filepath = os.path.expanduser('~/.asak/config')
 
-
+# TODO add tests for this
 def load_config(profile: str = "default"):
     """
     Load profile from the config file.
@@ -21,11 +21,8 @@ def load_config(profile: str = "default"):
         profile = config['default_profile']
 
     # make top level keys available in the profile
-    try:
-        config[profile]['owner'] = config['owner']
-    except KeyError:
-        print(f"Please add an owner key to {config_filepath}", file=sys.stderr)
-        exit(1)
+    if config.get('additional_tags', None):
+        config[profile]['additional_tags'] = config['additional_tags']
 
     try:
         return config[profile]

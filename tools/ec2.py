@@ -9,7 +9,7 @@ from tools.cli import cli
 from tools.config import *
 from tools.display import *
 
-
+# TODO - add owners to config file
 @arg('--owners', help='filter to AMIs owned by these accounts', default='self', nargs='*')
 @cli
 def describe_images(config, owners: Union[str, List[str]]) -> List[Dict[str, Any]]:
@@ -55,7 +55,10 @@ def launch(config, name: str, ami: str, dist: str = 'amazon', volume_size: int =
     """
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
-    owner = config['owner']
+    additional_tags = config['additional_tags'] if config.get('additional_tags', None) else []
+
+    tags = [{'Key': 'Name', 'Value': name}] + [ {'Key': k, 'Value': v} for k, v in additional_tags.items() ]
+
     root_device = root_devices[dist]
 
     # TODO: support multiple subnets
@@ -67,8 +70,8 @@ def launch(config, name: str, ami: str, dist: str = 'amazon', volume_size: int =
         'IamInstanceProfile': {"Arn": config['iam_instance_profile_arn']},
         'TagSpecifications': [
             # TODO read owner and any other tags from the config file
-            {'ResourceType': 'instance', 'Tags': [{'Key': 'Name', 'Value': name}, {'Key': 'Owner', 'Value': owner}]},
-            {'ResourceType': 'volume', 'Tags': [{'Key': 'Name', 'Value': name}, {'Key': 'Owner', 'Value': owner}]}
+            {'ResourceType': 'instance', 'Tags': tags},
+            {'ResourceType': 'volume', 'Tags': tags}
         ],
         'EbsOptimized': False if instance_type.startswith("t2") else True,
         'NetworkInterfaces': [

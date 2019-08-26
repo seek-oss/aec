@@ -1,7 +1,7 @@
 # example config, update this for your account and cp to ~/.asak/config
 
+additional_tags = { Owner = "alice@little.co", Project = "example project" }
 default_profile = "syd"
-owner = "alice@little.co"
 
 [syd]
 region = "ap-southeast-2"
@@ -13,4 +13,4 @@ vpc = { name = "public A", subnet = "subnet-12345678",  security_group = "sg-123
 region = "us-east-1"
 key_name = "my-key-us"
 iam_instance_profile_arn = "arn:aws:iam::123456789012:instance-profile/ec2_my_default"
-vpc = { name = "private B", subnet = "subnet-12345678",  security_group = "sg-12345678901234567" }
+vpc = { name = "private B", subnet = "subnet-87654321",  security_group = "sg-01234567123456789" }

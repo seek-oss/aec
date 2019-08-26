@@ -14,7 +14,7 @@ def mock_aws_configs():
     region = 'ap-southeast-2'
 
     return {"region": region,
-            "owner": "alice@testlab.io",
+            "additional_tags": { "Owner": "alice@testlab.io", "Project": "test project a"},
             "key_name": "test_key",
             "vpc": {"name": "test vpc", "subnet": next(ec2_backends[region].get_all_subnets()).id,
                     "security_group": "default"},
