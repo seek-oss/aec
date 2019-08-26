@@ -1,13 +1,13 @@
-#!/usr/bin/env python
 import os.path
 from typing import AnyStr, Union
 
+import argh
 import boto3
 from argh import arg
 
-from cli import cli
-from config import *
-from display import *
+from tools.cli import cli
+from tools.config import *
+from tools.display import *
 
 
 @arg('--owners', help='filter to AMIs owned by these accounts', default='self', nargs='*')
@@ -192,3 +192,13 @@ def first_or_else(l: List[Any], default: Any) -> Any:
 def read_file(filepath) -> AnyStr:
     with open(os.path.expanduser(filepath)) as file:
         return file.read()
+
+
+def main():
+    parser = argh.ArghParser()
+    parser.add_commands([describe_images, describe, launch, start, stop, terminate])
+    parser.dispatch()
+
+
+if __name__ == '__main__':
+    main()

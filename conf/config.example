@@ -1,4 +1,4 @@
-# example config, update this for your account and cp to ~/.aww/config
+# example config, update this for your account and cp to ~/.asak/config
 
 # default profile
 default = "syd"
@@ -16,5 +16,5 @@ amazon_linux_2 = { id = "ami-04481c741a0311bbb", root_device = "/dev/xvda" }
 ubuntu = { id = "ami-0b76c3b150c6b1423", root_device = "/dev/sda1" }
 
 [syd.userdata]
-amazon_linux_2 = "~/.aww/userdata/amzn-install-docker.yaml"
+amazon_linux_2 = "~/.asak/userdata/amzn-install-docker.yaml"
 

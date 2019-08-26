@@ -4,7 +4,7 @@ import pytoml as toml
 import os.path
 from typing import Dict, Any
 
-config_filepath = os.path.expanduser('~/.aww/config')
+config_filepath = os.path.expanduser('~/.asak/config')
 
 
 def load_config(profile: str = "default"):

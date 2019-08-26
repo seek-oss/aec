@@ -23,6 +23,6 @@ test:
 
 ## install config files (if they don't already exist)
 install:
-	mkdir -p ~/.aww/
-	cp -r conf/* ~/.aww/
-	cp -rn ~/.aww/config.example ~/.aww/config || true
+	mkdir -p ~/.asak/
+	cp -r conf/* ~/.asak/
+	cp -rn ~/.asak/config.example ~/.asak/config || true

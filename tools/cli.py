@@ -3,8 +3,8 @@ from functools import wraps
 
 from argh import arg
 
-from config import load_config
-from display import pretty_table, as_table
+from tools.config import load_config
+from tools.display import pretty_table, as_table
 
 
 def cli(func):
@@ -21,8 +21,8 @@ def cli(func):
     @wraps(func)
     @arg("--profile", help="Profile in the config file to use", default="default")
     def wrapper(*args, **kwargs):
-        #print(args)
-        #print(kwargs)
+        print(args)
+        print(kwargs)
 
         # we are being called from tests, or by other functions, just pass through
         if args or 'config' in kwargs:
