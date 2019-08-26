@@ -26,8 +26,14 @@ ec2 describe-images  --owners self 1234
 
 To launch a t2.medium instance named `lady gaga` with a 100gb EBS volume
 ```
-ec2 launch name="lady gaga" ami-0bfe6b818fce462af instance-type=t2.medium volume-size=100  
+ec2 launch "lady gaga" ami-0bfe6b818fce462af --instance-type t2.medium --volume-size 100  
 ```
+
+By default, commands will use the default profile as specified in the config file. To list ec2 instances using the non-default profile `us`
+```
+ec2 describe --profile us  
+```
+
 
 ## Similar projects
 

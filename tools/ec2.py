@@ -43,11 +43,12 @@ root_devices = {
 @arg('name', help='Name tag')
 @arg('ami', help='ami id')
 @arg('--dist', help='linux distribution', choices=root_devices.keys(), default='amazon')
-@arg('--volume_size', help='ebs volume size (GB)', default=100)
-@arg('--instance_type', help='instance type', default='t2.medium')
+@arg('--volume-size', help='ebs volume size (GB)', default=100)
+@arg('--instance-type', help='instance type', default='t2.medium')
 @arg('--userdata', help='path to user data file', default=None)
 @cli
-def launch(config, name: str, ami: str, dist: str = 'amazon', volume_size: int = 100, instance_type='t2.medium', userdata=None) -> \
+def launch(config, name: str, ami: str, dist: str = 'amazon', volume_size: int = 100, instance_type='t2.medium',
+           userdata=None) -> \
         List[Dict[str, Any]]:
     """
     Launch a tagged EC2 instance with an EBS volume
