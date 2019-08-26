@@ -12,7 +12,7 @@ Currently includes:
 1. Install the example config by running `make install-config` or install your organisation's provided config into `~/.asak/`
 1. Modify the config file at `~/.awak/config` and update any values as needed (eg: `additional_tags`)
 
-[virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) whilst not required is very useful for switching into asak's virtualenv. 
+[virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) whilst not required is very useful for switching into the asak virtualenv. 
 
 
 ## EC2 Usage
@@ -48,4 +48,4 @@ ec2 describe --profile us
 
 [awless](https://github.com/wallix/awless) is written in Go, and is an excellent substitute for awscli with support for 
 many AWS services. It has human friendly commands for use on the command line or in templates. One limitation is its 
-ec2 create instance command doesn't allow you to specify the EBS volume size. 
+ec2 create instance command doesn't allow you to specify the EBS volume size, or add tags. 

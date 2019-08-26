@@ -26,7 +26,7 @@ test: $(venv)
 install-example-config:
 	mkdir -p ~/.asak/
 	cp -r conf/* ~/.asak/
-	cp -rn ~/.asak/config.example ~/.asak/config || true
+	cp -rn ~/.asak/ec2.example.toml ~/.asak/ec2.toml || true
 
 ## install the tools
 install: $(venv)

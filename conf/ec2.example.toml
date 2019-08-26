@@ -1,5 +1,6 @@
 # example config, update this for your account and cp to ~/.asak/config
 
+# tags added to ec2 instances during launch
 additional_tags = { Owner = "alice@little.co", Project = "example project" }
 default_profile = "syd"
 
