@@ -131,11 +131,11 @@ def describe(config, name=None) -> List[Dict[str, Any]]:
 @cli
 def start(config, name) -> List[Dict[str, Any]]:
     """
-    Start EC2 instance(s)
+    Start EC2 instances by name
     """
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
-    print(f"Starting instance(s) with the name {name} ... ")
+    print(f"Starting instances with the name {name} ... ")
 
     instances = describe(config, name)
     instance_ids = [instance['InstanceId'] for instance in instances]
@@ -151,7 +151,7 @@ def start(config, name) -> List[Dict[str, Any]]:
 @cli
 def stop(config, name) -> List[Dict[str, Any]]:
     """
-    Stop EC2 instance(s)
+    Stop EC2 instances by name
     """
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
@@ -168,7 +168,7 @@ def stop(config, name) -> List[Dict[str, Any]]:
 @cli
 def terminate(config, name) -> List[Dict[str, Any]]:
     """
-    Terminate EC2 instance(s)
+    Terminate EC2 instances by name
     """
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
