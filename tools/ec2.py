@@ -1,5 +1,5 @@
 import os.path
-from typing import AnyStr, Union
+from typing import AnyStr
 
 import argh
 import boto3
@@ -9,15 +9,16 @@ from tools.cli import cli
 from tools.config import *
 from tools.display import *
 
-# TODO - add owners to config file
-@arg('--owners', help='filter to AMIs owned by these accounts', default='self', nargs='*')
+
 @cli
-def describe_images(config, owners: Union[str, List[str]]) -> List[Dict[str, Any]]:
+def describe_images(config) -> List[Dict[str, Any]]:
     """
-    List AMIs owned by your account
+    List AMIs
     """
 
     ec2_client = boto3.client('ec2', region_name=config['region'])
+
+    owners = config["describe_images_owners"] if config.get("describe_images_owners", None) else "self"
 
     if isinstance(owners, str):
         owners = [owners]
@@ -57,7 +58,7 @@ def launch(config, name: str, ami: str, dist: str = 'amazon', volume_size: int =
 
     additional_tags = config['additional_tags'] if config.get('additional_tags', None) else []
 
-    tags = [{'Key': 'Name', 'Value': name}] + [ {'Key': k, 'Value': v} for k, v in additional_tags.items() ]
+    tags = [{'Key': 'Name', 'Value': name}] + [{'Key': k, 'Value': v} for k, v in additional_tags.items()]
 
     root_device = root_devices[dist]
 

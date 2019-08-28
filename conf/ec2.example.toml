@@ -1,8 +1,11 @@
-# example config, update this for your account and cp to ~/.aec/config
+# example config, update this for your account and cp to ~/.aec/ec2.toml
+default_profile = "syd"
 
 # tags added to ec2 instances during launch
 additional_tags = { Owner = "alice@little.co", Project = "example project" }
-default_profile = "syd"
+
+# include these accounts when listing AMIs
+describe_images_owners = [ "self", "123456789012"]
 
 [syd]
 region = "ap-southeast-2"
