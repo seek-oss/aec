@@ -10,8 +10,24 @@ from tools.config import *
 from tools.display import *
 
 
+@arg('ami', help='ami id')
 @cli
-def describe_images(config) -> List[Dict[str, Any]]:
+def delete_image(config, ami: str):
+    """
+    Deregisters an AMI and deletes its snapshot
+    """
+    ec2_client = boto3.client('ec2', region_name=config['region'])
+
+    response = describe_images(config, ami)
+
+    ec2_client.deregister_image(ImageId=ami)
+
+    ec2_client.delete_snapshot(SnapshotId=response[0]['SnapshotId'])
+
+
+@cli
+@arg('--ami', help='filter to this ami id', default=None)
+def describe_images(config, ami) -> List[Dict[str, Any]]:
     """
     List AMIs
     """
@@ -23,13 +39,17 @@ def describe_images(config) -> List[Dict[str, Any]]:
     if isinstance(owners, str):
         owners = [owners]
 
-    response = ec2_client.describe_images(Owners=owners)
+    if ami:
+        response = ec2_client.describe_images(Owners=owners, ImageIds=[ami])
+    else:
+        response = ec2_client.describe_images(Owners=owners)
 
     images = [{
         'ImageId': i['ImageId'],
         'Name': i.get('Name', None),
         'Description': i.get('Description', None),
-        'CreationDate': i['CreationDate']
+        'CreationDate': i['CreationDate'],
+        'SnapshotId': i['BlockDeviceMappings'][0]['Ebs']['SnapshotId']
     } for i in response['Images']]
 
     return sorted(images, key=lambda i: i['CreationDate'], reverse=True)
@@ -225,7 +245,7 @@ def read_file(filepath) -> AnyStr:
 
 def main():
     parser = argh.ArghParser()
-    parser.add_commands([describe_images, describe, launch, start, stop, terminate, modify])
+    parser.add_commands([describe_images, describe, launch, start, stop, terminate, modify, delete_image])
     parser.dispatch()
 
 
