@@ -23,16 +23,20 @@ Activate the virtualenv, eg: `source ~/.virtualenvs/aec/bin/activate` or `workon
 
 To see the help, run `ec2 -h`
 ```
-usage: ec2 [-h] {describe-images,describe,launch,start,stop,terminate} ...
+usage: ec2 [-h]
+           {describe-images,describe,launch,start,stop,terminate,modify,delete-image}
+           ...
 
 positional arguments:
-  {describe-images,describe,launch,start,stop,terminate}
-    describe-images     List AMIs owned by your account
+  {describe-images,describe,launch,start,stop,terminate,modify,delete-image}
+    describe-images     List AMIs
     describe            List EC2 instances in the region
     launch              Launch a tagged EC2 instance with an EBS volume
     start               Start EC2 instances by name
     stop                Stop EC2 instances by name
     terminate           Terminate EC2 instances by name
+    modify              Change an instance's type
+    delete-image        Deregisters an AMI and deletes its snapshot
 
 optional arguments:
   -h, --help            show this help message and exit
