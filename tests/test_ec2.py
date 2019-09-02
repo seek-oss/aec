@@ -4,7 +4,7 @@ from moto import mock_ec2
 from moto.ec2 import ec2_backends
 from moto.ec2.models import AMIS
 
-from tools.ec2 import launch, describe, stop, terminate, start
+from tools.ec2 import launch, describe, stop, terminate, start, modify
 
 
 @pytest.fixture
@@ -14,7 +14,7 @@ def mock_aws_configs():
     region = 'ap-southeast-2'
 
     return {"region": region,
-            "additional_tags": { "Owner": "alice@testlab.io", "Project": "test project a"},
+            "additional_tags": {"Owner": "alice@testlab.io", "Project": "test project a"},
             "key_name": "test_key",
             "vpc": {"name": "test vpc", "subnet": next(ec2_backends[region].get_all_subnets()).id,
                     "security_group": "default"},
@@ -26,7 +26,8 @@ def test_launch(mock_aws_configs):
 
 
 def test_launch_has_userdata(mock_aws_configs):
-    print(launch(mock_aws_configs, "test_userdata", AMIS[0]["ami_id"], userdata="conf/userdata/amzn-install-docker.yaml"))
+    print(
+        launch(mock_aws_configs, "test_userdata", AMIS[0]["ami_id"], userdata="conf/userdata/amzn-install-docker.yaml"))
 
 
 def test_describe(mock_aws_configs):
@@ -68,6 +69,18 @@ def test_stop_start(mock_aws_configs):
     stop(mock_aws_configs, name="alice")
 
     start(mock_aws_configs, name="alice")
+
+
+def test_modify(mock_aws_configs):
+    launch(mock_aws_configs, "alice", AMIS[0]["ami_id"])
+
+    instances = modify(mock_aws_configs, name="alice", type='c5.2xlarge')
+
+    assert len(instances) == 1
+    assert instances[0]["Name"] == "alice"
+    assert instances[0]["Type"] == "c5.2xlarge"
+
+    print(instances)
 
 
 def test_terminate(mock_aws_configs):

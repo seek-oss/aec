@@ -182,6 +182,26 @@ def terminate(config, name) -> List[Dict[str, Any]]:
     } for i in response['TerminatingInstances']]
 
 
+@arg('name', help='Name tag of instance')
+@arg('type', help='Type of instance')
+@cli
+def modify(config, name, type) -> List[Dict[str, Any]]:
+    """
+    Change an instance's type
+    """
+    ec2_client = boto3.client('ec2', region_name=config['region'])
+
+    instances = describe(config, name)
+
+    if not instances:
+        raise Exception(f'No instances named {name}')
+
+    instance_id = instances[0]['InstanceId']
+    ec2_client.modify_instance_attribute(InstanceId=instance_id, InstanceType={'Value': type})
+
+    return describe(config, name)
+
+
 def first_or_else(l: List[Any], default: Any) -> Any:
     return l[0] if len(l) > 0 else default
 
@@ -193,7 +213,7 @@ def read_file(filepath) -> AnyStr:
 
 def main():
     parser = argh.ArghParser()
-    parser.add_commands([describe_images, describe, launch, start, stop, terminate])
+    parser.add_commands([describe_images, describe, launch, start, stop, terminate, modify])
     parser.dispatch()
 
 
