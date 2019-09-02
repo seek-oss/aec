@@ -23,8 +23,6 @@ def load_config(profile: str = "default"):
     # make top level keys available in the profile
     if config.get('additional_tags', None):
         config[profile]['additional_tags'] = config['additional_tags']
-    if config.get('describe_images_owners', None):
-        config[profile]['describe_images_owners'] = config['describe_images_owners']
 
     try:
         return config[profile]
