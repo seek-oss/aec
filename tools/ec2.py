@@ -139,6 +139,10 @@ def start(config, name) -> List[Dict[str, Any]]:
     print(f"Starting instances with the name {name} ... ")
 
     instances = describe(config, name)
+
+    if not instances:
+        raise Exception(f'No instances named {name}')
+
     instance_ids = [instance['InstanceId'] for instance in instances]
     ec2_client.start_instances(InstanceIds=instance_ids)
 
@@ -157,6 +161,10 @@ def stop(config, name) -> List[Dict[str, Any]]:
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
     instances = describe(config, name)
+
+    if not instances:
+        raise Exception(f'No instances named {name}')
+
     response = ec2_client.stop_instances(InstanceIds=[instance['InstanceId'] for instance in instances])
 
     return [{
@@ -174,6 +182,10 @@ def terminate(config, name) -> List[Dict[str, Any]]:
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
     instances = describe(config, name)
+
+    if not instances:
+        raise Exception(f'No instances named {name}')
+
     response = ec2_client.terminate_instances(InstanceIds=[instance['InstanceId'] for instance in instances])
 
     return [{
