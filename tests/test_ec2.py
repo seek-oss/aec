@@ -4,7 +4,7 @@ from moto import mock_ec2
 from moto.ec2 import ec2_backends
 from moto.ec2.models import AMIS
 
-from tools.ec2 import launch, describe, stop, terminate, start, modify
+from tools.ec2 import launch, describe, stop, terminate, start, modify, delete_image
 
 
 @pytest.fixture
@@ -80,7 +80,9 @@ def test_modify(mock_aws_configs):
     assert instances[0]["Name"] == "alice"
     assert instances[0]["Type"] == "c5.2xlarge"
 
-    print(instances)
+
+def test_delete_ami(mock_aws_configs):
+    delete_image(mock_aws_configs, AMIS[0]["ami_id"])
 
 
 def test_terminate(mock_aws_configs):
