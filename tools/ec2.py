@@ -25,6 +25,26 @@ def delete_image(config, ami: str):
     ec2_client.delete_snapshot(SnapshotId=response[0]['SnapshotId'])
 
 
+@arg('ami', help='ami id')
+@arg('account', help='account id')
+@cli
+def share_image(config, ami: str, account: str):
+    """
+    Share an AMI with another account
+    """
+
+    ec2_client = boto3.client('ec2', region_name=config['region'])
+
+    ec2_client.modify_image_attribute(
+        ImageId=ami,
+        LaunchPermission={"Add": [{"UserId": account}]},
+        OperationType="add",
+        UserIds=[account],
+        Value="string",
+        DryRun=False,
+    )
+
+
 @arg('--ami', help='filter to this ami id', default=None)
 @cli
 def describe_images(config, ami) -> List[Dict[str, Any]]:
@@ -245,7 +265,7 @@ def read_file(filepath) -> AnyStr:
 
 def main():
     parser = argh.ArghParser()
-    parser.add_commands([describe_images, describe, launch, start, stop, terminate, modify, delete_image])
+    parser.add_commands([describe_images, describe, launch, start, stop, terminate, modify, delete_image, share_image])
     parser.dispatch()
 
 

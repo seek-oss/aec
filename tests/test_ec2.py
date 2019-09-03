@@ -4,7 +4,7 @@ from moto import mock_ec2
 from moto.ec2 import ec2_backends
 from moto.ec2.models import AMIS
 
-from tools.ec2 import launch, describe, stop, terminate, start, modify, delete_image
+from tools.ec2 import launch, describe, stop, terminate, start, modify, delete_image, share_image
 
 
 @pytest.fixture
@@ -81,7 +81,7 @@ def test_modify(mock_aws_configs):
     assert instances[0]["Type"] == "c5.2xlarge"
 
 
-def test_delete_ami(mock_aws_configs):
+def test_delete_image(mock_aws_configs):
     delete_image(mock_aws_configs, AMIS[0]["ami_id"])
 
 
@@ -91,3 +91,8 @@ def test_terminate(mock_aws_configs):
     response = terminate(mock_aws_configs, name="alice")
 
     print(response)
+
+
+def test_share_image(mock_aws_configs):
+    share_image(mock_aws_configs, AMIS[0]["ami_id"], '123456789012')
+
