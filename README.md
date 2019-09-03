@@ -11,7 +11,7 @@ Currently supports the following AWS services:
 ## Install
 
 1. Run `make install` to create and install the tools into a virtualenv located at `~/.virtualenvs/aec` 
-1. Install the example config by running `make install-config` or copy your organisation's provided config into `~/.aec/`
+1. If your organisation has a config repo, use those instructions to install the config file. If you don't have one, you can install the example config by running `make install-config`.
 1. Modify the config files in `~/.aec/` and update any values as needed (eg: `additional_tags`)
 
 [virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) whilst not required is very useful for switching into the aec virtualenv. 
