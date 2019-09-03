@@ -24,9 +24,9 @@ test: $(venv)
 
 ## install example config files (if they don't already exist)
 install-example-config:
-	mkdir -p ~/.aec/
-	cp -r conf/* ~/.aec/
-	cp -rn ~/.aec/ec2.example.toml ~/.aec/ec2.toml || true
+	@mkdir -p ~/.aec/
+	@cp -r conf/* ~/.aec/
+	@(cp -rn ~/.aec/ec2.example.toml ~/.aec/ec2.toml && echo "Installed config into ~/.aec/") || echo "Didn't overwrite existing files"
 
 ## install the tools
 install: $(venv)
