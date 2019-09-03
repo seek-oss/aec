@@ -25,8 +25,8 @@ def delete_image(config, ami: str):
     ec2_client.delete_snapshot(SnapshotId=response[0]['SnapshotId'])
 
 
-@cli
 @arg('--ami', help='filter to this ami id', default=None)
+@cli
 def describe_images(config, ami) -> List[Dict[str, Any]]:
     """
     List AMIs
