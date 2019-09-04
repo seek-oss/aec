@@ -45,9 +45,9 @@ optional arguments:
 
 #### Examples
 
-To list AMIs created by your account and account 1234 
+To list AMIs (owned by accounts specified in the config file)
 ```
-ec2 describe-images  --owners self 1234
+ec2 describe-images
 ```
 
 To launch a t2.medium instance named `lady gaga` with a 100gb EBS volume, with other settings read from the config file
