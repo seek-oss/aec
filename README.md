@@ -2,7 +2,7 @@
 
 _"Doesn't do much, easily"_
 
-CLI tools for doing things on AWS easier. Defaults for your account only need to be supplied once via a config file, which supports multiple profiles (eg: for different regions).
+CLI tools for doing things on AWS easier. Defaults (eg: subnet, tags etc.) only need to be supplied once via a config file, which supports multiple profiles (eg: for different regions or AWS accounts).
 
 Currently supports the following AWS services:
 
