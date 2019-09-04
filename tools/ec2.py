@@ -265,7 +265,7 @@ def read_file(filepath) -> AnyStr:
 
 def main():
     parser = argh.ArghParser()
-    parser.add_commands([describe_images, describe, launch, start, stop, terminate, modify, delete_image, share_image])
+    parser.add_commands([delete_image, describe, describe_images, launch, modify, share_image, start, stop, terminate])
     parser.dispatch()
 
 
