@@ -1,0 +1,3 @@
+[myapp]
+queue_url = "https://sqs.ap-southeast-2.amazonaws.com/123456789012/myapp-dead-letter-queue"
+printer = "[(.Body | fromjson | .Records[].Sns.Message | fromjson | .Records[].s3.object.key), .MessageAttributes.ErrorMessage.StringValue] | @tsv"
