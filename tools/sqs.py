@@ -1,16 +1,17 @@
-import json
+import sys
+from os import path
 
 import argh
-from argh import arg
 import boto3
 import pyjq as pyjq
 
-from tools.cli import cli
+from tools.cli import *
 
+cli = Cli(config_file='~/.aec/sqs.toml').cli
 
 @arg('file_name', help="file to write messages to")
 @arg('--keep', help="keep messages, don't delete them", default=False)
-@cli('sqs')
+@cli
 def drain(config, file_name, keep=False):
     """
     Drains messages from a queue and writes them to a file
@@ -19,6 +20,11 @@ def drain(config, file_name, keep=False):
     printer = config['printer'] if config.get('printer', None) else None
 
     count = 0
+
+    if path.isfile(file_name) and path.exists(file_name):
+        print(f'{file_name} already exists', file=sys.stderr)
+        exit(1)
+
     with open(file_name, 'wb', buffering=0) as o:
         for message in receive_and_delete_messages(queue_url, keep):
             formatted_message = json.dumps(message) + "\n"

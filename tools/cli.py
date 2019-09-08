@@ -7,17 +7,22 @@ from tools.config import load_config
 from tools.display import pretty_table, as_table
 
 
-def cli(config_file):
-    """
-    A decorator that defines common args, injects config, and pretty prints the results of the function it wraps
-    when called from the CLI. When called by other functions, treat it as usual familiar (undecorated) function call,
-    ie: just pass through to the wrapped function. This means we can treat the function as a familiar function,
-    and easily provide the extra CLI functionality only when needed.
+class Cli:
 
-    :param config_file:
-    :return:
-    """
-    def decorator(func):
+    def __init__(self, config_file):
+        self.config_file = config_file
+
+    def cli(self, func):
+        """
+        A decorator that defines common args, injects config, and pretty prints the results of the function it wraps
+        when called from the CLI. When called by other functions, treat it as usual familiar (undecorated) function call,
+        ie: just pass through to the wrapped function. This means we can treat the function as a familiar function,
+        and easily provide the extra CLI functionality only when needed.
+
+        :param func:
+        :return:
+        """
+
         @wraps(func)
         @arg("--profile", help="Profile in the config file to use", default="default")
         def wrapper(*args, **kwargs):
@@ -30,7 +35,7 @@ def cli(config_file):
 
             # we are being called from the cli, so load the config and prettify the result
             profile = kwargs.pop('profile', 'default')
-            kwargs['config'] = load_config(config_file, profile)
+            kwargs['config'] = load_config(self.config_file, profile)
 
             result = func(*args, **kwargs)
 
@@ -43,4 +48,3 @@ def cli(config_file):
                 return result
 
         return wrapper
-    return decorator
