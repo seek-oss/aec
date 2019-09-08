@@ -10,10 +10,10 @@ from tools.cli import cli
 
 @arg('file_name', help="file to write messages to")
 @arg('--keep', help="keep messages, don't delete them", default=False)
-@cli
+@cli('sqs')
 def drain(config, file_name, keep=False):
     """
-    Drains messages from a queue and writes them to file
+    Drains messages from a queue and writes them to a file
     """
     queue_url = config['queue_url']
     printer = config['printer'] if config.get('printer', None) else None
