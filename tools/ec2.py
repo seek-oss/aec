@@ -8,6 +8,7 @@ from tools.cli import *
 
 cli = Cli(config_file='~/.aec/ec2.toml').cli
 
+
 @arg('ami', help='ami id')
 @cli
 def delete_image(config, ami: str):

@@ -9,6 +9,9 @@ from tools.cli import *
 
 cli = Cli(config_file='~/.aec/sqs.toml').cli
 
+
+# TODO support multiple queues, via config rather than profile
+
 @arg('file_name', help="file to write messages to")
 @arg('--keep', help="keep messages, don't delete them", default=False)
 @cli

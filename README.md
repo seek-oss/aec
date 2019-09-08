@@ -65,6 +65,22 @@ By default, commands will use the default profile as specified in the config fil
 ec2 describe --profile us  
 ```
 
+## SQS Usage
+
+Activate the virtualenv, eg: `source ~/.virtualenvs/aec/bin/activate` or `workon aec` (if you have virtualenvwrapper installed).
+
+To see the help, run `sqs -h`
+
+```
+usage: sqs [-h] {drain} ...
+
+positional arguments:
+  {drain}
+    drain     Drains messages from a queue and writes them to a file
+
+optional arguments:
+  -h, --help  show this help message and exit
+```
 
 ## Similar projects
 
