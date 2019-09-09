@@ -76,7 +76,8 @@ usage: sqs [-h] {drain} ...
 
 positional arguments:
   {drain}
-    drain     Drains messages from a queue and writes them to a file
+    drain     Receives messages from the configured queue and writes them to a
+              file, and then deletes them from the queue
 
 optional arguments:
   -h, --help  show this help message and exit
