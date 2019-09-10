@@ -7,7 +7,7 @@ CLI tools for doing things on AWS easier. Defaults (eg: subnet, tags etc.) only 
 Currently supports the following AWS services:
 
 * EC2 - manipulate EC2 instances by name, and launch them with EBS volumes of any size, as per the settings in the configuration file (subnet, tags etc).
-* SQS - drain configured SQS queues to a file
+* SQS - drain configured SQS queues to a file, pretty printing deleted messages using a jq filter
 
 ## Install
 
@@ -83,6 +83,14 @@ positional arguments:
 
 optional arguments:
   -h, --help  show this help message and exit
+```
+
+To drain the queue configured in the `app1` profile to `dlq.txt`, pretty printing the deleted messages:
+
+```
+$ sqs drain --profile app1 dlq.txt
+822167373.json	RequestId: 393e79a4-cee5-423f-8273-8ea10f1a1fc6 Process exited before completing request
+Drained 1 messages.
 ```
 
 ## Similar projects
