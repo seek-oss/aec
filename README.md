@@ -7,6 +7,7 @@ CLI tools for doing things on AWS easier. Defaults (eg: subnet, tags etc.) only 
 Currently supports the following AWS services:
 
 * EC2 - manipulate EC2 instances by name, and launch them with EBS volumes of any size, as per the settings in the configuration file (subnet, tags etc).
+* SQS - drain configured SQS queues to a file
 
 ## Install
 
@@ -65,6 +66,24 @@ By default, commands will use the default profile as specified in the config fil
 ec2 describe --profile us  
 ```
 
+## SQS Usage
+
+Activate the virtualenv, eg: `source ~/.virtualenvs/aec/bin/activate` or `workon aec` (if you have virtualenvwrapper installed).
+
+To see the help, run `sqs -h`
+
+```
+usage: sqs [-h] {drain} ...
+
+positional arguments:
+  {drain}
+    drain     Receive messages from the configured queue and write them to a
+              file, pretty print them to stdout and then delete them from the
+              queue
+
+optional arguments:
+  -h, --help  show this help message and exit
+```
 
 ## Similar projects
 

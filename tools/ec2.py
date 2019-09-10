@@ -1,13 +1,12 @@
 import os.path
-from typing import AnyStr
+from typing import AnyStr, List, Dict, Any
 
 import argh
 import boto3
-from argh import arg
 
-from tools.cli import cli
-from tools.config import *
-from tools.display import *
+from tools.cli import *
+
+cli = Cli(config_file='~/.aec/ec2.toml').cli
 
 
 @arg('ami', help='ami id')
