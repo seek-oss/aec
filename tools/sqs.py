@@ -17,7 +17,8 @@ cli = Cli(config_file='~/.aec/sqs.toml').cli
 @cli
 def drain(config, file_name, keep=False):
     """
-    Receives messages from the configured queue and writes them to a file, and then deletes them from the queue
+    Receive messages from the configured queue and write them to a file, pretty print them to stdout and then
+     delete them from the queue
     """
     queue_url = config['queue_url']
     printer = config['printer'] if config.get('printer', None) else None

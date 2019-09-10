@@ -7,6 +7,7 @@ CLI tools for doing things on AWS easier. Defaults (eg: subnet, tags etc.) only 
 Currently supports the following AWS services:
 
 * EC2 - manipulate EC2 instances by name, and launch them with EBS volumes of any size, as per the settings in the configuration file (subnet, tags etc).
+* SQS - drain configured SQS queues to a file
 
 ## Install
 
@@ -76,8 +77,9 @@ usage: sqs [-h] {drain} ...
 
 positional arguments:
   {drain}
-    drain     Receives messages from the configured queue and writes them to a
-              file, and then deletes them from the queue
+    drain     Receive messages from the configured queue and write them to a
+              file, pretty print them to stdout and then delete them from the
+              queue
 
 optional arguments:
   -h, --help  show this help message and exit
