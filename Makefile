@@ -11,7 +11,7 @@ $(venv): requirements.txt requirements.dev.txt
 	$(if $(value VIRTUAL_ENV),$(error Cannot create a virtualenv when running in a virtualenv. Please deactivate the current virtual env $(VIRTUAL_ENV)),)
 	python3 -m venv --clear $(venv) && $(venv)/bin/pip install -r requirements.txt && $(venv)/bin/pip install -r requirements.dev.txt
 
-## set up python virtual env (named aec) and install requirements
+## set up python virtualenv (named aec) and install requirements
 venv: $(venv)
 
 ## display this help message
@@ -28,7 +28,7 @@ install-example-config:
 	@cp -r conf/* ~/.aec/
 	@(cp -rn ~/.aec/ec2.example.toml ~/.aec/ec2.toml && echo "Installed config into ~/.aec/") || echo "Didn't overwrite existing files"
 
-## install the tools
+## install aec from this local clone (useful during development)
 install: $(venv)
 	$(pip) install -e .
 

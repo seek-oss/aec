@@ -11,16 +11,21 @@ Currently supports the following AWS services:
 
 ## Install
 
-1. Run `make install` to create and install the tools into a virtualenv located at `~/.virtualenvs/aec` 
+1. Ensure you have python version 3.7+ and pip3 installed on your computer
+1. Create and switch to a virtualenv if you want to use one ([virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) whilst not required is very useful for creating and switching into virtualenvs). 
+1. Run the following to install the latest master version:
+   ```
+   pip install --upgrade git+https://github.com/seek-oss/aec.git
+   ```
+
+   (Rerun the same command when you want to upgrade to the latest version)
+
+## Configure
+
 1. If your organisation has a config repo, use those instructions to install the config file. If you don't have one, you can install the example config by running `make install-config`.
 1. Modify the config files in `~/.aec/` and update any values as needed (eg: `additional_tags`)
 
-[virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) whilst not required is very useful for switching into the aec virtualenv. 
-
-
 ## EC2 Usage
-
-Activate the virtualenv, eg: `source ~/.virtualenvs/aec/bin/activate` or `workon aec` (if you have virtualenvwrapper installed).
 
 To see the help, run `ec2 -h`
 ```
