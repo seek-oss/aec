@@ -1,11 +1,13 @@
 import sys
-from os import path
+import os.path
+import json
 
 import argh
+from argh import arg
 import boto3
 import pyjq as pyjq
 
-from tools.cli import *
+from tools.cli import Cli
 
 cli = Cli(config_file='~/.aec/sqs.toml').cli
 
@@ -25,7 +27,7 @@ def drain(config, file_name, keep=False):
 
     count = 0
 
-    if path.isfile(file_name) and path.exists(file_name):
+    if os.path.isfile(file_name) and os.path.exists(file_name):
         print(f'{file_name} already exists', file=sys.stderr)
         exit(1)
 

@@ -13,6 +13,7 @@ def mock_aws_configs():
     region = 'ap-southeast-2'
     sqs = boto3.resource('sqs', region_name=region)
 
+    # pylint: disable=maybe-no-member
     queue = sqs.create_queue(QueueName="test-queue")
 
     queue.send_message(

@@ -1,10 +1,12 @@
 import os.path
+import json
 from typing import AnyStr, List, Dict, Any
 
 import argh
+from argh import arg
 import boto3
 
-from tools.cli import *
+from tools.cli import Cli
 
 cli = Cli(config_file='~/.aec/ec2.toml').cli
 

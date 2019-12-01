@@ -32,3 +32,7 @@ install-example-config:
 install: $(venv)
 	$(pip) install -e .
 
+## lint code
+lint: $(venv)
+	$(venv)/bin/pylint tests tools
+
