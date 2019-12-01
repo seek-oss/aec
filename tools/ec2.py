@@ -1,5 +1,4 @@
 import os.path
-import json
 from typing import AnyStr, List, Dict, Any
 
 import argh
