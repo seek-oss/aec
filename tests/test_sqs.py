@@ -13,9 +13,7 @@ def mock_aws_configs():
     region = 'ap-southeast-2'
     sqs = boto3.resource('sqs', region_name=region)
 
-    queue = sqs.create_queue(
-        QueueName='test-queue'
-    )
+    queue = sqs.create_queue(QueueName="test-queue")
 
     queue.send_message(
         MessageBody='''{
@@ -33,26 +31,27 @@ def mock_aws_configs():
         }
     )
 
-    return {"queue_url": queue.url,
-            "printer": "[(.Body | fromjson | .Records[].Sns.Message | fromjson | .Records[].s3.object.key), .MessageAttributes.ErrorMessage.StringValue] | @tsv"}
+    return {
+        "region": region,
+        "queue_url": queue.url,
+        "printer": "[(.Body | fromjson | .Records[].Sns.Message | fromjson | .Records[].s3.object.key), .MessageAttributes.ErrorMessage.StringValue] | @tsv",
+    }
 
 
 def test_drain(mock_aws_configs):
     drain(mock_aws_configs, "/dev/null")
-    assert approximate_messages_not_visible(mock_aws_configs['queue_url']) == 0
+    assert approximate_messages_not_visible(mock_aws_configs) == 0
 
 
 def test_drain_keep(mock_aws_configs):
     drain(mock_aws_configs, "/dev/null", keep=True)
-    assert approximate_messages_not_visible(mock_aws_configs['queue_url']) == 1
+    assert approximate_messages_not_visible(mock_aws_configs) == 1
 
 
-def approximate_messages_not_visible(queue_url: str) -> int:
-    sqs_client = boto3.client('sqs')
+def approximate_messages_not_visible(config) -> int:
+    sqs_client = boto3.client("sqs", region_name=config["region"])
     resp = sqs_client.get_queue_attributes(
-        QueueUrl=queue_url,
-        AttributeNames=['ApproximateNumberOfMessages']
-
+        QueueUrl=config["queue_url"], AttributeNames=["ApproximateNumberOfMessages"]
     )
     print(resp)
     return int(resp['Attributes']['ApproximateNumberOfMessagesNotVisible'])
