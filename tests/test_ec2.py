@@ -95,4 +95,3 @@ def test_terminate(mock_aws_configs):
 
 def test_share_image(mock_aws_configs):
     share_image(mock_aws_configs, AMIS[0]["ami_id"], '123456789012')
-

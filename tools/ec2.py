@@ -55,7 +55,8 @@ def describe_images(config, ami) -> List[Dict[str, Any]]:
 
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
-    owners = config["describe_images_owners"] if config.get("describe_images_owners", None) else "self"
+    owners = config["describe_images_owners"] if config.get(
+        "describe_images_owners", None) else "self"
 
     if isinstance(owners, str):
         owners = [owners]
@@ -97,9 +98,11 @@ def launch(config, name: str, ami: str, dist: str = 'amazon', volume_size: int =
     """
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
-    additional_tags = config['additional_tags'] if config.get('additional_tags', None) else []
+    additional_tags = config['additional_tags'] if config.get(
+        'additional_tags', None) else []
 
-    tags = [{'Key': 'Name', 'Value': name}] + [{'Key': k, 'Value': v} for k, v in additional_tags.items()]
+    tags = [{'Key': 'Name', 'Value': name}] + [{'Key': k, 'Value': v}
+                                               for k, v in additional_tags.items()]
 
     root_device = root_devices[dist]
 
@@ -206,7 +209,8 @@ def stop(config, name) -> List[Dict[str, Any]]:
     if not instances:
         raise Exception(f'No instances named {name}')
 
-    response = ec2_client.stop_instances(InstanceIds=[instance['InstanceId'] for instance in instances])
+    response = ec2_client.stop_instances(
+        InstanceIds=[instance['InstanceId'] for instance in instances])
 
     return [{
         'State': i['CurrentState']['Name'],
@@ -227,7 +231,8 @@ def terminate(config, name) -> List[Dict[str, Any]]:
     if not instances:
         raise Exception(f'No instances named {name}')
 
-    response = ec2_client.terminate_instances(InstanceIds=[instance['InstanceId'] for instance in instances])
+    response = ec2_client.terminate_instances(
+        InstanceIds=[instance['InstanceId'] for instance in instances])
 
     return [{
         'State': i['CurrentState']['Name'],
@@ -250,7 +255,8 @@ def modify(config, name, type) -> List[Dict[str, Any]]:
         raise Exception(f'No instances named {name}')
 
     instance_id = instances[0]['InstanceId']
-    ec2_client.modify_instance_attribute(InstanceId=instance_id, InstanceType={'Value': type})
+    ec2_client.modify_instance_attribute(
+        InstanceId=instance_id, InstanceType={'Value': type})
 
     return describe(config, name)
 
@@ -266,7 +272,8 @@ def read_file(filepath) -> AnyStr:
 
 def main():
     parser = argh.ArghParser()
-    parser.add_commands([delete_image, describe, describe_images, launch, modify, share_image, start, stop, terminate])
+    parser.add_commands([delete_image, describe, describe_images,
+                         launch, modify, share_image, start, stop, terminate])
     parser.dispatch()
 
 

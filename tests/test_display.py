@@ -6,11 +6,13 @@ from tools.display import as_table, pretty_table
 
 
 def test_as_table():
-    assert as_table([{'a': 1, 'b': 2}, {'b': 4, 'a': 3}], ['a', 'b']) == [['a', 'b'], ['1', '2'], ['3', '4']]
+    assert as_table([{'a': 1, 'b': 2}, {'b': 4, 'a': 3}], ['a', 'b']) == [
+        ['a', 'b'], ['1', '2'], ['3', '4']]
 
 
 def test_as_table_infer_keys():
-    assert as_table([{'a': 1, 'b': 2}, {'b': 4, 'a': 3}]) == [['a', 'b'], ['1', '2'], ['3', '4']]
+    assert as_table([{'a': 1, 'b': 2}, {'b': 4, 'a': 3}]) == [
+        ['a', 'b'], ['1', '2'], ['3', '4']]
 
 
 def test_as_table_with_datetime():
@@ -27,7 +29,8 @@ def test_as_table_empty_list():
 
 
 def test_pretty():
-    table = [['a', 'b', 'c'], ['aaaaaaaaaa', 'b', 'c'], ['a', 'bbbbbbbbbb', 'c']]
+    table = [['a', 'b', 'c'], ['aaaaaaaaaa',
+                               'b', 'c'], ['a', 'bbbbbbbbbb', 'c']]
     expected = (f"a           b           c  \n"
                 f"aaaaaaaaaa  b           c  \n"
                 f"a           bbbbbbbbbb  c  ")
