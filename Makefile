@@ -36,3 +36,6 @@ install: $(venv)
 lint: $(venv)
 	$(venv)/bin/pylint tests tools
 
+## format code
+format: $(venv)
+	$(venv)/bin/black .

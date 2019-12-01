@@ -8,7 +8,6 @@ from tools.display import pretty_table, as_table
 
 
 class Cli:
-
     def __init__(self, config_file):
         self.config_file = config_file
 
@@ -30,12 +29,12 @@ class Cli:
             # print(kwargs)
 
             # we are being called from tests, or by other functions, just pass through
-            if args or 'config' in kwargs:
+            if args or "config" in kwargs:
                 return func(*args, **kwargs)
 
             # we are being called from the cli, so load the config and prettify the result
-            profile = kwargs.pop('profile', 'default')
-            kwargs['config'] = load_config(self.config_file, profile)
+            profile = kwargs.pop("profile", "default")
+            kwargs["config"] = load_config(self.config_file, profile)
 
             result = func(*args, **kwargs)
 
