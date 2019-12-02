@@ -29,8 +29,10 @@ def drain(config, file_name, keep=False):
         print(f'{file_name} already exists', file=sys.stderr)
         exit(1)
 
-    with open(file_name, 'wb', buffering=0) as o:
-        for message in receive_and_delete_messages(queue_url, keep):
+    sqs_client = boto3.client("sqs", region_name=config["region"])
+
+    with open(file_name, "wb", buffering=0) as o:
+        for message in receive_and_delete_messages(sqs_client, queue_url, keep):
             formatted_message = json.dumps(message) + "\n"
             o.write(formatted_message.encode('utf-8', 'ignore'))
             if printer:
@@ -40,7 +42,7 @@ def drain(config, file_name, keep=False):
     print("Drained " + str(count) + " messages.")
 
 
-def receive_and_delete_messages(queue_url, keep):
+def receive_and_delete_messages(sqs_client, queue_url, keep):
     """
     Receives messages from an SQS queue.
 
@@ -51,8 +53,6 @@ def receive_and_delete_messages(queue_url, keep):
     :param keep: keep message, don't delete them
 
     """
-    sqs_client = boto3.client('sqs')
-
     while True:
         resp = sqs_client.receive_message(
             QueueUrl=queue_url,
