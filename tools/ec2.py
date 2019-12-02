@@ -95,7 +95,7 @@ def launch(config, name: str, ami: str, dist: str = 'amazon', volume_size: int =
     """
     ec2_client = boto3.client('ec2', region_name=config['region'])
 
-    additional_tags = config['additional_tags'] if config.get('additional_tags', None) else []
+    additional_tags = config['additional_tags'] if config.get('additional_tags', None) else {}
 
     tags = [{'Key': 'Name', 'Value': name}] + [{'Key': k, 'Value': v} for k, v in additional_tags.items()]
 
