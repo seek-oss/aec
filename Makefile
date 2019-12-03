@@ -1,7 +1,7 @@
 MAKEFLAGS += --warn-undefined-variables
 SHELL = /bin/bash -o pipefail
 .DEFAULT_GOAL := help
-.PHONY: help venv test install
+.PHONY: help venv test install install-example-config
 
 venv = ~/.virtualenvs/aec
 python := $(venv)/bin/python
@@ -9,7 +9,7 @@ pip := $(venv)/bin/pip
 
 $(venv): requirements.txt requirements.dev.txt
 	$(if $(value VIRTUAL_ENV),$(error Cannot create a virtualenv when running in a virtualenv. Please deactivate the current virtual env $(VIRTUAL_ENV)),)
-	python3 -m venv --clear $(venv) && $(venv)/bin/pip install -r requirements.txt && $(venv)/bin/pip install -r requirements.dev.txt
+	python3 -m venv --clear $(venv) && $(pip) install -r requirements.txt && $(pip) install -r requirements.dev.txt
 
 ## set up python virtualenv (named aec) and install requirements
 venv: $(venv)
@@ -32,3 +32,10 @@ install-example-config:
 install: $(venv)
 	$(pip) install -e .
 
+## lint code
+lint: $(venv)
+	$(venv)/bin/pylint tests tools
+
+## format code
+format: $(venv)
+	$(venv)/bin/black .

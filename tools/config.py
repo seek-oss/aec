@@ -19,14 +19,17 @@ def load_config(config_file: str, profile: str = "default"):
 
     # set profile to the value of the default key
     if profile == "default":
-        if 'default_profile' not in config:
-            print(f"No profile supplied, or default profile set in {config_filepath}", file=sys.stderr)
+        if "default_profile" not in config:
+            print(
+                f"No profile supplied, or default profile set in {config_filepath}",
+                file=sys.stderr,
+            )
             exit(1)
-        profile = config['default_profile']
+        profile = config["default_profile"]
 
     # make top level keys available in the profile
-    if config.get('additional_tags', None):
-        config[profile]['additional_tags'] = config['additional_tags']
+    if config.get("additional_tags", None):
+        config[profile]["additional_tags"] = config["additional_tags"]
 
     try:
         return config[profile]
