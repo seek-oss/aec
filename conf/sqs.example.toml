@@ -1,4 +1,5 @@
 [myapp]
+region = "ap-southeast-2"
 queue_url = "https://sqs.ap-southeast-2.amazonaws.com/123456789012/myapp-dead-letter-queue"
 # this is a jq filter used to print messages from the queue
 printer = "[(.Body | fromjson | .Records[].Sns.Message | fromjson | .Records[].s3.object.key), .MessageAttributes.ErrorMessage.StringValue] | @tsv"
