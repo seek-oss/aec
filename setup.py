@@ -8,7 +8,7 @@ setup(
     packages=find_packages(),
     install_requires=[
         "boto3==1.9.130",
-        "pytoml==0.1.20",
+        "pytoml==0.1.21",
         "argh==0.26.2",
         "pyjq==2.3.1",
     ],
