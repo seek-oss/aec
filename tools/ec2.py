@@ -116,6 +116,8 @@ def launch(
 
     root_device = root_devices[dist]
 
+    security_group = config["vpc"]["security_group"]
+
     # TODO: support multiple subnets
     kwargs = {
         "ImageId": ami,
@@ -125,7 +127,6 @@ def launch(
         "InstanceType": instance_type,
         "IamInstanceProfile": {"Arn": config["iam_instance_profile_arn"]},
         "TagSpecifications": [
-            # TODO read owner and any other tags from the config file
             {"ResourceType": "instance", "Tags": tags},
             {"ResourceType": "volume", "Tags": tags},
         ],
@@ -137,7 +138,9 @@ def launch(
                 "DeleteOnTermination": True,
                 "SubnetId": config["vpc"]["subnet"],
                 "Ipv6AddressCount": 0,
-                "Groups": [config["vpc"]["security_group"]],
+                "Groups": security_group
+                if isinstance(security_group, list)
+                else [security_group],
             }
         ],
         "BlockDeviceMappings": [
@@ -165,6 +168,8 @@ def launch(
     waiter = ec2_client.get_waiter("instance_running")
     waiter.wait(InstanceIds=[instance["InstanceId"]])
 
+    # TODO: wait until instance checks passed (as they do in the console)
+
     return [
         {
             "InstanceType": instance["InstanceType"],
@@ -185,6 +190,8 @@ def describe(config, name=None) -> List[Dict[str, Any]]:
 
     filters = [] if name is None else [{"Name": "tag:Name", "Values": [name]}]
     response = ec2_client.describe_instances(Filters=filters)
+
+    # print(response["Reservations"][0]["Instances"][0])
 
     instances = [
         {
