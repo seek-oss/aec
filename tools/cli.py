@@ -8,7 +8,6 @@ from tools.display import pretty_table, as_table
 
 
 class Cli:
-
     def __init__(self, config_file):
         self.config_file = config_file
 
@@ -26,16 +25,16 @@ class Cli:
         @wraps(func)
         @arg("--profile", help="Profile in the config file to use", default="default")
         def wrapper(*args, **kwargs):
-            #print(args)
-            #print(kwargs)
+            # print(args)
+            # print(kwargs)
 
             # we are being called from tests, or by other functions, just pass through
-            if args or 'config' in kwargs:
+            if args or "config" in kwargs:
                 return func(*args, **kwargs)
 
             # we are being called from the cli, so load the config and prettify the result
-            profile = kwargs.pop('profile', 'default')
-            kwargs['config'] = load_config(self.config_file, profile)
+            profile = kwargs.pop("profile", "default")
+            kwargs["config"] = load_config(self.config_file, profile)
 
             result = func(*args, **kwargs)
 

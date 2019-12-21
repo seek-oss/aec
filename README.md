@@ -12,7 +12,8 @@ Currently supports the following AWS services:
 ## Install
 
 1. Ensure you have python version 3.7+ and pip3 installed on your computer
-1. Create and switch to a virtualenv if you want to use one ([virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) whilst not required is very useful for creating and switching into virtualenvs). 
+1. Create and switch to a virtualenv if you want to use one ([virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) whilst not required is very useful for creating and switching into virtualenvs).
+1. Make sure you have automake and libtool installed, eg: `brew install automake libtool` 
 1. Run the following to install the latest master version:
    ```
    pip install --upgrade git+https://github.com/seek-oss/aec.git

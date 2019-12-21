@@ -1,32 +1,35 @@
 import sys
-from os import path
+import os.path
+import json
 
 import argh
+from argh import arg
 import boto3
 import pyjq as pyjq
 
-from tools.cli import *
+from tools.cli import Cli
 
-cli = Cli(config_file='~/.aec/sqs.toml').cli
+cli = Cli(config_file="~/.aec/sqs.toml").cli
 
 
 # TODO support multiple queues, via config rather than profile
 
-@arg('file_name', help="file to write messages to")
-@arg('--keep', help="keep messages, don't delete them", default=False)
+
+@arg("file_name", help="file to write messages to")
+@arg("--keep", help="keep messages, don't delete them", default=False)
 @cli
 def drain(config, file_name, keep=False):
     """
     Receive messages from the configured queue and write them to a file, pretty print them to stdout and then
      delete them from the queue
     """
-    queue_url = config['queue_url']
-    printer = config['printer'] if config.get('printer', None) else None
+    queue_url = config["queue_url"]
+    printer = config["printer"] if config.get("printer", None) else None
 
     count = 0
 
-    if path.isfile(file_name) and path.exists(file_name):
-        print(f'{file_name} already exists', file=sys.stderr)
+    if os.path.isfile(file_name) and os.path.exists(file_name):
+        print(f"{file_name} already exists", file=sys.stderr)
         exit(1)
 
     sqs_client = boto3.client("sqs", region_name=config["region"])
@@ -34,7 +37,7 @@ def drain(config, file_name, keep=False):
     with open(file_name, "wb", buffering=0) as o:
         for message in receive_and_delete_messages(sqs_client, queue_url, keep):
             formatted_message = json.dumps(message) + "\n"
-            o.write(formatted_message.encode('utf-8', 'ignore'))
+            o.write(formatted_message.encode("utf-8", "ignore"))
             if printer:
                 print(pyjq.one(printer, message))
             count += 1
@@ -56,27 +59,25 @@ def receive_and_delete_messages(sqs_client, queue_url, keep):
     while True:
         resp = sqs_client.receive_message(
             QueueUrl=queue_url,
-            AttributeNames=['All'],
-            MessageAttributeNames=['All'],
-            MaxNumberOfMessages=10
+            AttributeNames=["All"],
+            MessageAttributeNames=["All"],
+            MaxNumberOfMessages=10,
         )
 
         try:
-            yield from resp['Messages']
+            yield from resp["Messages"]
         except KeyError:
             return
 
         entries = [
-            {'Id': msg['MessageId'], 'ReceiptHandle': msg['ReceiptHandle']}
-            for msg in resp['Messages']
+            {"Id": msg["MessageId"], "ReceiptHandle": msg["ReceiptHandle"]}
+            for msg in resp["Messages"]
         ]
 
         if not keep:
-            resp = sqs_client.delete_message_batch(
-                QueueUrl=queue_url, Entries=entries
-            )
+            resp = sqs_client.delete_message_batch(QueueUrl=queue_url, Entries=entries)
 
-            if len(resp['Successful']) != len(entries):
+            if len(resp["Successful"]) != len(entries):
                 raise RuntimeError(
                     f"Failed to delete messages: entries={entries!r} resp={resp!r}"
                 )
@@ -88,5 +89,5 @@ def main():
     parser.dispatch()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

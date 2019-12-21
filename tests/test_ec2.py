@@ -4,21 +4,35 @@ from moto import mock_ec2
 from moto.ec2 import ec2_backends
 from moto.ec2.models import AMIS
 
-from tools.ec2 import launch, describe, stop, terminate, start, modify, delete_image, share_image
+from tools.ec2 import (
+    launch,
+    describe,
+    stop,
+    terminate,
+    start,
+    modify,
+    delete_image,
+    share_image,
+)
 
 
 @pytest.fixture
 def mock_aws_configs():
     mock = mock_ec2()
     mock.start()
-    region = 'ap-southeast-2'
+    region = "ap-southeast-2"
 
-    return {"region": region,
-            "additional_tags": {"Owner": "alice@testlab.io", "Project": "test project a"},
-            "key_name": "test_key",
-            "vpc": {"name": "test vpc", "subnet": next(ec2_backends[region].get_all_subnets()).id,
-                    "security_group": "default"},
-            "iam_instance_profile_arn": "test_profile"}
+    return {
+        "region": region,
+        "additional_tags": {"Owner": "alice@testlab.io", "Project": "test project a"},
+        "key_name": "test_key",
+        "vpc": {
+            "name": "test vpc",
+            "subnet": next(ec2_backends[region].get_all_subnets()).id,
+            "security_group": "default",
+        },
+        "iam_instance_profile_arn": "test_profile",
+    }
 
 
 def test_launch(mock_aws_configs):
@@ -27,7 +41,13 @@ def test_launch(mock_aws_configs):
 
 def test_launch_has_userdata(mock_aws_configs):
     print(
-        launch(mock_aws_configs, "test_userdata", AMIS[0]["ami_id"], userdata="conf/userdata/amzn-install-docker.yaml"))
+        launch(
+            mock_aws_configs,
+            "test_userdata",
+            AMIS[0]["ami_id"],
+            userdata="conf/userdata/amzn-install-docker.yaml",
+        )
+    )
 
 
 def test_describe(mock_aws_configs):
@@ -44,7 +64,7 @@ def test_describe(mock_aws_configs):
 
 def test_describe_instance_without_tags(mock_aws_configs):
     # create instance without tags
-    ec2_client = boto3.client('ec2', region_name=mock_aws_configs['region'])
+    ec2_client = boto3.client("ec2", region_name=mock_aws_configs["region"])
     ec2_client.run_instances(MaxCount=1, MinCount=1)
 
     instances = describe(config=mock_aws_configs)
@@ -74,7 +94,7 @@ def test_stop_start(mock_aws_configs):
 def test_modify(mock_aws_configs):
     launch(mock_aws_configs, "alice", AMIS[0]["ami_id"])
 
-    instances = modify(mock_aws_configs, name="alice", type='c5.2xlarge')
+    instances = modify(mock_aws_configs, name="alice", type="c5.2xlarge")
 
     assert len(instances) == 1
     assert instances[0]["Name"] == "alice"
@@ -94,5 +114,4 @@ def test_terminate(mock_aws_configs):
 
 
 def test_share_image(mock_aws_configs):
-    share_image(mock_aws_configs, AMIS[0]["ami_id"], '123456789012')
-
+    share_image(mock_aws_configs, AMIS[0]["ami_id"], "123456789012")
