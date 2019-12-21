@@ -107,7 +107,7 @@ def launch(
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
     additional_tags = (
-        config["additional_tags"] if config.get("additional_tags", None) else []
+        config["additional_tags"] if config.get("additional_tags", None) else {}
     )
 
     tags = [{"Key": "Name", "Value": name}] + [
