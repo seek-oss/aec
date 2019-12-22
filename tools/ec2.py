@@ -14,7 +14,7 @@ cli = Cli(config_file="~/.aec/ec2.toml").cli
 @cli
 def delete_image(config, ami: str):
     """
-    Deregisters an AMI and deletes its snapshot
+    Deregister an AMI and deletes its snapshot
     """
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
