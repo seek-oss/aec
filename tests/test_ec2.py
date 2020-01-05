@@ -39,6 +39,11 @@ def test_launch(mock_aws_configs):
     print(launch(mock_aws_configs, "alice", AMIS[0]["ami_id"]))
 
 
+def test_launch_multiple_security_groups(mock_aws_configs):
+    mock_aws_configs["vpc"]["security_group"] = ["one", "two"]
+    print(launch(mock_aws_configs, "alice", AMIS[0]["ami_id"],))
+
+
 def test_launch_has_userdata(mock_aws_configs):
     print(
         launch(
