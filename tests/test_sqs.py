@@ -52,7 +52,8 @@ def test_drain_keep(mock_aws_configs):
 def approximate_messages_not_visible(config) -> int:
     sqs_client = boto3.client("sqs", region_name=config["region"])
     resp = sqs_client.get_queue_attributes(
-        QueueUrl=config["queue_url"], AttributeNames=["ApproximateNumberOfMessagesNotVisible"]
+        QueueUrl=config["queue_url"],
+        AttributeNames=["ApproximateNumberOfMessagesNotVisible"],
     )
     print(resp)
     return int(resp["Attributes"]["ApproximateNumberOfMessagesNotVisible"])

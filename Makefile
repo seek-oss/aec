@@ -7,9 +7,14 @@ venv = ~/.virtualenvs/aec
 python := $(venv)/bin/python
 pip := $(venv)/bin/pip
 
-$(venv): requirements.txt requirements.dev.txt
+$(pip):
+	# create new virtualenv $(venv) containing pip
 	$(if $(value VIRTUAL_ENV),$(error Cannot create a virtualenv when running in a virtualenv. Please deactivate the current virtual env $(VIRTUAL_ENV)),)
-	python3 -m venv --clear $(venv) && $(pip) install -r requirements.txt && $(pip) install -r requirements.dev.txt
+	python3 -m venv --clear $(venv)
+
+$(venv): requirements.txt requirements.dev.txt $(pip)
+	$(pip) install -r requirements.txt && $(pip) install -r requirements.dev.txt
+	touch $(venv)
 
 ## set up python virtualenv (named aec) and install requirements
 venv: $(venv)
