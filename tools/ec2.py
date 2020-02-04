@@ -9,7 +9,6 @@ from tools.cli import Cli
 
 cli = Cli(config_file="~/.aec/ec2.toml").cli
 
-
 @arg("ami", help="ami id")
 @cli
 def delete_image(config, ami: str):
@@ -73,6 +72,7 @@ def describe_images(config, ami) -> List[Dict[str, Any]]:
             "ImageId": i["ImageId"],
             "Name": i.get("Name", None),
             "Description": i.get("Description", None),
+            "Platform": i.get("Platform", None),
             "CreationDate": i["CreationDate"],
             "SnapshotId": i["BlockDeviceMappings"][0]["Ebs"]["SnapshotId"],
         }
@@ -187,11 +187,23 @@ def describe(config, name=None) -> List[Dict[str, Any]]:
     List EC2 instances in the region
     """
     ec2_client = boto3.client("ec2", region_name=config["region"])
+    ssm_client = boto3.client("ssm", region_name=config["region"])
 
     filters = [] if name is None else [{"Name": "tag:Name", "Values": [name]}]
     response = ec2_client.describe_instances(Filters=filters)
+    # TODO pull in patch information if available at an instance level
+    ssm_info = ssm_client.describe_instance_information()
+    # ssm_patch_info = ssm_client.describe_instance_information()
 
     # print(response["Reservations"][0]["Instances"][0])
+    
+    ssm_instances = {}
+    for s in ssm_info["InstanceInformationList"]:
+        ssm_instances[s['InstanceId']] = {
+                "PlatformName": s['PlatformName'],
+                "PlatformType": s['PlatformType'],
+                "PlatformVersion": s['PlatformVersion'],
+        }
 
     instances = [
         {
@@ -203,9 +215,13 @@ def describe(config, name=None) -> List[Dict[str, Any]]:
             "DnsName": i["PublicDnsName"]
             if i.get("PublicDnsName", None) != ""
             else i["PrivateDnsName"],
+            "PrivateIpAddress": i["PrivateIpAddress"],
             "LaunchTime": i["LaunchTime"],
             "ImageId": i["ImageId"],
             "InstanceId": i["InstanceId"],
+            "PlatformName": ssm_instances.get(i["InstanceId"], {}).get('PlatformName', 'NA'),
+            "PlatformType": ssm_instances.get(i["InstanceId"], {}).get('PlatformType', 'NA'),
+            "PlatformVersion": ssm_instances.get(i["InstanceId"], {}).get('PlatformVersion', 'NA'),
         }
         for r in response["Reservations"]
         for i in r["Instances"]
