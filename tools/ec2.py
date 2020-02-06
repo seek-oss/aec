@@ -9,6 +9,7 @@ from tools.cli import Cli
 
 cli = Cli(config_file="~/.aec/ec2.toml").cli
 
+
 @arg("ami", help="ami id")
 @cli
 def delete_image(config, ami: str):
@@ -196,13 +197,13 @@ def describe(config, name=None) -> List[Dict[str, Any]]:
     # ssm_patch_info = ssm_client.describe_instance_information()
 
     # print(response["Reservations"][0]["Instances"][0])
-    
+
     ssm_instances = {}
     for s in ssm_info["InstanceInformationList"]:
-        ssm_instances[s['InstanceId']] = {
-                "PlatformName": s['PlatformName'],
-                "PlatformType": s['PlatformType'],
-                "PlatformVersion": s['PlatformVersion'],
+        ssm_instances[s["InstanceId"]] = {
+            "PlatformName": s["PlatformName"],
+            "PlatformType": s["PlatformType"],
+            "PlatformVersion": s["PlatformVersion"],
         }
 
     instances = [
@@ -219,9 +220,15 @@ def describe(config, name=None) -> List[Dict[str, Any]]:
             "LaunchTime": i["LaunchTime"],
             "ImageId": i["ImageId"],
             "InstanceId": i["InstanceId"],
-            "PlatformName": ssm_instances.get(i["InstanceId"], {}).get('PlatformName', 'NA'),
-            "PlatformType": ssm_instances.get(i["InstanceId"], {}).get('PlatformType', 'NA'),
-            "PlatformVersion": ssm_instances.get(i["InstanceId"], {}).get('PlatformVersion', 'NA'),
+            "PlatformName": ssm_instances.get(i["InstanceId"], {}).get(
+                "PlatformName", "NA"
+            ),
+            "PlatformType": ssm_instances.get(i["InstanceId"], {}).get(
+                "PlatformType", "NA"
+            ),
+            "PlatformVersion": ssm_instances.get(i["InstanceId"], {}).get(
+                "PlatformVersion", "NA"
+            ),
         }
         for r in response["Reservations"]
         for i in r["Instances"]
