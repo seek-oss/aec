@@ -125,7 +125,6 @@ def launch(
         "MinCount": 1,
         "KeyName": config["key_name"],
         "InstanceType": instance_type,
-        "IamInstanceProfile": {"Arn": config["iam_instance_profile_arn"]},
         "TagSpecifications": [
             {"ResourceType": "instance", "Tags": tags},
             {"ResourceType": "volume", "Tags": tags},
@@ -154,6 +153,11 @@ def launch(
             }
         ],
     }
+
+    iam_instance_profile_arn = config.get("iam_instance_profile_arn", None)
+    if iam_instance_profile_arn:
+        kwargs["IamInstanceProfile"] = {"Arn": iam_instance_profile_arn}
+
     if userdata:
         kwargs["UserData"] = read_file(userdata)
 
