@@ -154,6 +154,12 @@ def launch(
         ],
     }
 
+    associate_public_ip_address = config["vpc"].get("associate_public_ip_address", None)
+    if associate_public_ip_address is not None:
+        kwargs["NetworkInterfaces"][0][
+            "AssociatePublicIpAddress"
+        ] = associate_public_ip_address
+
     iam_instance_profile_arn = config.get("iam_instance_profile_arn", None)
     if iam_instance_profile_arn:
         kwargs["IamInstanceProfile"] = {"Arn": iam_instance_profile_arn}
@@ -162,7 +168,7 @@ def launch(
         kwargs["UserData"] = read_file(userdata)
 
     print(
-        f"Launching a {instance_type} in {config['region']} named {name} using {ami} in "
+        f"Launching a {instance_type} in {config['region']} named {name} in "
         f"vpc {config['vpc']['name']}... "
     )
     response = ec2_client.run_instances(**kwargs)
@@ -174,14 +180,9 @@ def launch(
 
     # TODO: wait until instance checks passed (as they do in the console)
 
-    return [
-        {
-            "InstanceType": instance["InstanceType"],
-            "PrivateDnsName": instance["PrivateDnsName"],
-            "ImageId": instance["ImageId"],
-            "InstanceId": instance["InstanceId"],
-        }
-    ]
+    # the response from run_instances above always contains an empty string
+    # for PublicDnsName, so we call describe to get it
+    return describe(config, name=name)
 
 
 @arg("--name", help="Filter to hosts with this Name tag", default=None)
