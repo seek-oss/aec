@@ -17,7 +17,7 @@ from tools.ec2 import (
 
 
 @pytest.fixture
-def mock_aws_configs():
+def mock_aws_config():
     mock = mock_ec2()
     mock.start()
     region = "ap-southeast-2"
@@ -35,19 +35,23 @@ def mock_aws_configs():
     }
 
 
-def test_launch(mock_aws_configs):
-    print(launch(mock_aws_configs, "alice", AMIS[0]["ami_id"]))
+def test_launch(mock_aws_config):
+    print(launch(mock_aws_config, "alice", AMIS[0]["ami_id"]))
 
 
-def test_launch_multiple_security_groups(mock_aws_configs):
-    mock_aws_configs["vpc"]["security_group"] = ["one", "two"]
-    print(launch(mock_aws_configs, "alice", AMIS[0]["ami_id"],))
+def test_launch_multiple_security_groups(mock_aws_config):
+    mock_aws_config["vpc"]["security_group"] = ["one", "two"]
+    print(launch(mock_aws_config, "alice", AMIS[0]["ami_id"],))
+
+def test_launch_without_instance_profile(mock_aws_config):
+    del mock_aws_config["iam_instance_profile_arn"]
+    print(launch(mock_aws_config, "alice", AMIS[0]["ami_id"],))
 
 
-def test_launch_has_userdata(mock_aws_configs):
+def test_launch_has_userdata(mock_aws_config):
     print(
         launch(
-            mock_aws_configs,
+            mock_aws_config,
             "test_userdata",
             AMIS[0]["ami_id"],
             userdata="conf/userdata/amzn-install-docker.yaml",
@@ -55,11 +59,11 @@ def test_launch_has_userdata(mock_aws_configs):
     )
 
 
-def test_describe(mock_aws_configs):
-    launch(mock_aws_configs, "alice", AMIS[0]["ami_id"])
-    launch(mock_aws_configs, "sam", AMIS[0]["ami_id"])
+def test_describe(mock_aws_config):
+    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    launch(mock_aws_config, "sam", AMIS[0]["ami_id"])
 
-    instances = describe(config=mock_aws_configs)
+    instances = describe(config=mock_aws_config)
     print(instances)
 
     assert len(instances) == 2
@@ -67,56 +71,56 @@ def test_describe(mock_aws_configs):
     assert instances[1]["Name"] == "sam"
 
 
-def test_describe_instance_without_tags(mock_aws_configs):
+def test_describe_instance_without_tags(mock_aws_config):
     # create instance without tags
-    ec2_client = boto3.client("ec2", region_name=mock_aws_configs["region"])
+    ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
     ec2_client.run_instances(MaxCount=1, MinCount=1)
 
-    instances = describe(config=mock_aws_configs)
+    instances = describe(config=mock_aws_config)
     print(instances)
 
     assert len(instances) == 1
 
 
-def test_describe_by_name(mock_aws_configs):
-    launch(mock_aws_configs, "alice", AMIS[0]["ami_id"])
+def test_describe_by_name(mock_aws_config):
+    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
 
-    instances = describe(name="alice", config=mock_aws_configs)
+    instances = describe(name="alice", config=mock_aws_config)
     print(instances)
 
     assert len(instances) == 1
     assert instances[0]["Name"] == "alice"
 
 
-def test_stop_start(mock_aws_configs):
-    launch(mock_aws_configs, "alice", AMIS[0]["ami_id"])
+def test_stop_start(mock_aws_config):
+    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
 
-    stop(mock_aws_configs, name="alice")
+    stop(mock_aws_config, name="alice")
 
-    start(mock_aws_configs, name="alice")
+    start(mock_aws_config, name="alice")
 
 
-def test_modify(mock_aws_configs):
-    launch(mock_aws_configs, "alice", AMIS[0]["ami_id"])
+def test_modify(mock_aws_config):
+    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
 
-    instances = modify(mock_aws_configs, name="alice", type="c5.2xlarge")
+    instances = modify(mock_aws_config, name="alice", type="c5.2xlarge")
 
     assert len(instances) == 1
     assert instances[0]["Name"] == "alice"
     assert instances[0]["Type"] == "c5.2xlarge"
 
 
-def test_delete_image(mock_aws_configs):
-    delete_image(mock_aws_configs, AMIS[0]["ami_id"])
+def test_delete_image(mock_aws_config):
+    delete_image(mock_aws_config, AMIS[0]["ami_id"])
 
 
-def test_terminate(mock_aws_configs):
-    launch(mock_aws_configs, "alice", AMIS[0]["ami_id"])
+def test_terminate(mock_aws_config):
+    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
 
-    response = terminate(mock_aws_configs, name="alice")
+    response = terminate(mock_aws_config, name="alice")
 
     print(response)
 
 
-def test_share_image(mock_aws_configs):
-    share_image(mock_aws_configs, AMIS[0]["ami_id"], "123456789012")
+def test_share_image(mock_aws_config):
+    share_image(mock_aws_config, AMIS[0]["ami_id"], "123456789012")
