@@ -9,30 +9,23 @@ Currently supports the following AWS services:
 * EC2 - manipulate EC2 instances by name, and launch them with EBS volumes of any size, as per the settings in the configuration file (subnet, tags etc).
 * SQS - drain configured SQS queues to a file, pretty printing deleted messages using a jq filter
 
-## Install
+## Prerequisites
 
-1. Ensure you have python version 3.7+ and pip3 installed on your computer
-1. Create and switch to a virtualenv if you want to use one ([virtualenvwrapper](https://virtualenvwrapper.readthedocs.io/en/latest/) whilst not required is very useful for creating and switching into virtualenvs).
+* python 3.7+
+* pip3
+* automake & libtool  
+    * Ubuntu: `sudo apt install automake libtool` 
+    * macOS: `brew install automake libtool` 
 
-### Mac
 
-1. Make sure you have automake and libtool installed, eg: `brew install automake libtool` 
-1. Run the following to install the latest master version:
-   ```
-   pip3 install --upgrade git+https://github.com/seek-oss/aec.git
-   ```
+## Install 
 
-   (Rerun the same command when you want to upgrade to the latest version)
+Run the following to install the latest master version:
+```
+pip3 install --upgrade git+https://github.com/seek-oss/aec.git
+```
 
-### Ubuntu
-
-1. Make sure you have automake and libtool installed, eg: `apt install automake libtool python3-pip` 
-1. Run the following to install the latest master version:
-   ```
-   pip3 install --upgrade git+https://github.com/seek-oss/aec.git
-   ```
-
-   (Rerun the same command when you want to upgrade to the latest version)
+Rerun the same command when you want to upgrade to the latest version.
 
 ## Configure
 
