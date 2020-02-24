@@ -36,16 +36,25 @@ def mock_aws_config():
 
 
 def test_launch(mock_aws_config):
-    print(launch(mock_aws_config, "alice", AMIS[0]["ami_id"]))
+    instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    assert "amazonaws.com" in instances[0]["DnsName"]
 
 
 def test_launch_multiple_security_groups(mock_aws_config):
     mock_aws_config["vpc"]["security_group"] = ["one", "two"]
-    print(launch(mock_aws_config, "alice", AMIS[0]["ami_id"],))
+    print(launch(mock_aws_config, "alice", AMIS[0]["ami_id"], ))
+
 
 def test_launch_without_instance_profile(mock_aws_config):
     del mock_aws_config["iam_instance_profile_arn"]
-    print(launch(mock_aws_config, "alice", AMIS[0]["ami_id"],))
+    print(launch(mock_aws_config, "alice", AMIS[0]["ami_id"], ))
+
+
+@pytest.mark.skip(reason="failing because of https://github.com/spulec/moto/pull/2651")
+def test_launch_without_public_ip_address(mock_aws_config):
+    mock_aws_config["vpc"]["associate_public_ip_address"] = False
+    instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    assert "ec2.internal" in instances[0]["DnsName"]
 
 
 def test_launch_has_userdata(mock_aws_config):
