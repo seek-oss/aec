@@ -35,6 +35,12 @@ def mock_aws_config():
     }
 
 
+def describe_instance0(region_name, instance_id):
+    ec2_client = boto3.client("ec2", region_name=region_name)
+    instances = ec2_client.describe_instances(InstanceIds=[instance_id])
+    return instances["Reservations"][0]["Instances"][0]
+
+
 def test_launch(mock_aws_config):
     instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
     assert "amazonaws.com" in instances[0]["DnsName"]
@@ -55,6 +61,15 @@ def test_launch_without_public_ip_address(mock_aws_config):
     mock_aws_config["vpc"]["associate_public_ip_address"] = False
     instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
     assert "ec2.internal" in instances[0]["DnsName"]
+
+
+def test_override_key_name(mock_aws_config):
+    instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"], key_name="magic-key")
+    instance_id = instances[0]["InstanceId"]
+
+    actual_key_name = describe_instance0(mock_aws_config["region"], instance_id)
+
+    assert "magic-key" in actual_key_name["KeyName"]
 
 
 def test_launch_has_userdata(mock_aws_config):

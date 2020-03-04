@@ -90,6 +90,7 @@ root_devices = {"amazon": "/dev/xvda", "ubuntu": "/dev/sda1"}
 @arg("--dist", help="linux distribution", choices=root_devices.keys(), default="amazon")
 @arg("--volume-size", help="ebs volume size (GB)", default=100)
 @arg("--instance-type", help="instance type", default="t2.medium")
+@arg("--key-name", help="key name", default="config file setting")
 @arg("--userdata", help="path to user data file", default=None)
 @cli
 def launch(
@@ -99,6 +100,7 @@ def launch(
     dist: str = "amazon",
     volume_size: int = 100,
     instance_type="t2.medium",
+    key_name=None,
     userdata=None,
 ) -> List[Dict[str, Any]]:
     """
@@ -118,12 +120,15 @@ def launch(
 
     security_group = config["vpc"]["security_group"]
 
+    if not key_name:
+        key_name = config["key_name"]
+
     # TODO: support multiple subnets
     kwargs = {
         "ImageId": ami,
         "MaxCount": 1,
         "MinCount": 1,
-        "KeyName": config["key_name"],
+        "KeyName": key_name,
         "InstanceType": instance_type,
         "TagSpecifications": [
             {"ResourceType": "instance", "Tags": tags},
