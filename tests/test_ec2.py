@@ -48,12 +48,12 @@ def test_launch(mock_aws_config):
 
 def test_launch_multiple_security_groups(mock_aws_config):
     mock_aws_config["vpc"]["security_group"] = ["one", "two"]
-    print(launch(mock_aws_config, "alice", AMIS[0]["ami_id"], ))
+    print(launch(mock_aws_config, "alice", AMIS[0]["ami_id"],))
 
 
 def test_launch_without_instance_profile(mock_aws_config):
     del mock_aws_config["iam_instance_profile_arn"]
-    print(launch(mock_aws_config, "alice", AMIS[0]["ami_id"], ))
+    print(launch(mock_aws_config, "alice", AMIS[0]["ami_id"],))
 
 
 @pytest.mark.skip(reason="failing because of https://github.com/spulec/moto/pull/2651")
@@ -64,7 +64,9 @@ def test_launch_without_public_ip_address(mock_aws_config):
 
 
 def test_override_key_name(mock_aws_config):
-    instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"], key_name="magic-key")
+    instances = launch(
+        mock_aws_config, "alice", AMIS[0]["ami_id"], key_name="magic-key"
+    )
     instance_id = instances[0]["InstanceId"]
 
     actual_key_name = describe_instance0(mock_aws_config["region"], instance_id)

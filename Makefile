@@ -16,8 +16,8 @@ $(venv): requirements.txt requirements.dev.txt $(pip)
 	$(pip) install -r requirements.txt && $(pip) install -r requirements.dev.txt
 	touch $(venv)
 
-## set up python virtualenv (named aec) and install requirements
-venv: $(venv)
+## install/upgrade requirements in the aec virtualenv
+install-reqs: $(venv)
 
 ## display this help message
 help:
@@ -27,13 +27,13 @@ help:
 test: $(venv)
 	$(venv)/bin/pytest
 
-## install example config files (if they don't already exist)
-install-example-config:
+## install example config files in ~/.aec/ (if they don't already exist)
+install-config:
 	@mkdir -p ~/.aec/
 	@cp -r conf/* ~/.aec/
 	@(cp -rn ~/.aec/ec2.example.toml ~/.aec/ec2.toml && echo "Installed config into ~/.aec/") || echo "Didn't overwrite existing files"
 
-## install aec from this local clone (useful during development)
+## install aec in editable mode (useful during development)
 install: $(venv)
 	$(pip) install -e .
 
@@ -41,6 +41,6 @@ install: $(venv)
 lint: $(venv)
 	$(venv)/bin/pylint tests tools
 
-## format code
+## format code using black
 format: $(venv)
 	$(venv)/bin/black .

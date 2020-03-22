@@ -29,7 +29,7 @@ Rerun the same command when you want to upgrade to the latest version.
 
 ## Configure
 
-1. If your organisation has a config repo, use those instructions to install the config file. If you don't have one, you can install the example config by cloning this repository and running `make install-example-config`.
+1. If your organisation has a config repo, use those instructions to install the config file. If you don't have one, you can install the example config by cloning this repository and running `make install-config`.
 1. Modify the config files in `~/.aec/` and update any values as needed (eg: `additional_tags`)
 
 ## EC2 Usage
