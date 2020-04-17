@@ -64,7 +64,7 @@ def describe_images(config, ami) -> List[Dict[str, Any]]:
         owners = [owners]
 
     if ami:
-        response = ec2_client.describe_images(Owners=owners, ImageIds=[ami])
+        response = ec2_client.describe_images(ImageIds=[ami])
     else:
         response = ec2_client.describe_images(Owners=owners)
 
