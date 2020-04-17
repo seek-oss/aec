@@ -1,7 +1,7 @@
 MAKEFLAGS += --warn-undefined-variables
 SHELL = /bin/bash -o pipefail
 .DEFAULT_GOAL := help
-.PHONY: help venv test install install-example-config
+.PHONY: help install-reqs install-config install test lint format
 
 venv = ~/.virtualenvs/aec
 python := $(venv)/bin/python
@@ -16,16 +16,12 @@ $(venv): requirements.txt requirements.dev.txt $(pip)
 	$(pip) install -r requirements.txt && $(pip) install -r requirements.dev.txt
 	touch $(venv)
 
-## install/upgrade requirements in the aec virtualenv
-install-reqs: $(venv)
-
 ## display this help message
 help:
 	@awk '/^##.*$$/,/^[~\/\.a-zA-Z_-]+:/' $(MAKEFILE_LIST) | awk '!(NR%2){print $$0p}{p=$$0}' | awk 'BEGIN {FS = ":.*?##"}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' | sort
 
-## run tests
-test: $(venv)
-	$(venv)/bin/pytest
+## install/upgrade requirements in the aec virtualenv
+install-reqs: $(venv)
 
 ## install example config files in ~/.aec/ (if they don't already exist)
 install-config:
@@ -36,6 +32,10 @@ install-config:
 ## install aec in editable mode (useful during development)
 install: $(venv)
 	$(pip) install -e .
+
+## run tests
+test: $(venv)
+	$(venv)/bin/pytest
 
 ## lint code
 lint: $(venv)
