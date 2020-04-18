@@ -13,9 +13,9 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.6
-    - name: Install dependencies
+    - name: Install requirements
       run: |
-        make venv
+        make install-reqs
     - name: Lint
       run: |
         make lint
