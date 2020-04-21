@@ -90,7 +90,7 @@ root_devices = {"amazon": "/dev/xvda", "ubuntu": "/dev/sda1"}
 @arg("--dist", help="linux distribution", choices=root_devices.keys(), default="amazon")
 @arg("--volume-size", help="ebs volume size (GB)", default=100)
 @arg("--instance-type", help="instance type", default="t2.medium")
-@arg("--key-name", help="key name", default="config file setting")
+@arg("--key-name", help="key name", default=None)
 @arg("--userdata", help="path to user data file", default=None)
 @cli
 def launch(
