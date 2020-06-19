@@ -1,0 +1,36 @@
+image: python:3.6-slim
+tasks:
+  packages-update:
+    command:
+      apt-get update
+  packages-install:
+    dependencies:
+      - packages-update
+    command:
+      apt-get install -y gcc automake make libtool git
+  install-reqs:
+    dependencies:
+      - packages-install
+    input_paths:
+      - Makefile
+      - requirements.txt
+      - requirements.dev.txt
+    command: |
+      make install-reqs
+  lint:
+    dependencies:
+      - install-reqs
+    input_paths:
+      - setup.py
+      - pyproject.toml
+      - .pylintrc
+      - tests
+      - tools
+      - conf
+    command:
+      make lint
+  test:
+    dependencies:
+      - lint
+    command:
+      make test
