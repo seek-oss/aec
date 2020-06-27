@@ -6,7 +6,7 @@ import pytoml as toml
 
 
 # TODO add tests for this
-def load_config(config_file: str, profile: str = "default"):
+def load_config(config_file: str, profile: str = "default") -> Dict[str, str]:
     """
     Load profile from the config file.
 

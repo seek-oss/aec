@@ -1,13 +1,21 @@
 import os.path
 from typing import Any, AnyStr, Dict, List
 
-import argh
 import boto3
+import typer
 from argh import arg
 
-from tools.cli import Cli
+from tools.cli import Cli, cli_result
+from tools.config import load_config
 
 cli = Cli(config_file="~/.aec/ec2.toml").cli
+
+
+app = typer.Typer(context_settings=dict(help_option_names=["-h", "--help"]), result_callback=cli_result)
+
+
+def load_profile(profile: str) -> Dict[str, str]:
+    return load_config("~/.aec/ec2.toml", profile)
 
 
 @arg("ami", help="ami id")
@@ -168,9 +176,13 @@ def launch(
     return describe(config, name=name)
 
 
-@arg("--name", help="Filter to hosts with this Name tag", default=None)
-@cli
-def describe(config, name=None) -> List[Dict[str, Any]]:
+# @arg("--name", help="Filter to hosts with this Name tag", default=None)
+# @cli
+@app.command()
+def describe(
+    name: str = None,
+    config=typer.Option("default", "--profile", help="Profile in the config file to use", callback=load_profile),
+) -> List[Dict[str, Any]]:
     """
     List EC2 instances in the region
     """
@@ -198,9 +210,11 @@ def describe(config, name=None) -> List[Dict[str, Any]]:
     return sorted(instances, key=lambda i: i["State"] + str(i["Name"]))
 
 
-@arg("name", help="Name tag of instance")
-@cli
-def start(config, name) -> List[Dict[str, Any]]:
+# @arg("name", help="Name tag of instance")
+@app.command()
+def start(
+    name: str, profile=typer.Option("default", help="Profile in the config file to use", callback=load_profile)
+) -> List[Dict[str, Any]]:
     """
     Start EC2 instances by name
     """
@@ -290,11 +304,7 @@ def read_file(filepath) -> AnyStr:
 
 
 def main():
-    parser = argh.ArghParser()
-    parser.add_commands(
-        [delete_image, describe, describe_images, launch, modify, share_image, start, stop, terminate,]
-    )
-    parser.dispatch()
+    app()
 
 
 if __name__ == "__main__":

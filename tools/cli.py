@@ -47,3 +47,16 @@ class Cli:
                 return result
 
         return wrapper
+
+
+def cli_result(result) -> None:
+    def pretty(result):
+        if isinstance(result, list):
+            prettified = pretty_table(as_table(result))
+            return prettified if prettified else "No results"
+        elif isinstance(result, dict):
+            return json.dumps(result, default=str)
+        else:
+            return result
+
+    print(pretty(result))
