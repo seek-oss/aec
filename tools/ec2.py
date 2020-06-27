@@ -173,7 +173,7 @@ def launch(
 
     # the response from run_instances above always contains an empty string
     # for PublicDnsName, so we call describe to get it
-    return describe(config, name=name)
+    return describe(name=name, config=config)
 
 
 # @arg("--name", help="Filter to hosts with this Name tag", default=None)
@@ -222,7 +222,7 @@ def start(
 
     print(f"Starting instances with the name {name} ... ")
 
-    instances = describe(config, name)
+    instances = describe(name, config)
 
     if not instances:
         raise Exception(f"No instances named {name}")
@@ -233,7 +233,7 @@ def start(
     waiter = ec2_client.get_waiter("instance_running")
     waiter.wait(InstanceIds=instance_ids)
 
-    return describe(config, name)
+    return describe(name, config)
 
 
 @arg("name", help="Name tag")
@@ -244,7 +244,7 @@ def stop(config, name) -> List[Dict[str, Any]]:
     """
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
-    instances = describe(config, name)
+    instances = describe(name, config)
 
     if not instances:
         raise Exception(f"No instances named {name}")
@@ -262,7 +262,7 @@ def terminate(config, name) -> List[Dict[str, Any]]:
     """
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
-    instances = describe(config, name)
+    instances = describe(name, config)
 
     if not instances:
         raise Exception(f"No instances named {name}")
@@ -283,7 +283,7 @@ def modify(config, name, type) -> List[Dict[str, Any]]:
     """
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
-    instances = describe(config, name)
+    instances = describe(name, config)
 
     if not instances:
         raise Exception(f"No instances named {name}")
@@ -291,7 +291,7 @@ def modify(config, name, type) -> List[Dict[str, Any]]:
     instance_id = instances[0]["InstanceId"]
     ec2_client.modify_instance_attribute(InstanceId=instance_id, InstanceType={"Value": type})
 
-    return describe(config, name)
+    return describe(name, config)
 
 
 def first_or_else(l: List[Any], default: Any) -> Any:
