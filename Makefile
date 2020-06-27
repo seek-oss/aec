@@ -44,3 +44,4 @@ lint: $(venv)
 ## format code using black
 format: $(venv)
 	$(venv)/bin/black .
+	$(venv)/bin/isort --recursive --apply .

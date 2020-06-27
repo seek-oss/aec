@@ -4,7 +4,7 @@ from functools import wraps
 from argh import arg
 
 from tools.config import load_config
-from tools.display import pretty_table, as_table
+from tools.display import as_table, pretty_table
 
 
 class Cli:

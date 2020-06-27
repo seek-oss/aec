@@ -1,11 +1,11 @@
-import sys
-import os.path
 import json
+import os.path
+import sys
 
 import argh
-from argh import arg
 import boto3
 import pyjq as pyjq
+from argh import arg
 
 from tools.cli import Cli
 

@@ -1,6 +1,6 @@
 import os.path
 import sys
-from typing import Dict, Any
+from typing import Any, Dict
 
 import pytoml as toml
 

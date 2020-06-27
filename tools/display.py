@@ -1,4 +1,4 @@
-from typing import Dict, List, Any
+from typing import Any, Dict, List
 
 
 def as_table(dicts: List[Dict[str, Any]], keys: List[str] = None) -> List[List[str]]:

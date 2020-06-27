@@ -1,9 +1,9 @@
 import os.path
-from typing import AnyStr, List, Dict, Any
+from typing import Any, AnyStr, Dict, List
 
 import argh
-from argh import arg
 import boto3
+from argh import arg
 
 from tools.cli import Cli
 
