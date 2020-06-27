@@ -22,10 +22,10 @@ def test_as_table_infer_keys():
 
 
 def test_as_table_with_datetime():
-    assert as_table(
-        [{"a": 1, "b": datetime.datetime(2019, 8, 19, 6, 3, 6, tzinfo=tzutc())}],
+    assert as_table([{"a": 1, "b": datetime.datetime(2019, 8, 19, 6, 3, 6, tzinfo=tzutc())}], ["a", "b"],) == [
         ["a", "b"],
-    ) == [["a", "b"], ["1", "2019-08-19 06:03:06+00:00"]]
+        ["1", "2019-08-19 06:03:06+00:00"],
+    ]
 
 
 def test_as_table_with_none():
@@ -38,11 +38,7 @@ def test_as_table_empty_list():
 
 def test_pretty():
     table = [["a", "b", "c"], ["aaaaaaaaaa", "b", "c"], ["a", "bbbbbbbbbb", "c"]]
-    expected = (
-        f"a           b           c  \n"
-        f"aaaaaaaaaa  b           c  \n"
-        f"a           bbbbbbbbbb  c  "
-    )
+    expected = f"a           b           c  \n" f"aaaaaaaaaa  b           c  \n" f"a           bbbbbbbbbb  c  "
     actual = pretty_table(table)
     assert actual == expected
 

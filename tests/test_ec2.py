@@ -64,9 +64,7 @@ def test_launch_without_public_ip_address(mock_aws_config):
 
 
 def test_override_key_name(mock_aws_config):
-    instances = launch(
-        mock_aws_config, "alice", AMIS[0]["ami_id"], key_name="magic-key"
-    )
+    instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"], key_name="magic-key")
     instance_id = instances[0]["InstanceId"]
 
     actual_key_name = describe_instance0(mock_aws_config["region"], instance_id)
@@ -76,12 +74,7 @@ def test_override_key_name(mock_aws_config):
 
 def test_launch_has_userdata(mock_aws_config):
     print(
-        launch(
-            mock_aws_config,
-            "test_userdata",
-            AMIS[0]["ami_id"],
-            userdata="conf/userdata/amzn-install-docker.yaml",
-        )
+        launch(mock_aws_config, "test_userdata", AMIS[0]["ami_id"], userdata="conf/userdata/amzn-install-docker.yaml",)
     )
 
 

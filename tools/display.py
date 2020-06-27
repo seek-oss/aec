@@ -14,10 +14,7 @@ def as_table(dicts: List[Dict[str, Any]], keys: List[str] = None) -> List[List[s
 
     if keys is None:
         keys = list(dicts[0].keys())
-    return [keys] + [
-        [str(d.get(f, "")) if d.get(f, "") is not None else None for f in keys]
-        for d in dicts
-    ]
+    return [keys] + [[str(d.get(f, "")) if d.get(f, "") is not None else None for f in keys] for d in dicts]
 
 
 def pretty_table(table: List[List[str]]) -> str:
@@ -42,8 +39,7 @@ def pretty_table(table: List[List[str]]) -> str:
             "".join(
                 [
                     "".join(
-                        (col if col is not None else "").ljust(col_width[idx] + padding)
-                        for idx, col in enumerate(row)
+                        (col if col is not None else "").ljust(col_width[idx] + padding) for idx, col in enumerate(row)
                     )
                 ]
             )

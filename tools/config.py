@@ -21,8 +21,7 @@ def load_config(config_file: str, profile: str = "default"):
     if profile == "default":
         if "default_profile" not in config:
             print(
-                f"No profile supplied, or default profile set in {config_filepath}",
-                file=sys.stderr,
+                f"No profile supplied, or default profile set in {config_filepath}", file=sys.stderr,
             )
             exit(1)
         profile = config["default_profile"]

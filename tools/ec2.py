@@ -54,11 +54,7 @@ def describe_images(config, ami) -> List[Dict[str, Any]]:
 
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
-    owners = (
-        config["describe_images_owners"]
-        if config.get("describe_images_owners", None)
-        else "self"
-    )
+    owners = config["describe_images_owners"] if config.get("describe_images_owners", None) else "self"
 
     if isinstance(owners, str):
         owners = [owners]
@@ -108,13 +104,9 @@ def launch(
     """
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
-    additional_tags = (
-        config["additional_tags"] if config.get("additional_tags", None) else {}
-    )
+    additional_tags = config["additional_tags"] if config.get("additional_tags", None) else {}
 
-    tags = [{"Key": "Name", "Value": name}] + [
-        {"Key": k, "Value": v} for k, v in additional_tags.items()
-    ]
+    tags = [{"Key": "Name", "Value": name}] + [{"Key": k, "Value": v} for k, v in additional_tags.items()]
 
     root_device = root_devices[dist]
 
@@ -130,10 +122,7 @@ def launch(
         "MinCount": 1,
         "KeyName": key_name,
         "InstanceType": instance_type,
-        "TagSpecifications": [
-            {"ResourceType": "instance", "Tags": tags},
-            {"ResourceType": "volume", "Tags": tags},
-        ],
+        "TagSpecifications": [{"ResourceType": "instance", "Tags": tags}, {"ResourceType": "volume", "Tags": tags},],
         "EbsOptimized": False if instance_type.startswith("t2") else True,
         "NetworkInterfaces": [
             {
@@ -142,28 +131,20 @@ def launch(
                 "DeleteOnTermination": True,
                 "SubnetId": config["vpc"]["subnet"],
                 "Ipv6AddressCount": 0,
-                "Groups": security_group
-                if isinstance(security_group, list)
-                else [security_group],
+                "Groups": security_group if isinstance(security_group, list) else [security_group],
             }
         ],
         "BlockDeviceMappings": [
             {
                 "DeviceName": root_device,
-                "Ebs": {
-                    "VolumeSize": volume_size,
-                    "DeleteOnTermination": True,
-                    "VolumeType": "gp2",
-                },
+                "Ebs": {"VolumeSize": volume_size, "DeleteOnTermination": True, "VolumeType": "gp2",},
             }
         ],
     }
 
     associate_public_ip_address = config["vpc"].get("associate_public_ip_address", None)
     if associate_public_ip_address is not None:
-        kwargs["NetworkInterfaces"][0][
-            "AssociatePublicIpAddress"
-        ] = associate_public_ip_address
+        kwargs["NetworkInterfaces"][0]["AssociatePublicIpAddress"] = associate_public_ip_address
 
     iam_instance_profile_arn = config.get("iam_instance_profile_arn", None)
     if iam_instance_profile_arn:
@@ -172,10 +153,7 @@ def launch(
     if userdata:
         kwargs["UserData"] = read_file(userdata)
 
-    print(
-        f"Launching a {instance_type} in {config['region']} named {name} in "
-        f"vpc {config['vpc']['name']}... "
-    )
+    print(f"Launching a {instance_type} in {config['region']} named {name} in " f"vpc {config['vpc']['name']}... ")
     response = ec2_client.run_instances(**kwargs)
 
     instance = response["Instances"][0]
@@ -206,13 +184,9 @@ def describe(config, name=None) -> List[Dict[str, Any]]:
     instances = [
         {
             "State": i["State"]["Name"],
-            "Name": first_or_else(
-                [t["Value"] for t in i.get("Tags", []) if t["Key"] == "Name"], None
-            ),
+            "Name": first_or_else([t["Value"] for t in i.get("Tags", []) if t["Key"] == "Name"], None),
             "Type": i["InstanceType"],
-            "DnsName": i["PublicDnsName"]
-            if i.get("PublicDnsName", None) != ""
-            else i["PrivateDnsName"],
+            "DnsName": i["PublicDnsName"] if i.get("PublicDnsName", None) != "" else i["PrivateDnsName"],
             "LaunchTime": i["LaunchTime"],
             "ImageId": i["ImageId"],
             "InstanceId": i["InstanceId"],
@@ -261,14 +235,9 @@ def stop(config, name) -> List[Dict[str, Any]]:
     if not instances:
         raise Exception(f"No instances named {name}")
 
-    response = ec2_client.stop_instances(
-        InstanceIds=[instance["InstanceId"] for instance in instances]
-    )
+    response = ec2_client.stop_instances(InstanceIds=[instance["InstanceId"] for instance in instances])
 
-    return [
-        {"State": i["CurrentState"]["Name"], "InstanceId": i["InstanceId"]}
-        for i in response["StoppingInstances"]
-    ]
+    return [{"State": i["CurrentState"]["Name"], "InstanceId": i["InstanceId"]} for i in response["StoppingInstances"]]
 
 
 @arg("name", help="Name tag of instance")
@@ -284,13 +253,10 @@ def terminate(config, name) -> List[Dict[str, Any]]:
     if not instances:
         raise Exception(f"No instances named {name}")
 
-    response = ec2_client.terminate_instances(
-        InstanceIds=[instance["InstanceId"] for instance in instances]
-    )
+    response = ec2_client.terminate_instances(InstanceIds=[instance["InstanceId"] for instance in instances])
 
     return [
-        {"State": i["CurrentState"]["Name"], "InstanceId": i["InstanceId"]}
-        for i in response["TerminatingInstances"]
+        {"State": i["CurrentState"]["Name"], "InstanceId": i["InstanceId"]} for i in response["TerminatingInstances"]
     ]
 
 
@@ -309,9 +275,7 @@ def modify(config, name, type) -> List[Dict[str, Any]]:
         raise Exception(f"No instances named {name}")
 
     instance_id = instances[0]["InstanceId"]
-    ec2_client.modify_instance_attribute(
-        InstanceId=instance_id, InstanceType={"Value": type}
-    )
+    ec2_client.modify_instance_attribute(InstanceId=instance_id, InstanceType={"Value": type})
 
     return describe(config, name)
 
@@ -328,17 +292,7 @@ def read_file(filepath) -> AnyStr:
 def main():
     parser = argh.ArghParser()
     parser.add_commands(
-        [
-            delete_image,
-            describe,
-            describe_images,
-            launch,
-            modify,
-            share_image,
-            start,
-            stop,
-            terminate,
-        ]
+        [delete_image, describe, describe_images, launch, modify, share_image, start, stop, terminate,]
     )
     parser.dispatch()
 

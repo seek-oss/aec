@@ -58,10 +58,7 @@ def receive_and_delete_messages(sqs_client, queue_url, keep):
     """
     while True:
         resp = sqs_client.receive_message(
-            QueueUrl=queue_url,
-            AttributeNames=["All"],
-            MessageAttributeNames=["All"],
-            MaxNumberOfMessages=10,
+            QueueUrl=queue_url, AttributeNames=["All"], MessageAttributeNames=["All"], MaxNumberOfMessages=10,
         )
 
         try:
@@ -69,18 +66,13 @@ def receive_and_delete_messages(sqs_client, queue_url, keep):
         except KeyError:
             return
 
-        entries = [
-            {"Id": msg["MessageId"], "ReceiptHandle": msg["ReceiptHandle"]}
-            for msg in resp["Messages"]
-        ]
+        entries = [{"Id": msg["MessageId"], "ReceiptHandle": msg["ReceiptHandle"]} for msg in resp["Messages"]]
 
         if not keep:
             resp = sqs_client.delete_message_batch(QueueUrl=queue_url, Entries=entries)
 
             if len(resp["Successful"]) != len(entries):
-                raise RuntimeError(
-                    f"Failed to delete messages: entries={entries!r} resp={resp!r}"
-                )
+                raise RuntimeError(f"Failed to delete messages: entries={entries!r} resp={resp!r}")
 
 
 def main():
