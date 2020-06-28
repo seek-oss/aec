@@ -13,15 +13,12 @@ $(pip):
 	python3 -m venv --clear $(venv)
 
 $(venv): requirements.txt requirements.dev.txt $(pip)
-	$(pip) install -r requirements.txt && $(pip) install -r requirements.dev.txt
+	$(pip) install -e . && $(pip) install -r requirements.dev.txt
 	touch $(venv)
 
 ## display this help message
 help:
 	@awk '/^##.*$$/,/^[~\/\.a-zA-Z_-]+:/' $(MAKEFILE_LIST) | awk '!(NR%2){print $$0p}{p=$$0}' | awk 'BEGIN {FS = ":.*?##"}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' | sort
-
-## install/upgrade requirements in the aec virtualenv
-install-reqs: $(venv)
 
 ## install example config files in ~/.aec/ (if they don't already exist)
 install-config:
@@ -29,9 +26,8 @@ install-config:
 	@cp -r conf/* ~/.aec/
 	@(cp -rn ~/.aec/ec2.example.toml ~/.aec/ec2.toml && echo "Installed config into ~/.aec/") || echo "Didn't overwrite existing files"
 
-## install aec in editable mode (useful during development)
+## install/upgrade aec into virtualenv
 install: $(venv)
-	$(pip) install -e .
 
 ## run tests
 test: $(venv)
