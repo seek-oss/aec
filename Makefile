@@ -39,9 +39,5 @@ lint: $(venv)
 
 ## format code using black
 format: $(venv)
-	# sort imports one per line, so autoflake can remove unused imports
-	$(venv)/bin/isort --recursive --force-single-line-imports --apply tests tools
-	$(venv)/bin/autoflake --recursive --remove-all-unused-imports --in-place tests tools
-
 	$(venv)/bin/black tests tools
 	$(venv)/bin/isort --recursive --multi-line=3 --trailing-comma --apply tests tools
