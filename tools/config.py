@@ -4,9 +4,10 @@ from typing import Any, Dict
 
 import pytoml as toml
 
+Config = Dict[str, Any]
 
 # TODO add tests for this
-def load_config(config_file: str, profile: str = "default") -> Dict[str, str]:
+def load_config(config_file: str, profile: str = "default") -> Config:
     """
     Load profile from the config file.
 
@@ -18,7 +19,7 @@ def load_config(config_file: str, profile: str = "default") -> Dict[str, str]:
     config = load_user_config_file(config_filepath)
 
     # set profile to the value of the default key
-    if profile == "default":
+    if profile == "default" or profile is None:
         if "default_profile" not in config:
             print(
                 f"No profile supplied, or default profile set in {config_filepath}", file=sys.stderr,

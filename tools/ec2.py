@@ -1,21 +1,23 @@
 import os.path
-from typing import Any, AnyStr, Dict, List
+from typing import Any, AnyStr, Dict, List, Optional
 
 import boto3
 import typer
 from argh import arg
 
 from tools.cli import Cli, cli_result
-from tools.config import load_config
+from tools import config
 
 cli = Cli(config_file="~/.aec/ec2.toml").cli
-
 
 app = typer.Typer(context_settings=dict(help_option_names=["-h", "--help"]), result_callback=cli_result)
 
 
-def load_profile(profile: str) -> Dict[str, str]:
-    return load_config("~/.aec/ec2.toml", profile)
+def load_profile(profile: str) -> config.Config:
+    return config.load_config("~/.aec/ec2.toml", profile)
+
+
+profile_option = typer.Option(None, "--profile", help="Profile in the config file to use", callback=load_profile)
 
 
 @arg("ami", help="ami id")
@@ -176,12 +178,10 @@ def launch(
     return describe(name=name, config=config)
 
 
-# @arg("--name", help="Filter to hosts with this Name tag", default=None)
-# @cli
 @app.command()
 def describe(
-    name: str = None,
-    config=typer.Option("default", "--profile", help="Profile in the config file to use", callback=load_profile),
+    name: Optional[str] = typer.Argument(default=None, help="Filter to hosts with this exact Name tag"),
+    config = profile_option,
 ) -> List[Dict[str, Any]]:
     """
     List EC2 instances in the region
@@ -210,10 +210,10 @@ def describe(
     return sorted(instances, key=lambda i: i["State"] + str(i["Name"]))
 
 
-# @arg("name", help="Name tag of instance")
 @app.command()
 def start(
-    name: str, config=typer.Option("default", help="Profile in the config file to use", callback=load_profile)
+    name: str = typer.Argument(..., help="Name tag of instance"),
+    config = profile_option,
 ) -> List[Dict[str, Any]]:
     """
     Start EC2 instances by name

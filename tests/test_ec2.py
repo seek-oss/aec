@@ -82,7 +82,7 @@ def test_describe(mock_aws_config):
     launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
     launch(mock_aws_config, "sam", AMIS[0]["ami_id"])
 
-    instances = describe(config=mock_aws_config)
+    instances = describe(name=None, config=mock_aws_config)
     print(instances)
 
     assert len(instances) == 2
@@ -95,7 +95,7 @@ def test_describe_instance_without_tags(mock_aws_config):
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
     ec2_client.run_instances(MaxCount=1, MinCount=1)
 
-    instances = describe(config=mock_aws_config)
+    instances = describe(name=None, config=mock_aws_config)
     print(instances)
 
     assert len(instances) == 1
