@@ -14,14 +14,14 @@ Currently supports the following AWS services:
 * python 3.7+
 * pip3
 * automake & libtool  
-    * Ubuntu: `sudo apt install automake libtool` 
-    * macOS: `brew install automake libtool` 
+  * Ubuntu: `sudo apt install automake libtool`
+  * macOS: `brew install automake libtool`
 
-
-## Install 
+## Install
 
 Run the following to install the latest master version:
-```
+
+```bash
 pip3 install --upgrade git+https://github.com/seek-oss/aec.git
 ```
 
@@ -35,7 +35,8 @@ Rerun the same command when you want to upgrade to the latest version.
 ## EC2 Usage
 
 To see the help, run `ec2 -h`
-```
+
+```text
 usage: ec2 [-h]
            {delete-image,describe,describe-images,launch,modify,share-image,start,stop,terminate}
            ...
@@ -56,25 +57,29 @@ optional arguments:
   -h, --help            show this help message and exit
 ```
 
-#### Examples
+### Examples
 
 To list AMIs (owned by accounts specified in the config file)
-```
+
+```bash
 ec2 describe-images
 ```
 
 To launch a t2.medium instance named `lady gaga` with a 100gb EBS volume, with other settings read from the config file
-```
+
+```bash
 ec2 launch "lady gaga" ami-0bfe6b818fce462af --instance-type t2.medium --volume-size 100  
 ```
 
 Stop the instance
-```
+
+```bash
 ec2 stop "lady gaga"
 ```
 
 By default, commands will use the default profile as specified in the config file. To list ec2 instances using the non-default profile `us`
-```
+
+```bash
 ec2 describe --profile us  
 ```
 
@@ -84,7 +89,7 @@ Activate the virtualenv, eg: `source ~/.virtualenvs/aec/bin/activate` or `workon
 
 To see the help, run `sqs -h`
 
-```
+```text
 usage: sqs [-h] {drain} ...
 
 positional arguments:
@@ -99,14 +104,14 @@ optional arguments:
 
 To drain the queue configured in the `app1` profile to `dlq.txt`, pretty printing the deleted messages:
 
-```
+```bash
 $ sqs drain --profile app1 dlq.txt
-822167373.json	RequestId: 393e79a4-cee5-423f-8273-8ea10f1a1fc6 Process exited before completing request
+822167373.json RequestId: 393e79a4-cee5-423f-8273-8ea10f1a1fc6 Process exited before completing request
 Drained 1 messages.
 ```
 
 ## Similar projects
 
-[awless](https://github.com/wallix/awless) is written in Go, and is an excellent substitute for awscli with support for 
-many AWS services. It has human friendly commands for use on the command line or in templates. Unlike `aec` its 
-ec2 create instance command doesn't allow you to specify the EBS volume size, or add tags. 
+[awless](https://github.com/wallix/awless) is written in Go, and is an excellent substitute for awscli with support for
+many AWS services. It has human friendly commands for use on the command line or in templates. Unlike `aec` its
+ec2 create instance command doesn't allow you to specify the EBS volume size, or add tags.
