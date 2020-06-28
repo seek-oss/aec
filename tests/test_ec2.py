@@ -116,7 +116,7 @@ def test_stop_start(mock_aws_config):
 
     stop(mock_aws_config, name="alice")
 
-    start(mock_aws_config, name="alice")
+    start(name="alice", config=mock_aws_config)
 
 
 def test_modify(mock_aws_config):

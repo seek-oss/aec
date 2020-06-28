@@ -213,7 +213,7 @@ def describe(
 # @arg("name", help="Name tag of instance")
 @app.command()
 def start(
-    name: str, profile=typer.Option("default", help="Profile in the config file to use", callback=load_profile)
+    name: str, config=typer.Option("default", help="Profile in the config file to use", callback=load_profile)
 ) -> List[Dict[str, Any]]:
     """
     Start EC2 instances by name
