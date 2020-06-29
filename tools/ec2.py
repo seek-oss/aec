@@ -1,12 +1,14 @@
 import os.path
+from enum import Enum
+from pathlib import Path
 from typing import Any, AnyStr, Dict, List, Optional
 
 import boto3
 import typer
 from argh import arg
 
-from tools.cli import Cli, cli_result
 from tools import config
+from tools.cli import Cli, cli_result
 
 cli = Cli(config_file="~/.aec/ec2.toml").cli
 
@@ -88,26 +90,23 @@ def describe_images(config, ami) -> List[Dict[str, Any]]:
     return sorted(images, key=lambda i: i["CreationDate"], reverse=True)
 
 
-root_devices = {"amazon": "/dev/xvda", "ubuntu": "/dev/sda1"}
+class Distro(str, Enum):
+    amazon = "amazon"
+    ubuntu = "ubuntu"
 
+    def root_device(self, root_devices = {"amazon": "/dev/xvda", "ubuntu": "/dev/sda1"}):
+        return root_devices[self.name]
 
-@arg("name", help="Name tag")
-@arg("ami", help="ami id")
-@arg("--dist", help="linux distribution", choices=root_devices.keys(), default="amazon")
-@arg("--volume-size", help="ebs volume size (GB)", default=100)
-@arg("--instance-type", help="instance type", default="t2.medium")
-@arg("--key-name", help="key name", default=None)
-@arg("--userdata", help="path to user data file", default=None)
-@cli
+@app.command()
 def launch(
-    config,
-    name: str,
-    ami: str,
-    dist: str = "amazon",
-    volume_size: int = 100,
-    instance_type="t2.medium",
-    key_name=None,
-    userdata=None,
+    config=profile_option,
+    name: str = typer.Argument(..., help="Name tag"),
+    ami: str = typer.Argument(..., help="AMI id"),
+    dist: Distro = typer.Option(Distro.amazon, help="Linux distribution"),
+    volume_size: int = typer.Option(100, help="EBS volume size (GB)"),
+    instance_type: str = typer.Option("t2.medium", help="Instance type"),
+    key_name: Optional[str] = typer.Option(None, help="Key name"),
+    userdata: Optional[Path] = typer.Option(None, help="Path to user data file"),
 ) -> List[Dict[str, Any]]:
     """
     Launch a tagged EC2 instance with an EBS volume
@@ -118,7 +117,7 @@ def launch(
 
     tags = [{"Key": "Name", "Value": name}] + [{"Key": k, "Value": v} for k, v in additional_tags.items()]
 
-    root_device = root_devices[dist]
+    root_device = dist.root_device()
 
     security_group = config["vpc"]["security_group"]
 
@@ -181,7 +180,7 @@ def launch(
 @app.command()
 def describe(
     name: Optional[str] = typer.Argument(default=None, help="Filter to hosts with this exact Name tag"),
-    config = profile_option,
+    config=profile_option,
 ) -> List[Dict[str, Any]]:
     """
     List EC2 instances in the region
@@ -211,10 +210,7 @@ def describe(
 
 
 @app.command()
-def start(
-    name: str = typer.Argument(..., help="Name tag of instance"),
-    config = profile_option,
-) -> List[Dict[str, Any]]:
+def start(name: str = typer.Argument(..., help="Name tag of instance"), config=profile_option,) -> List[Dict[str, Any]]:
     """
     Start EC2 instances by name
     """
