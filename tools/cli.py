@@ -1,8 +1,13 @@
+import functools
 import json
 from functools import wraps
+from typing import Callable, Tuple
 
 from argh import arg
+import typer
+import typer.models
 
+from tools import config
 from tools.config import load_config
 from tools.display import as_table, pretty_table
 
@@ -60,3 +65,19 @@ def cli_result(result) -> None:
             return result
 
     print(pretty(result))
+
+
+def ProfileOption(config_file: str) -> typer.models.OptionInfo:
+    def load(profile: str):
+        return config.load_config(config_file, profile)
+
+    return typer.Option(
+        None,
+        "--profile",
+        help="Profile in the config file to use",
+        callback=load,
+    )
+
+
+def Typer() -> typer.Typer:
+    return typer.Typer(context_settings=dict(help_option_names=["-h", "--help"]), result_callback=cli_result)

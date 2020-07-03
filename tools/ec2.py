@@ -7,20 +7,12 @@ import boto3
 import typer
 from argh import arg
 
-from tools import config
-from tools.cli import Cli, cli_result
+from tools.cli import Cli, ProfileOption, Typer
 
 cli = Cli(config_file="~/.aec/ec2.toml").cli
 
-app = typer.Typer(context_settings=dict(help_option_names=["-h", "--help"]), result_callback=cli_result)
-
-
-def load_profile(profile: str) -> config.Config:
-    return config.load_config("~/.aec/ec2.toml", profile)
-
-
-profile_option = typer.Option(None, "--profile", help="Profile in the config file to use", callback=load_profile)
-
+app = Typer()
+profile_option = ProfileOption("~/.aec/ec2.toml")
 
 @arg("ami", help="ami id")
 @cli
@@ -31,6 +23,8 @@ def delete_image(config, ami: str):
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
     response = describe_images(config, ami)
+
+    ec2_client.deregister_image
 
     ec2_client.deregister_image(ImageId=ami)
 
@@ -94,8 +88,9 @@ class Distro(str, Enum):
     amazon = "amazon"
     ubuntu = "ubuntu"
 
-    def root_device(self, root_devices = {"amazon": "/dev/xvda", "ubuntu": "/dev/sda1"}):
+    def root_device(self, root_devices={"amazon": "/dev/xvda", "ubuntu": "/dev/sda1"}):
         return root_devices[self.name]
+
 
 @app.command()
 def launch(
