@@ -3,18 +3,18 @@
 repos:
 -   repo: local
     hooks:
+      - id: autopep8
+        name: autopep8
+        entry: make autopep8
+        stages: [commit]
+        language: system
+        types: [python] 
       - id: lint
         name: lint
         entry: make lint
         stages: [commit]
         language: system
         types: [python]
-      - id: autopep8
-        name: autopep8
-        entry: make autopep8
-        stages: [commit]
-        language: system
-        types: [python]    
       - id: test
         name: test
         entry: make test
