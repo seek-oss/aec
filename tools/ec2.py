@@ -47,7 +47,7 @@ def share_image(config, ami: str, account: str):
 
 @arg("--ami", help="filter to this ami id", default=None)
 @cli
-def describe_images(config, ami) -> List[Dict[str, Any]]:
+def describe_images(config, ami: str = None) -> List[Dict[str, Any]]:
     """
     List AMIs
     """
@@ -70,7 +70,7 @@ def describe_images(config, ami) -> List[Dict[str, Any]]:
             "Name": i.get("Name", None),
             "Description": i.get("Description", None),
             "CreationDate": i["CreationDate"],
-            "SnapshotId": i["BlockDeviceMappings"][0]["Ebs"]["SnapshotId"],
+            "SnapshotId": i["BlockDeviceMappings"][0]["Ebs"]["SnapshotId"] if i["BlockDeviceMappings"] else None,
         }
         for i in response["Images"]
     ]
@@ -122,7 +122,7 @@ def launch(
         "MinCount": 1,
         "KeyName": key_name,
         "InstanceType": instance_type,
-        "TagSpecifications": [{"ResourceType": "instance", "Tags": tags}, {"ResourceType": "volume", "Tags": tags},],
+        "TagSpecifications": [{"ResourceType": "instance", "Tags": tags}, {"ResourceType": "volume", "Tags": tags}, ],
         "EbsOptimized": False if instance_type.startswith("t2") else True,
         "NetworkInterfaces": [
             {
@@ -137,7 +137,7 @@ def launch(
         "BlockDeviceMappings": [
             {
                 "DeviceName": root_device,
-                "Ebs": {"VolumeSize": volume_size, "DeleteOnTermination": True, "VolumeType": "gp2",},
+                "Ebs": {"VolumeSize": volume_size, "DeleteOnTermination": True, "VolumeType": "gp2", },
             }
         ],
     }
@@ -292,7 +292,7 @@ def read_file(filepath) -> AnyStr:
 def main():
     parser = argh.ArghParser()
     parser.add_commands(
-        [delete_image, describe, describe_images, launch, modify, share_image, start, stop, terminate,]
+        [delete_image, describe, describe_images, launch, modify, share_image, start, stop, terminate, ]
     )
     parser.dispatch()
 
