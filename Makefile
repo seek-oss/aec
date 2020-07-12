@@ -42,6 +42,11 @@ lint: $(venv)
 	$(venv)/bin/pylint tests tools
 
 ## format code using black
-format: $(venv)
+black: $(venv)
 	$(venv)/bin/black tests tools
+	$(venv)/bin/isort --recursive --multi-line=3 --trailing-comma --apply tests tools
+
+## format code using autopep8
+autopep8: $(venv)
+	$(venv)/bin/autopep8 --in-place -r tests tools
 	$(venv)/bin/isort --recursive --multi-line=3 --trailing-comma --apply tests tools
