@@ -20,7 +20,7 @@ jobs:
         key: ${{ runner.os }}-venv-${{ hashFiles('**/requirements.*') }}
     - name: Install requirements
       run: |
-        make install-reqs
+        make install
     - name: Lint
       run: |
         make lint
