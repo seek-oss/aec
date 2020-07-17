@@ -4,7 +4,6 @@ SHELL = /bin/bash -o pipefail
 .PHONY: help install-config install test lint black autopep8
 
 venv = ~/.virtualenvs/aec
-python := $(venv)/bin/python
 pip := $(venv)/bin/pip
 
 $(pip):
