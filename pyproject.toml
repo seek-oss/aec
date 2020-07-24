@@ -4,3 +4,9 @@ line-length = 120
 [tool.autopep8]
 max_line_length = 120
 aggressive = 1
+
+[tool.isort]
+# make isort compatible with black
+line_length = 120
+multi_line_output = 3
+include_trailing_comma = true
