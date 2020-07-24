@@ -20,8 +20,8 @@ $(venv): requirements.txt requirements.dev.txt $(pip)
 	$(pip) install -e '.[dev]'
 	touch $(venv)
 
-## create venv, install this package in dev mode, and install hooks 
-install: $(venv) install-hooks
+## create venv, install this package in dev mode, and install hooks (if not in CI)
+install: $(venv) $(if $(value CI),,install-hooks)
 
 ## lint
 check: lint
