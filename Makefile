@@ -9,9 +9,10 @@ help:
 
 venv = ~/.virtualenvs/aec
 pip := $(venv)/bin/pip
+src := tools tests
 
 $(pip):
-	# create new virtualenv $(venv) containing pip
+	# create empty virtualenv with basics like pip
 	$(if $(value VIRTUAL_ENV),$(error Cannot create a virtualenv when running in a virtualenv. Please deactivate the current virtual env $(VIRTUAL_ENV)),)
 	python3 -m venv --clear $(venv)
 
@@ -19,7 +20,7 @@ $(venv): requirements.txt requirements.dev.txt $(pip)
 	$(pip) install -e '.[dev]'
 	touch $(venv)
 
-## install aec in editable mode (useful during development)
+## create venv and install this package in editable mode
 install: $(venv)
 
 ## run tests
@@ -28,17 +29,17 @@ test: $(venv)
 
 ## lint code
 lint: $(venv)
-	$(venv)/bin/pylint tests tools
+	$(venv)/bin/pylint $(src)
 
 ## format code using black
 black: $(venv)
-	$(venv)/bin/black tests tools
-	$(venv)/bin/isort --recursive --multi-line=3 --trailing-comma --apply tests tools
+	$(venv)/bin/black $(src)
+	$(venv)/bin/isort --recursive --multi-line=3 --trailing-comma --apply $(src)
 
 ## format code using autopep8
 autopep8: $(venv)
-	$(venv)/bin/autopep8 --in-place -r tests tools
-	$(venv)/bin/isort --recursive --multi-line=3 --trailing-comma --apply tests tools
+	$(venv)/bin/autopep8 --in-place -r $(src)
+	$(venv)/bin/isort --recursive --multi-line=3 --trailing-comma --apply $(src)
 
 ## install example config files in ~/.aec/ (if they don't already exist)
 install-config:
