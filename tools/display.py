@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 
 def as_table(dicts: List[Dict[str, Any]], keys: List[str] = None) -> List[List[str]]:
     """
-    Converts a list of dictionaries to a nested list, ordered by specified keys
+    Converts a list of dictionaries to a nested list, ordered by specified keys.
 
     :param keys: ordered list of keys to include in each row, or None to use the keys for the first dict
     :param dicts: list of dictionaries
@@ -19,7 +19,7 @@ def as_table(dicts: List[Dict[str, Any]], keys: List[str] = None) -> List[List[s
 
 def pretty_table(table: List[List[str]]) -> str:
     """
-    Formats a table as a pretty string for printing
+    Formats a table as a pretty string for printing.
 
     :param table:
     :return:

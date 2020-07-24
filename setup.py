@@ -11,7 +11,5 @@ setup(
     python_requires=">=3.6",
     packages=find_packages(),
     install_requires=install_requires,
-    extras_require={
-        "dev": extras_dev
-    }
+    extras_require={"dev": extras_dev},
 )

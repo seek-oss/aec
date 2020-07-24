@@ -4,17 +4,7 @@ from moto import mock_ec2
 from moto.ec2 import ec2_backends
 from moto.ec2.models import AMIS
 
-from tools.ec2 import (
-    delete_image,
-    describe,
-    describe_images,
-    launch,
-    modify,
-    share_image,
-    start,
-    stop,
-    terminate,
-)
+from tools.ec2 import delete_image, describe, describe_images, launch, modify, share_image, start, stop, terminate
 
 
 @pytest.fixture

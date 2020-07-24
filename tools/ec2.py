@@ -13,9 +13,7 @@ cli = Cli(config_file="~/.aec/ec2.toml").cli
 @arg("ami", help="ami id")
 @cli
 def delete_image(config, ami: str):
-    """
-    Deregister an AMI and deletes its snapshot
-    """
+    """Deregister an AMI and deletes its snapshot."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
     response = describe_images(config, ami)
@@ -29,9 +27,7 @@ def delete_image(config, ami: str):
 @arg("account", help="account id")
 @cli
 def share_image(config, ami: str, account: str):
-    """
-    Share an AMI with another account
-    """
+    """Share an AMI with another account."""
 
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
@@ -48,9 +44,7 @@ def share_image(config, ami: str, account: str):
 @arg("--ami", help="filter to this ami id", default=None)
 @cli
 def describe_images(config, ami: str = None) -> List[Dict[str, Any]]:
-    """
-    List AMIs
-    """
+    """List AMIs."""
 
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
@@ -99,9 +93,7 @@ def launch(
     key_name=None,
     userdata=None,
 ) -> List[Dict[str, Any]]:
-    """
-    Launch a tagged EC2 instance with an EBS volume
-    """
+    """Launch a tagged EC2 instance with an EBS volume."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
     additional_tags = config["additional_tags"] if config.get("additional_tags", None) else {}
@@ -122,7 +114,7 @@ def launch(
         "MinCount": 1,
         "KeyName": key_name,
         "InstanceType": instance_type,
-        "TagSpecifications": [{"ResourceType": "instance", "Tags": tags}, {"ResourceType": "volume", "Tags": tags}, ],
+        "TagSpecifications": [{"ResourceType": "instance", "Tags": tags}, {"ResourceType": "volume", "Tags": tags},],
         "EbsOptimized": False if instance_type.startswith("t2") else True,
         "NetworkInterfaces": [
             {
@@ -137,7 +129,7 @@ def launch(
         "BlockDeviceMappings": [
             {
                 "DeviceName": root_device,
-                "Ebs": {"VolumeSize": volume_size, "DeleteOnTermination": True, "VolumeType": "gp2", },
+                "Ebs": {"VolumeSize": volume_size, "DeleteOnTermination": True, "VolumeType": "gp2",},
             }
         ],
     }
@@ -171,9 +163,7 @@ def launch(
 @arg("--name", help="Filter to hosts with this Name tag", default=None)
 @cli
 def describe(config, name=None) -> List[Dict[str, Any]]:
-    """
-    List EC2 instances in the region
-    """
+    """List EC2 instances in the region."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
     filters = [] if name is None else [{"Name": "tag:Name", "Values": [name]}]
@@ -201,9 +191,7 @@ def describe(config, name=None) -> List[Dict[str, Any]]:
 @arg("name", help="Name tag of instance")
 @cli
 def start(config, name) -> List[Dict[str, Any]]:
-    """
-    Start EC2 instances by name
-    """
+    """Start EC2 instances by name."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
     print(f"Starting instances with the name {name} ... ")
@@ -225,9 +213,7 @@ def start(config, name) -> List[Dict[str, Any]]:
 @arg("name", help="Name tag")
 @cli
 def stop(config, name) -> List[Dict[str, Any]]:
-    """
-    Stop EC2 instances by name
-    """
+    """Stop EC2 instances by name."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
     instances = describe(config, name)
@@ -243,9 +229,7 @@ def stop(config, name) -> List[Dict[str, Any]]:
 @arg("name", help="Name tag of instance")
 @cli
 def terminate(config, name) -> List[Dict[str, Any]]:
-    """
-    Terminate EC2 instances by name
-    """
+    """Terminate EC2 instances by name."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
     instances = describe(config, name)
@@ -264,9 +248,7 @@ def terminate(config, name) -> List[Dict[str, Any]]:
 @arg("type", help="Type of instance")
 @cli
 def modify(config, name, type) -> List[Dict[str, Any]]:
-    """
-    Change an instance's type
-    """
+    """Change an instance's type."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
     instances = describe(config, name)
@@ -292,7 +274,7 @@ def read_file(filepath) -> AnyStr:
 def main():
     parser = argh.ArghParser()
     parser.add_commands(
-        [delete_image, describe, describe_images, launch, modify, share_image, start, stop, terminate, ]
+        [delete_image, describe, describe_images, launch, modify, share_image, start, stop, terminate,]
     )
     parser.dispatch()
 

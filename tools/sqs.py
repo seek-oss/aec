@@ -19,10 +19,8 @@ cli = Cli(config_file="~/.aec/sqs.toml").cli
 @arg("--keep", help="keep messages, don't delete them", default=False)
 @cli
 def drain(config, file_name, keep=False):
-    """
-    Receive messages from the configured queue and write them to a file, pretty print them to stdout and then
-     delete them from the queue
-    """
+    """Receive messages from the configured queue and write them to a file, pretty print them to stdout and then delete
+    them from the queue."""
     queue_url = config["queue_url"]
     printer = config["printer"] if config.get("printer", None) else None
 
@@ -54,7 +52,6 @@ def receive_and_delete_messages(sqs_client, queue_url, keep):
 
     :param queue_url: URL of the SQS queue to drain.
     :param keep: keep message, don't delete them
-
     """
     while True:
         resp = sqs_client.receive_message(

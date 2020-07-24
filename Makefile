@@ -1,7 +1,7 @@
 MAKEFLAGS += --warn-undefined-variables
 SHELL = /bin/bash -o pipefail
 .DEFAULT_GOAL := help
-.PHONY: help install test lint black autopep8 install-config 
+.PHONY: help install test lint check install-config hooks install-hooks
 
 ## display help message
 help:
@@ -20,29 +20,35 @@ $(venv): requirements.txt requirements.dev.txt $(pip)
 	$(pip) install -e '.[dev]'
 	touch $(venv)
 
-## create venv and install this package in editable mode
-install: $(venv)
+## create venv, install this package in dev mode, and install hooks 
+install: $(venv) install-hooks
+
+## lint
+check: lint
+
+## lint
+lint: files ?= $(src)
+lint: $(venv)
+	$(venv)/bin/pylint $(files)
 
 ## run tests
 test: $(venv)
 	$(venv)/bin/pytest
-
-## lint code
-lint: $(venv)
-	$(venv)/bin/pylint $(src)
-
-## format code using black
-black: $(venv)
-	$(venv)/bin/black $(src)
-	$(venv)/bin/isort --recursive --multi-line=3 --trailing-comma --apply $(src)
-
-## format code using autopep8
-autopep8: $(venv)
-	$(venv)/bin/autopep8 --in-place -r $(src)
-	$(venv)/bin/isort --recursive --multi-line=3 --trailing-comma --apply $(src)
 
 ## install example config files in ~/.aec/ (if they don't already exist)
 install-config:
 	@mkdir -p ~/.aec/
 	@cp -r conf/* ~/.aec/
 	@(cp -rn ~/.aec/ec2.example.toml ~/.aec/ec2.toml && echo "Installed config into ~/.aec/") || echo "Didn't overwrite existing files"
+
+## run pre-commit hooks on all files
+hooks: install-hooks
+	pre-commit run --all-files
+
+install-hooks: .git/hooks/pre-commit .git/hooks/pre-push
+
+.git/hooks/pre-commit: 
+	pre-commit install -t pre-commit
+
+.git/hooks/pre-push:
+	pre-commit install -t pre-push
