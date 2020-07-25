@@ -40,12 +40,12 @@ def mock_aws_configs():
 
 
 def test_drain(mock_aws_configs):
-    drain(mock_aws_configs, "/dev/null")
+    drain("/dev/null", config=mock_aws_configs)
     assert approximate_messages_not_visible(mock_aws_configs) == 0
 
 
 def test_drain_keep(mock_aws_configs):
-    drain(mock_aws_configs, "/dev/null", keep=True)
+    drain("/dev/null", keep=True, config=mock_aws_configs)
     assert approximate_messages_not_visible(mock_aws_configs) == 1
 
 
