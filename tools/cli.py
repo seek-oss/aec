@@ -29,11 +29,11 @@ class Cli:
             # print(kwargs)
 
             # we are being called from tests, or by other functions, just pass through
-            if args or "config" in kwargs:
+            if args or isinstance(kwargs.get("config", None), dict):
                 return func(*args, **kwargs)
 
             # we are being called from the cli, so load the config and prettify the result
-            profile = kwargs.pop("profile", "default")
+            profile = kwargs.pop("config")
             kwargs["config"] = load_config(self.config_file, profile)
 
             result = func(*args, **kwargs)

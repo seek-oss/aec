@@ -6,7 +6,7 @@ import pytoml as toml
 
 
 # TODO add tests for this
-def load_config(config_file: str, profile: str = "default"):
+def load_config(config_file: str, profile: str = None):
     """
     Load profile from the config file.
 
@@ -18,7 +18,7 @@ def load_config(config_file: str, profile: str = "default"):
     config = load_user_config_file(config_filepath)
 
     # set profile to the value of the default key
-    if profile == "default":
+    if not profile:
         if "default_profile" not in config:
             print(
                 f"No profile supplied, or default profile set in {config_filepath}", file=sys.stderr,
