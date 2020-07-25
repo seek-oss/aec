@@ -5,7 +5,7 @@ extras_dev = open("requirements.dev.txt").read().strip().split("\n")
 
 setup(
     name="aec",
-    version="0.1.2",
+    version="0.2.0",
     description="AWS Easy CLI",
     entry_points={"console_scripts": ["ec2 = tools.ec2:main", "sqs = tools.sqs:main"]},
     python_requires=">=3.6",
