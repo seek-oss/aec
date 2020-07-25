@@ -34,7 +34,20 @@ You can use the config files provided by your organisation, or install the examp
 1. Run `make install-config` to copy example config files to `~/.aec/`
 1. Modify the config files in `~/.aec/` and update any values as needed (eg: `additional_tags`)
 
+## Contributing
+
+Pre-reqs for development:
+* make
+* [pre-commit](https://pre-commit.com/)
+
+To get started run `make install`. This will:
+* install git hooks for formatting before commit, and running tests before push
+* create the virtualenv
+* install this package in editable mode
+
+Then run `make` to see the options for running checks, tests etc.
+
 ## Similar projects
 
 [awless](https://github.com/wallix/awless) is written in Go, and is an excellent substitute for awscli with
-support for many AWS services. It has human friendly commands for use on the command line or in templates. Unlike `aec` its ec2 create instance command doesn't allow you to specify the EBS volume size, or add tags. 
+support for many AWS services. It has human friendly commands for use on the command line or in templates. Unlike `aec` its ec2 create instance command doesn't allow you to specify the EBS volume size, or add tags.
