@@ -12,11 +12,11 @@ cli = Cli(config_file="~/.aec/ec2.toml").cli
 
 @arg("ami", help="ami id")
 @cli
-def delete_image(config, ami: str):
+def delete_image(ami: str, config: Dict[str, Any] = None):
     """Deregister an AMI and deletes its snapshot."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
-    response = describe_images(config, ami)
+    response = describe_images(ami, config)
 
     ec2_client.deregister_image(ImageId=ami)
 
@@ -26,7 +26,7 @@ def delete_image(config, ami: str):
 @arg("ami", help="ami id")
 @arg("account", help="account id")
 @cli
-def share_image(config, ami: str, account: str):
+def share_image(ami: str, account: str, config: Dict[str, Any] = None):
     """Share an AMI with another account."""
 
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -43,7 +43,7 @@ def share_image(config, ami: str, account: str):
 
 @arg("--ami", help="filter to this ami id", default=None)
 @cli
-def describe_images(config, ami: str = None) -> List[Dict[str, Any]]:
+def describe_images(ami: str = None, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
     """List AMIs."""
 
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -84,7 +84,6 @@ root_devices = {"amazon": "/dev/xvda", "ubuntu": "/dev/sda1"}
 @arg("--userdata", help="path to user data file", default=None)
 @cli
 def launch(
-    config,
     name: str,
     ami: str,
     dist: str = "amazon",
@@ -92,6 +91,7 @@ def launch(
     instance_type="t2.medium",
     key_name=None,
     userdata=None,
+    config: Dict[str, Any] = None,
 ) -> List[Dict[str, Any]]:
     """Launch a tagged EC2 instance with an EBS volume."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -157,12 +157,12 @@ def launch(
 
     # the response from run_instances above always contains an empty string
     # for PublicDnsName, so we call describe to get it
-    return describe(config, name=name)
+    return describe(name=name, config=config)
 
 
 @arg("--name", help="Filter to hosts with this Name tag", default=None)
 @cli
-def describe(config, name=None) -> List[Dict[str, Any]]:
+def describe(name=None, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
     """List EC2 instances in the region."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
@@ -190,13 +190,13 @@ def describe(config, name=None) -> List[Dict[str, Any]]:
 
 @arg("name", help="Name tag of instance")
 @cli
-def start(config, name) -> List[Dict[str, Any]]:
+def start(name, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
     """Start EC2 instances by name."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
     print(f"Starting instances with the name {name} ... ")
 
-    instances = describe(config, name)
+    instances = describe(name, config)
 
     if not instances:
         raise Exception(f"No instances named {name}")
@@ -207,16 +207,16 @@ def start(config, name) -> List[Dict[str, Any]]:
     waiter = ec2_client.get_waiter("instance_running")
     waiter.wait(InstanceIds=instance_ids)
 
-    return describe(config, name)
+    return describe(name, config)
 
 
 @arg("name", help="Name tag")
 @cli
-def stop(config, name) -> List[Dict[str, Any]]:
+def stop(name, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
     """Stop EC2 instances by name."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
-    instances = describe(config, name)
+    instances = describe(name, config)
 
     if not instances:
         raise Exception(f"No instances named {name}")
@@ -228,11 +228,11 @@ def stop(config, name) -> List[Dict[str, Any]]:
 
 @arg("name", help="Name tag of instance")
 @cli
-def terminate(config, name) -> List[Dict[str, Any]]:
+def terminate(name, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
     """Terminate EC2 instances by name."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
-    instances = describe(config, name)
+    instances = describe(name, config)
 
     if not instances:
         raise Exception(f"No instances named {name}")
@@ -247,11 +247,11 @@ def terminate(config, name) -> List[Dict[str, Any]]:
 @arg("name", help="Name tag of instance")
 @arg("type", help="Type of instance")
 @cli
-def modify(config, name, type) -> List[Dict[str, Any]]:
+def modify(name, type, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
     """Change an instance's type."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
-    instances = describe(config, name)
+    instances = describe(name, config)
 
     if not instances:
         raise Exception(f"No instances named {name}")
@@ -259,7 +259,7 @@ def modify(config, name, type) -> List[Dict[str, Any]]:
     instance_id = instances[0]["InstanceId"]
     ec2_client.modify_instance_attribute(InstanceId=instance_id, InstanceType={"Value": type})
 
-    return describe(config, name)
+    return describe(name, config)
 
 
 def first_or_else(l: List[Any], default: Any) -> Any:
