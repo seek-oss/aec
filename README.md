@@ -29,7 +29,7 @@ Rerun the same command when you want to upgrade to the latest version.
 
 ## Configure
 
-Before you can use aec, you will need to create config files in `~/.aec/`.
+Before you can use aec, you will need to create the config files in `~/.aec/`.
 You can use the config files provided by your organisation, or install the example config files as follows:
 1. Run `make install-config` to copy example config files to `~/.aec/`
 1. Modify the config files in `~/.aec/` and update any values as needed (eg: `additional_tags`)
