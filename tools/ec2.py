@@ -6,7 +6,7 @@ from argh import arg
 
 from tools.cli import Cli
 
-cli = Cli(namespace="ec2", config_file="~/.aec/ec2.toml")
+cli = Cli(config_file="~/.aec/ec2.toml", namespace="ec2", title="ec2 commands")
 
 
 @arg("ami", help="ami id")

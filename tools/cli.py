@@ -1,6 +1,7 @@
 import inspect
 import json
 from functools import wraps
+from typing import Optional
 
 import argh
 
@@ -9,9 +10,12 @@ from tools.display import as_table, pretty_table
 
 
 class Cli:
-    def __init__(self, namespace: str, config_file: str):
+    def __init__(
+        self, config_file: str, namespace: str, title: Optional[str] = None, description: Optional[str] = None
+    ):
         self.namespace = namespace
         self.config_file = config_file
+        self.namespace_kwargs = {"title": title, "description": description}
         self.commands = []
 
     def cmd(self, func):

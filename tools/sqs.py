@@ -9,7 +9,7 @@ from argh import arg
 
 from tools.cli import Cli
 
-cli = Cli(config_file="~/.aec/sqs.toml", namespace="sqs")
+cli = Cli(config_file="~/.aec/sqs.toml", namespace="sqs", title="sqs commands")
 
 
 # TODO support multiple queues, via config rather than profile

@@ -1,5 +1,6 @@
 import argh
 
+import tools.configure
 import tools.ec2
 import tools.sqs
 
@@ -10,8 +11,13 @@ def sort(functions):
 
 def main():
     parser = argh.ArghParser()
-    parser.add_commands(sort(tools.ec2.cli.commands), namespace=tools.ec2.cli.namespace)
-    parser.add_commands(sort(tools.sqs.cli.commands), namespace=tools.sqs.cli.namespace)
+    for cli in [tools.ec2.cli, tools.sqs.cli]:
+        parser.add_commands(
+            sorted(cli.commands, key=lambda f: f.__name__),
+            namespace=cli.namespace,
+            namespace_kwargs=cli.namespace_kwargs,
+        )
+    parser.add_commands([tools.configure.configure])
     parser.dispatch()
 
 
