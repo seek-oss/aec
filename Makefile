@@ -1,7 +1,7 @@
 MAKEFLAGS += --warn-undefined-variables
 SHELL = /bin/bash -o pipefail
 .DEFAULT_GOAL := help
-.PHONY: help install test lint check install-config hooks install-hooks
+.PHONY: help install test lint check hooks install-hooks
 
 ## display help message
 help:
@@ -34,12 +34,6 @@ lint: $(venv)
 ## run tests
 test: $(venv)
 	$(venv)/bin/pytest
-
-## install example config files in ~/.aec/ (if they don't already exist)
-install-config:
-	@mkdir -p ~/.aec/
-	@cp -r conf/* ~/.aec/
-	@(cp -rn ~/.aec/ec2.example.toml ~/.aec/ec2.toml && echo "Installed config into ~/.aec/") || echo "Didn't overwrite existing files"
 
 ## run pre-commit hooks on all files
 hooks: install-hooks
