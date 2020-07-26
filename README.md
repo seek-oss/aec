@@ -13,7 +13,7 @@ Currently supports the following AWS services:
 
 * python 3.7+
 * pip3
-* automake & libtool  
+* automake & libtool:  
   * Ubuntu: `sudo apt install automake libtool`
   * macOS: `brew install automake libtool`
 
@@ -34,9 +34,18 @@ You can use the config files provided by your organisation, or install the examp
 1. Run `make install-config` to copy example config files to `~/.aec/`
 1. Modify the config files in `~/.aec/` and update any values as needed (eg: `additional_tags`)
 
-## Contributing
+## Handy aliases
 
-Pre-reqs for development:
+For even faster access to aec subcommands, you may like to add the following aliases to your .bashrc:
+
+```
+alias ec2='aec ec2'
+alias sqs='aec sqs'
+```
+
+## Development
+
+Pre-reqs:
 * make
 * [pre-commit](https://pre-commit.com/)
 

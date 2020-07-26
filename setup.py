@@ -7,7 +7,7 @@ setup(
     name="aec",
     version="0.2.0",
     description="AWS Easy CLI",
-    entry_points={"console_scripts": ["ec2 = tools.ec2:main", "sqs = tools.sqs:main"]},
+    entry_points={"console_scripts": ["aec = tools.main:main"]},
     python_requires=">=3.6",
     packages=find_packages(),
     install_requires=install_requires,

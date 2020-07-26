@@ -1,9 +1,9 @@
 # SQS Usage
 
-To see the help, run `sqs -h`
+To see the help, run `aec sqs -h`
 
 ```
-usage: sqs [-h] {drain} ...
+usage: aec sqs [-h] {drain} ...
 
 positional arguments:
   {drain}

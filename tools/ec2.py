@@ -1,17 +1,16 @@
 import os.path
 from typing import Any, AnyStr, Dict, List
 
-import argh
 import boto3
 from argh import arg
 
 from tools.cli import Cli
 
-cli = Cli(config_file="~/.aec/ec2.toml").cli
+cli = Cli(namespace="ec2", config_file="~/.aec/ec2.toml")
 
 
 @arg("ami", help="ami id")
-@cli
+@cli.cmd
 def delete_image(ami: str, config: Dict[str, Any] = None):
     """Deregister an AMI and deletes its snapshot."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -25,7 +24,7 @@ def delete_image(ami: str, config: Dict[str, Any] = None):
 
 @arg("ami", help="ami id")
 @arg("account", help="account id")
-@cli
+@cli.cmd
 def share_image(ami: str, account: str, config: Dict[str, Any] = None):
     """Share an AMI with another account."""
 
@@ -42,7 +41,7 @@ def share_image(ami: str, account: str, config: Dict[str, Any] = None):
 
 
 @arg("--ami", help="filter to this ami id", default=None)
-@cli
+@cli.cmd
 def describe_images(ami: str = None, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
     """List AMIs."""
 
@@ -82,7 +81,7 @@ root_devices = {"amazon": "/dev/xvda", "ubuntu": "/dev/sda1"}
 @arg("--instance-type", help="instance type", default="t2.medium")
 @arg("--key-name", help="key name", default=None)
 @arg("--userdata", help="path to user data file", default=None)
-@cli
+@cli.cmd
 def launch(
     name: str,
     ami: str,
@@ -161,7 +160,7 @@ def launch(
 
 
 @arg("--name", help="Filter to hosts with this Name tag", default=None)
-@cli
+@cli.cmd
 def describe(name=None, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
     """List EC2 instances in the region."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -189,7 +188,7 @@ def describe(name=None, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
 
 
 @arg("name", help="Name tag of instance")
-@cli
+@cli.cmd
 def start(name, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
     """Start EC2 instances by name."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -211,7 +210,7 @@ def start(name, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
 
 
 @arg("name", help="Name tag")
-@cli
+@cli.cmd
 def stop(name, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
     """Stop EC2 instances by name."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -227,7 +226,7 @@ def stop(name, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
 
 
 @arg("name", help="Name tag of instance")
-@cli
+@cli.cmd
 def terminate(name, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
     """Terminate EC2 instances by name."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -246,7 +245,7 @@ def terminate(name, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
 
 @arg("name", help="Name tag of instance")
 @arg("type", help="Type of instance")
-@cli
+@cli.cmd
 def modify(name, type, config: Dict[str, Any] = None) -> List[Dict[str, Any]]:
     """Change an instance's type."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -269,15 +268,3 @@ def first_or_else(l: List[Any], default: Any) -> Any:
 def read_file(filepath) -> AnyStr:
     with open(os.path.expanduser(filepath)) as file:
         return file.read()
-
-
-def main():
-    parser = argh.ArghParser()
-    parser.add_commands(
-        [delete_image, describe, describe_images, launch, modify, share_image, start, stop, terminate,]
-    )
-    parser.dispatch()
-
-
-if __name__ == "__main__":
-    main()

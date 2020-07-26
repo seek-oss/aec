@@ -2,17 +2,19 @@ import inspect
 import json
 from functools import wraps
 
-from argh import arg
+import argh
 
 from tools.config import load_config
 from tools.display import as_table, pretty_table
 
 
 class Cli:
-    def __init__(self, config_file):
+    def __init__(self, namespace: str, config_file: str):
+        self.namespace = namespace
         self.config_file = config_file
+        self.commands = []
 
-    def cli(self, func):
+    def cmd(self, func):
         """
         A decorator that defines common args, injects config, and pretty prints the results of the function it wraps
         when called from the CLI. When called by other functions, treat it as usual familiar (undecorated) function call,
@@ -24,7 +26,7 @@ class Cli:
         """
 
         @wraps(func)
-        @arg("--config", help="Section of the config file to use")
+        @argh.arg("--config", help="Section of the config file to use")
         def wrapper(*args, **kwargs):
             # print(args)
             # print(kwargs)
@@ -57,5 +59,7 @@ class Cli:
 
         # prevent argh help from displaying a positional args param
         wrapper.__signature__ = inspect.signature(func)
+
+        self.commands.append(wrapper)
 
         return wrapper

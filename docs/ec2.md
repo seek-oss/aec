@@ -1,9 +1,9 @@
 # EC2 Usage
 
-To see the help, run `ec2 -h`
+To see the help, run `aec ec2 -h`
 
 ```
-usage: ec2 [-h]
+usage: aec ec2 [-h]
            {delete-image,describe,describe-images,launch,modify,share-image,start,stop,terminate}
            ...
 
@@ -46,4 +46,3 @@ By default, commands will use the default profile as specified in the config fil
 ```
 ec2 describe --config us  
 ```
-
