@@ -49,7 +49,7 @@ class Cli:
             profile = args[CONFIG_ARG_INDEX]
             config = load_config(self.config_file, profile)
 
-            args_without_config = args[:1]
+            args_without_config = args[:CONFIG_ARG_INDEX]
             result = func(*args_without_config, config, **kwargs)
 
             # prettify the result
