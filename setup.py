@@ -10,6 +10,8 @@ setup(
     entry_points={"console_scripts": ["aec = tools.main:main"]},
     python_requires=">=3.6",
     packages=find_packages(),
+    package_data={"aec": ["config-example/ec2.toml"],},
+    include_package_data=True,
     install_requires=install_requires,
     extras_require={"dev": extras_dev},
 )

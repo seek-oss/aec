@@ -66,4 +66,5 @@ class Cli:
 
         self.commands.append(wrapper)
 
+        # TODO: just register and return unwrapped func
         return wrapper

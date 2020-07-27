@@ -17,7 +17,9 @@ def main():
             namespace=cli.namespace,
             namespace_kwargs=cli.namespace_kwargs,
         )
-    parser.add_commands([tools.configure.configure])
+    parser.add_commands(
+        [tools.configure.example], namespace="configure", namespace_kwargs=tools.configure.namespace_kwargs
+    )
     parser.dispatch()
 
 

@@ -30,7 +30,7 @@ Rerun the same command when you want to upgrade to the latest version.
 ## Configure
 
 Before you can use aec, you will need to create the config files in `~/.aec/`.
-Use config files provided by your organisation, or install the example config files by running `aec configure`
+Use config files provided by your organisation, or install the example config files by running `aec configure example`
 and update them as necessary.
 
 ## Handy aliases
