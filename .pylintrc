@@ -5,10 +5,10 @@
 #
 # plus the following: 
 #
-# unused-wildcard-import,unused-import,unused-argument
+# unused-wildcard-import,unused-import
 
 disable=all
-enable=F,E,unreachable,duplicate-key,unnecessary-semicolon,global-variable-not-assigned,unused-variable,binary-op-exception,bad-format-string,anomalous-backslash-in-string,bad-open-mode,unused-wildcard-import,unused-import,unused-argument
+enable=F,E,unreachable,duplicate-key,unnecessary-semicolon,global-variable-not-assigned,unused-variable,binary-op-exception,bad-format-string,anomalous-backslash-in-string,bad-open-mode,unused-wildcard-import,unused-import
 
 # use pylint defaults for everything else
 

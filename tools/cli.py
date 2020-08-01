@@ -1,7 +1,7 @@
 import inspect
 import json
 from functools import wraps
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Optional
 
 import argh
 

@@ -29,7 +29,6 @@ def test_cli_injects_config():
 
 def test_cli_pretty_prints_list_as_table():
     def listy(config: Dict[str, Any] = None):
-        assert config
         return [{"a": 1, "b": 2}]
 
     cli = Cli(config_file="config-example/ec2.toml", namespace="test")
