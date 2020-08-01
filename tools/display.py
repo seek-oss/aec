@@ -1,12 +1,12 @@
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Sequence
 
 
-def as_table(dicts: List[Dict[str, Any]], keys: List[str] = None) -> List[List[str]]:
+def as_table(dicts: Optional[Sequence[Dict[str, Any]]], keys: Optional[List[str]] = None) -> List[List[Optional[str]]]:
     """
     Converts a list of dictionaries to a nested list, ordered by specified keys.
 
-    :param keys: ordered list of keys to include in each row, or None to use the keys for the first dict
     :param dicts: list of dictionaries
+    :param keys: ordered list of keys to include in each row, or None to use the keys from the first dict
     :return:
     """
     if not dicts:
@@ -14,10 +14,10 @@ def as_table(dicts: List[Dict[str, Any]], keys: List[str] = None) -> List[List[s
 
     if keys is None:
         keys = list(dicts[0].keys())
-    return [keys] + [[str(d.get(f, "")) if d.get(f, "") is not None else None for f in keys] for d in dicts]
+    return [keys] + [[str(d.get(f, "")) if d.get(f, "") else None for f in keys] for d in dicts]
 
 
-def pretty_table(table: List[List[str]]) -> str:
+def pretty_table(table: Optional[Sequence[Sequence[Optional[str]]]]) -> str:
     """
     Formats a table as a pretty string for printing.
 
