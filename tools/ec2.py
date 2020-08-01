@@ -107,7 +107,7 @@ def launch(
         key_name = config["key_name"]
 
     # TODO: support multiple subnets
-    kwargs = {
+    kwargs: Dict[str, Any] = {
         "ImageId": ami,
         "MaxCount": 1,
         "MinCount": 1,
