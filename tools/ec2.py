@@ -11,7 +11,7 @@ cli = Cli(config_file="~/.aec/ec2.toml", namespace="ec2", title="ec2 commands")
 
 @arg("ami", help="ami id")
 @cli.cmd
-def delete_image(ami: str, config: Dict[str, Any] = None):
+def delete_image(ami: str, config: Dict[str, Any] = None) -> None:
     """Deregister an AMI and deletes its snapshot."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
@@ -25,7 +25,7 @@ def delete_image(ami: str, config: Dict[str, Any] = None):
 @arg("ami", help="ami id")
 @arg("account", help="account id")
 @cli.cmd
-def share_image(ami: str, account: str, config: Dict[str, Any] = None):
+def share_image(ami: str, account: str, config: Dict[str, Any] = None) -> None:
     """Share an AMI with another account."""
 
     ec2_client = boto3.client("ec2", region_name=config["region"])

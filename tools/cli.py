@@ -1,7 +1,7 @@
 import inspect
 import json
 from functools import wraps
-from typing import Optional
+from typing import Any, Callable, Dict, Optional
 
 import argh
 
@@ -18,7 +18,7 @@ class Cli:
         self.namespace_kwargs = {"title": title, "description": description}
         self.commands = []
 
-    def cmd(self, func):
+    def cmd(self, func: Callable[..., Any]):
         """
         A decorator that defines common args, injects config, and pretty prints the results of the function it wraps
         when called from the CLI. When called by other functions, treat it as usual familiar (undecorated) function call,
