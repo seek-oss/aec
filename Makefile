@@ -47,6 +47,7 @@ install-hooks: .git/hooks/pre-commit .git/hooks/pre-push
 .git/hooks/pre-push:
 	pre-commit install -t pre-push
 
+## build source dist
 dist: $(src) setup.py MANIFEST.in
 	rm -rf aec.egg-info
 	rm -rf dist
