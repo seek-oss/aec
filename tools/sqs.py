@@ -18,7 +18,7 @@ cli = Cli(config_file="~/.aec/sqs.toml", namespace="sqs", title="sqs commands")
 @arg("file_name", help="file to write messages to")
 @arg("--keep", help="keep messages, don't delete them", default=False)
 @cli.cmd
-def drain(file_name, keep=False, config: Dict[str, Any] = None) -> None:
+def drain(config: Dict[str, Any], file_name, keep=False) -> None:
     """Receive messages from the configured queue and write them to a file, pretty print them to stdout and then delete
     them from the queue."""
     queue_url = config["queue_url"]

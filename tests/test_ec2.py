@@ -27,29 +27,29 @@ def mock_aws_config():
 
 
 def test_launch(mock_aws_config):
-    instances = launch("alice", AMIS[0]["ami_id"], config=mock_aws_config)
+    instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
     assert "amazonaws.com" in instances[0]["DnsName"]
 
 
 def test_launch_multiple_security_groups(mock_aws_config):
     mock_aws_config["vpc"]["security_group"] = ["one", "two"]
-    print(launch("alice", AMIS[0]["ami_id"], config=mock_aws_config))
+    print(launch(mock_aws_config, "alice", AMIS[0]["ami_id"]))
 
 
 def test_launch_without_instance_profile(mock_aws_config):
     del mock_aws_config["iam_instance_profile_arn"]
-    print(launch("alice", AMIS[0]["ami_id"], config=mock_aws_config))
+    print(launch(mock_aws_config, "alice", AMIS[0]["ami_id"]))
 
 
 @pytest.mark.skip(reason="failing because of https://github.com/spulec/moto/pull/2651")
 def test_launch_without_public_ip_address(mock_aws_config):
     mock_aws_config["vpc"]["associate_public_ip_address"] = False
-    instances = launch("alice", AMIS[0]["ami_id"], config=mock_aws_config)
+    instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
     assert "ec2.internal" in instances[0]["DnsName"]
 
 
 def test_override_key_name(mock_aws_config):
-    instances = launch("alice", AMIS[0]["ami_id"], key_name="magic-key", config=mock_aws_config)
+    instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"], key_name="magic-key")
     instance_id = instances[0]["InstanceId"]
 
     actual_key_name = describe_instance0(mock_aws_config["region"], instance_id)
@@ -60,17 +60,17 @@ def test_override_key_name(mock_aws_config):
 def test_launch_has_userdata(mock_aws_config):
     print(
         launch(
+            mock_aws_config,
             "test_userdata",
             AMIS[0]["ami_id"],
             userdata="tools/config-example/userdata/amzn-install-docker.yaml",
-            config=mock_aws_config,
         )
     )
 
 
 def test_describe(mock_aws_config):
-    launch("alice", AMIS[0]["ami_id"], config=mock_aws_config)
-    launch("sam", AMIS[0]["ami_id"], config=mock_aws_config)
+    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    launch(mock_aws_config, "sam", AMIS[0]["ami_id"])
 
     instances = describe(config=mock_aws_config)
     print(instances)
@@ -92,9 +92,9 @@ def test_describe_instance_without_tags(mock_aws_config):
 
 
 def test_describe_by_name(mock_aws_config):
-    launch("alice", AMIS[0]["ami_id"], config=mock_aws_config)
+    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
 
-    instances = describe(name="alice", config=mock_aws_config)
+    instances = describe(config=mock_aws_config, name="alice")
     print(instances)
 
     assert len(instances) == 1
@@ -119,15 +119,15 @@ def test_describe_images(mock_aws_config):
 
 
 def test_stop_start(mock_aws_config):
-    launch("alice", AMIS[0]["ami_id"], config=mock_aws_config)
+    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
 
-    stop(name="alice", config=mock_aws_config)
+    stop(mock_aws_config, name="alice")
 
-    start(name="alice", config=mock_aws_config)
+    start(mock_aws_config, name="alice")
 
 
 def test_modify(mock_aws_config):
-    launch("alice", AMIS[0]["ami_id"], config=mock_aws_config)
+    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
 
     instances = modify(name="alice", type="c5.2xlarge", config=mock_aws_config)
 
@@ -137,16 +137,16 @@ def test_modify(mock_aws_config):
 
 
 def test_delete_image(mock_aws_config):
-    delete_image(AMIS[0]["ami_id"], config=mock_aws_config)
+    delete_image(mock_aws_config, AMIS[0]["ami_id"])
 
 
 def test_terminate(mock_aws_config):
-    launch("alice", AMIS[0]["ami_id"], config=mock_aws_config)
+    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
 
-    response = terminate(name="alice", config=mock_aws_config)
+    response = terminate(config=mock_aws_config, name="alice")
 
     print(response)
 
 
 def test_share_image(mock_aws_config):
-    share_image(AMIS[0]["ami_id"], "123456789012", config=mock_aws_config)
+    share_image(mock_aws_config, AMIS[0]["ami_id"], "123456789012")

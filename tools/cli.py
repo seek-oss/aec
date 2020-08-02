@@ -36,7 +36,7 @@ class Cli:
             # print(kwargs)
 
             # config is always the final arg
-            CONFIG_ARG_INDEX = -1
+            CONFIG_ARG_INDEX = 0
 
             # if arg/kwargs contain the config dict then we are being called from tests,
             # or by other functions, so just pass through
@@ -49,7 +49,7 @@ class Cli:
             profile = args[CONFIG_ARG_INDEX]
             config = load_config(self.config_file, profile)
 
-            args_without_config = args[:CONFIG_ARG_INDEX]
+            args_without_config = args[CONFIG_ARG_INDEX:]
             result = func(*args_without_config, config, **kwargs)
 
             # prettify the result

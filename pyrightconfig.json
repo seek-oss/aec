@@ -3,5 +3,6 @@
         "tools",
         "tests"
     ],
-    "strictDictionaryInference": true
+    "strictDictionaryInference": true,
+    "strictParameterNoneValue": true
 }
