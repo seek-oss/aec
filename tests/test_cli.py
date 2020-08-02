@@ -10,7 +10,7 @@ def test_cli_injects_config():
     # config is given a default value because it is an optional cli arg.
     # When --config isn't supplied, the default profile from the config
     # file is passed in
-    def eat(thing, temp: Optional[str] = None, config: Dict[str, Any] = None):
+    def eat(config: Dict[str, Any], thing, temp: Optional[str] = None):
         print(config)
         assert config and isinstance(config, dict) and config["region"] == "us-east-1"
         assert thing == "cheese"
@@ -28,7 +28,7 @@ def test_cli_injects_config():
 
 
 def test_cli_pretty_prints_list_as_table():
-    def listy(config: Dict[str, Any] = None):
+    def listy(config: Dict[str, Any]):
         return [{"a": 1, "b": 2}]
 
     cli = Cli(config_file="tools/config-example/ec2.toml", namespace="test")

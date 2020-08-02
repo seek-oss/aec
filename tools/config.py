@@ -1,12 +1,12 @@
 import os.path
 import sys
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import pytoml as toml
 
 
 # TODO add tests for this
-def load_config(config_file: str, profile: str = None):
+def load_config(config_file: str, profile: Optional[str] = None):
     """
     Load profile from the config file.
 
