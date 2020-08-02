@@ -1,13 +1,16 @@
 # EC2 Usage
 
-To see the help, run `ec2 -h`
+To see the help, run `aec ec2 -h`
 
 ```
-usage: ec2 [-h]
-           {delete-image,describe,describe-images,launch,modify,share-image,start,stop,terminate}
-           ...
+usage: aec ec2 [-h]
+               {delete-image,describe,describe-images,launch,modify,share-image,start,stop,terminate}
+               ...
 
-positional arguments:
+optional arguments:
+  -h, --help            show this help message and exit
+
+ec2 commands:
   {delete-image,describe,describe-images,launch,modify,share-image,start,stop,terminate}
     delete-image        Deregister an AMI and deletes its snapshot.
     describe            List EC2 instances in the region.
@@ -18,9 +21,6 @@ positional arguments:
     start               Start EC2 instances by name.
     stop                Stop EC2 instances by name.
     terminate           Terminate EC2 instances by name.
-
-optional arguments:
-  -h, --help            show this help message and exit
 ```
 
 To list AMIs (owned by accounts specified in the config file)
@@ -46,4 +46,3 @@ By default, commands will use the default profile as specified in the config fil
 ```
 ec2 describe --config us  
 ```
-

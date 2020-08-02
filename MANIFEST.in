@@ -1,0 +1,3 @@
+# needed by setup.py
+include requirements.*
+graft tools/config-example

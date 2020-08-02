@@ -62,7 +62,7 @@ def test_launch_has_userdata(mock_aws_config):
         launch(
             "test_userdata",
             AMIS[0]["ami_id"],
-            userdata="conf/userdata/amzn-install-docker.yaml",
+            userdata="tools/config-example/userdata/amzn-install-docker.yaml",
             config=mock_aws_config,
         )
     )

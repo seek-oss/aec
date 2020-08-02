@@ -1,4 +1,5 @@
-# example config, update this for your account and cp to ~/.aec/ec2.toml
+# example config, update this for your aws account
+
 default_profile = "syd"
 
 # tags added to ec2 instances during launch

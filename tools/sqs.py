@@ -3,14 +3,13 @@ import os.path
 import sys
 from typing import Any, Dict
 
-import argh
 import boto3
 import pyjq as pyjq
 from argh import arg
 
 from tools.cli import Cli
 
-cli = Cli(config_file="~/.aec/sqs.toml").cli
+cli = Cli(config_file="~/.aec/sqs.toml", namespace="sqs", title="sqs commands")
 
 
 # TODO support multiple queues, via config rather than profile
@@ -18,8 +17,8 @@ cli = Cli(config_file="~/.aec/sqs.toml").cli
 
 @arg("file_name", help="file to write messages to")
 @arg("--keep", help="keep messages, don't delete them", default=False)
-@cli
-def drain(file_name, keep=False, config: Dict[str, Any] = None):
+@cli.cmd
+def drain(file_name, keep=False, config: Dict[str, Any] = None) -> None:
     """Receive messages from the configured queue and write them to a file, pretty print them to stdout and then delete
     them from the queue."""
     queue_url = config["queue_url"]
@@ -71,13 +70,3 @@ def receive_and_delete_messages(sqs_client, queue_url, keep):
 
             if len(resp["Successful"]) != len(entries):
                 raise RuntimeError(f"Failed to delete messages: entries={entries!r} resp={resp!r}")
-
-
-def main():
-    parser = argh.ArghParser()
-    parser.add_commands([drain])
-    parser.dispatch()
-
-
-if __name__ == "__main__":
-    main()

@@ -1,7 +1,7 @@
 MAKEFLAGS += --warn-undefined-variables
 SHELL = /bin/bash -o pipefail
 .DEFAULT_GOAL := help
-.PHONY: help install test lint check install-config hooks install-hooks
+.PHONY: help install test lint check hooks install-hooks
 
 ## display help message
 help:
@@ -16,7 +16,7 @@ $(pip):
 	$(if $(value VIRTUAL_ENV),$(error Cannot create a virtualenv when running in a virtualenv. Please deactivate the current virtual env $(VIRTUAL_ENV)),)
 	python3 -m venv --clear $(venv)
 
-$(venv): requirements.txt requirements.dev.txt $(pip)
+$(venv): requirements.txt requirements.dev.txt setup.py $(pip)
 	$(pip) install -e '.[dev]'
 	touch $(venv)
 
@@ -35,12 +35,6 @@ lint: $(venv)
 test: $(venv)
 	$(venv)/bin/pytest
 
-## install example config files in ~/.aec/ (if they don't already exist)
-install-config:
-	@mkdir -p ~/.aec/
-	@cp -r conf/* ~/.aec/
-	@(cp -rn ~/.aec/ec2.example.toml ~/.aec/ec2.toml && echo "Installed config into ~/.aec/") || echo "Didn't overwrite existing files"
-
 ## run pre-commit hooks on all files
 hooks: install-hooks
 	pre-commit run --all-files
@@ -52,3 +46,9 @@ install-hooks: .git/hooks/pre-commit .git/hooks/pre-push
 
 .git/hooks/pre-push:
 	pre-commit install -t pre-push
+
+## build source dist
+dist: $(src) setup.py MANIFEST.in
+	rm -rf aec.egg-info
+	rm -rf dist
+	python setup.py sdist
