@@ -13,8 +13,9 @@ setup(
     url="https://github.com/seek-oss/aec",
     license="MIT",
     entry_points={"console_scripts": ["aec = tools.main:main"]},
-    python_requires=">=3.6",
+    python_requires=">=3.7",
     packages=find_packages(exclude=["tests"]),
+    include_package_data=True,
     install_requires=install_requires,
     extras_require={"dev": extras_dev},
 )

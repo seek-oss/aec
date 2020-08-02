@@ -1,5 +1,6 @@
 import os
 import shutil
+from importlib import resources
 
 namespace_kwargs = {"title": "configure commands", "description": "create config files in ~/.aec/"}
 
@@ -7,7 +8,8 @@ namespace_kwargs = {"title": "configure commands", "description": "create config
 def example():
     """create example config files."""
 
-    config_dir = os.path.expanduser("~/.aec/")
-    shutil.copytree("./config-example", config_dir)
+    with resources.path("tools", "config-example") as example_path:
+        config_dir = os.path.expanduser("~/.aec/")
+        shutil.copytree(example_path, config_dir)
 
     print("Created example config in", config_dir)
