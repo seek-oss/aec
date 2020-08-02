@@ -6,7 +6,7 @@ long_description = open("README.md").read()
 
 setup(
     name="aec",
-    version="0.2.0",
+    version="0.3.0",
     description="AWS Easy CLI",
     long_description=long_description,
     long_description_content_type="text/markdown",
