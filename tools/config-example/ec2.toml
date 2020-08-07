@@ -10,7 +10,7 @@ region = "ap-southeast-2"
 key_name = "my-key"
 iam_instance_profile_arn = "arn:aws:iam::123456789012:instance-profile/ec2_my_default"
 vpc = { name = "public A", subnet = "subnet-12345678",  security_group = "sg-12345678901234567" }
-
+kms_key_id = "arn:aws:kms:ap-southeast-2:123456789012:key/abcdef"
 # include these accounts when listing AMIs
 describe_images_owners = "self"
 
