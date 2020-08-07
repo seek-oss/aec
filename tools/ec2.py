@@ -78,19 +78,21 @@ root_devices = {"amazon": "/dev/xvda", "ubuntu": "/dev/sda1"}
 @arg("ami", help="ami id")
 @arg("--dist", help="linux distribution", choices=root_devices.keys(), default="amazon")
 @arg("--volume-size", help="ebs volume size (GB)", default=100)
+@arg("--encrypted", help="whether the ebs volumn is encrypted", default=True)
 @arg("--instance-type", help="instance type", default="t2.medium")
 @arg("--key-name", help="key name", default=None)
 @arg("--userdata", help="path to user data file", default=None)
 @cli.cmd
 def launch(
-    name: str,
-    ami: str,
-    dist: str = "amazon",
-    volume_size: int = 100,
-    instance_type="t2.medium",
-    key_name=None,
-    userdata=None,
-    config: Dict[str, Any] = None,
+        name: str,
+        ami: str,
+        dist: str = "amazon",
+        volume_size: int = 100,
+        encrypted: bool = True,
+        instance_type="t2.medium",
+        key_name=None,
+        userdata=None,
+        config: Dict[str, Any] = None,
 ) -> List[Dict[str, Any]]:
     """Launch a tagged EC2 instance with an EBS volume."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -100,6 +102,8 @@ def launch(
     tags = [{"Key": "Name", "Value": name}] + [{"Key": k, "Value": v} for k, v in additional_tags.items()]
 
     root_device = root_devices[dist]
+
+    kms_key_id = config.get("kms_key_id", None)
 
     security_group = config["vpc"]["security_group"]
 
@@ -113,7 +117,7 @@ def launch(
         "MinCount": 1,
         "KeyName": key_name,
         "InstanceType": instance_type,
-        "TagSpecifications": [{"ResourceType": "instance", "Tags": tags}, {"ResourceType": "volume", "Tags": tags},],
+        "TagSpecifications": [{"ResourceType": "instance", "Tags": tags}, {"ResourceType": "volume", "Tags": tags}, ],
         "EbsOptimized": False if instance_type.startswith("t2") else True,
         "NetworkInterfaces": [
             {
@@ -128,7 +132,7 @@ def launch(
         "BlockDeviceMappings": [
             {
                 "DeviceName": root_device,
-                "Ebs": {"VolumeSize": volume_size, "DeleteOnTermination": True, "VolumeType": "gp2",},
+                "Ebs": {"VolumeSize": volume_size, "DeleteOnTermination": True, "VolumeType": "gp2", 'Encrypted': encrypted},
             }
         ],
     }
@@ -140,6 +144,9 @@ def launch(
     iam_instance_profile_arn = config.get("iam_instance_profile_arn", None)
     if iam_instance_profile_arn:
         kwargs["IamInstanceProfile"] = {"Arn": iam_instance_profile_arn}
+
+    if kms_key_id is not None:
+        kwargs["BlockDeviceMappings"][0]["Ebs"]["KmsKeyId"] = kms_key_id
 
     if userdata:
         kwargs["UserData"] = read_file(userdata)
