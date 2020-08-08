@@ -1,7 +1,10 @@
+from pathlib import Path
+
 from setuptools import find_packages, setup
 
-install_requires = open("requirements.txt").read().strip().split("\n")
-extras_dev = open("requirements.dev.txt").read().strip().split("\n")
+install_requires = Path("requirements.txt").read_text()
+extras_dev = Path("requirements.dev.txt").read_text()
+
 long_description = open("README.md").read()
 
 setup(
