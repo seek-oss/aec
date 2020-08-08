@@ -5,7 +5,7 @@ from typing import Any, Callable, Optional
 
 import argh
 
-from tools.config import load_config
+import tools.config
 from tools.display import as_table, pretty_table
 
 
@@ -68,3 +68,16 @@ class Cli:
 
         # TODO: just register and return unwrapped func
         return wrapper
+
+    def pretty(self, result):
+        # prettify the result
+        if isinstance(result, list):
+            prettified = pretty_table(as_table(result))
+            return prettified if prettified else "No results"
+        elif isinstance(result, dict):
+            return json.dumps(result, default=str)
+        else:
+            return result
+
+    def load_config(self, ctx, param, value):
+        return tools.config.load_config(self.config_file, value)

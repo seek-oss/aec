@@ -2,6 +2,7 @@ import os.path
 from typing import Any, AnyStr, Dict, List, Optional
 
 import boto3
+import click
 from argh import arg
 
 from tools.cli import Cli
@@ -9,10 +10,21 @@ from tools.cli import Cli
 cli = Cli(config_file="~/.aec/ec2.toml", namespace="ec2", title="ec2 commands")
 
 
-@arg("ami", help="ami id")
-@cli.cmd
+@click.group()
+def ec2():
+    """EC2 commands."""
+    pass
+
+
+@click.argument("ami")
+@click.option("--config", help="Section of the config file to use", callback=cli.load_config)
+@ec2.command()
 def delete_image(config: Dict[str, Any], ami: str) -> None:
-    """Deregister an AMI and deletes its snapshot."""
+    """
+    Deregister an AMI and deletes its snapshot.
+
+    AMI is the AMI id
+    """
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
     response = describe_images(config, ami)
@@ -159,8 +171,8 @@ def launch(
     return describe(config=config, name=name)
 
 
-@arg("--name", help="Filter to hosts with this Name tag", default=None)
-@cli.cmd
+@click.option("--name", help="Filter to hosts with this Name tag")
+@ec2.command()
 def describe(config: Dict[str, Any], name: Optional[str] = None) -> List[Dict[str, Any]]:
     """List EC2 instances in the region."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -268,3 +280,7 @@ def first_or_else(l: List[Any], default: Any) -> Any:
 def read_file(filepath) -> AnyStr:
     with open(os.path.expanduser(filepath)) as file:
         return file.read()
+
+
+if __name__ == "__main__":
+    ec2()
