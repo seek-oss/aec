@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 install_requires = Path("requirements.txt").read_text()
 extras_dev = Path("requirements.dev.txt").read_text()
 
-long_description = open("README.md").read()
+long_description = Path("README.md").read_text()
 
 setup(
     name="aec",
