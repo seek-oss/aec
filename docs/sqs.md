@@ -8,11 +8,9 @@ usage: aec sqs [-h] {drain} ...
 optional arguments:
   -h, --help  show this help message and exit
 
-sqs commands:
+subcommands:
   {drain}
-    drain     Receive messages from the configured queue and write them to a
-              file, pretty print them to stdout and then delete them from the
-              queue.
+    drain     Receive messages from the configured queue and write them to a file, pretty print them to stdout and then delete them from the queue.
 ```
 
 To drain the queue configured in the `app1` profile to `dlq.txt`, pretty printing the deleted messages:
