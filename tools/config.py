@@ -1,6 +1,7 @@
 import os.path
 import sys
-from typing import Any, Dict, Optional
+from argparse import Namespace
+from typing import Any, Callable, Dict, Optional
 
 import pytoml as toml
 
@@ -44,3 +45,12 @@ def load_user_config_file(config_filepath) -> Dict[str, Any]:
 
     with open(config_filepath) as config_file:
         return toml.load(config_file)
+
+
+def inject_config(config_file: str) -> Callable[[Namespace], None]:
+    def inner(namespace: Namespace) -> None:
+        # replace the "config" arg value with a dict loaded from the config file
+        if "config" in namespace:
+            setattr(namespace, "config", load_config(config_file, namespace.config))
+
+    return inner

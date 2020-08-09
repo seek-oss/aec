@@ -3,6 +3,7 @@ import sys
 from typing import List
 
 import tools.cli as cli
+import tools.config as config
 import tools.configure as configure
 import tools.display as display
 import tools.ec2 as ec2
@@ -79,8 +80,8 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(title="commands")
 
     cli.add_command_group(subparsers, "configure", "configure subcommands", configure_cli)
-    cli.add_command_group(subparsers, "ec2", "ec2 subcommands", ec2_cli, cli.inject_config("~/.aec/ec2.toml"))
-    cli.add_command_group(subparsers, "sqs", "sqs subcommands", sqs_cli, cli.inject_config("~/.aec/sqs.toml"))
+    cli.add_command_group(subparsers, "ec2", "ec2 subcommands", ec2_cli, config.inject_config("~/.aec/ec2.toml"))
+    cli.add_command_group(subparsers, "sqs", "sqs subcommands", sqs_cli, config.inject_config("~/.aec/sqs.toml"))
 
     return parser
 

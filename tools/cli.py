@@ -4,8 +4,6 @@ import inspect
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace, _SubParsersAction
 from typing import Any, Callable, List, Optional
 
-import tools.config as config
-
 
 class Arg:
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -70,15 +68,6 @@ def add_command_group(
         if cmd.args:
             for arg in cmd.args:
                 parser.add_argument(*arg.args, **arg.kwargs)
-
-
-def inject_config(config_file: str) -> Callable[[Namespace], None]:
-    def inner(namespace: Namespace) -> None:
-        # replace the "config" arg value with a dict loaded from the config file
-        if "config" in namespace:
-            setattr(namespace, "config", config.load_config(config_file, namespace.config))
-
-    return inner
 
 
 def dispatch(parser: ArgumentParser, args: List[str]) -> Any:
