@@ -6,7 +6,7 @@ from typing import Any, Callable, Optional
 
 import argh
 
-from tools.config import load_config
+import tools.config as config
 from tools.display import as_table, pretty_table
 
 
@@ -104,10 +104,18 @@ def usage_exit(parser: ArgumentParser) -> Callable[[], None]:
     return inner
 
 
-def add_command_group(parent: _SubParsersAction, name: str, help: str, cmds: List[Cmd]) -> None:
+def add_command_group(
+    parent: _SubParsersAction,
+    name: str,
+    help: str,
+    cmds: List[Cmd],
+    args_pre_processor: Optional[Callable[[Namespace], None]] = None,
+) -> None:
     group = parent.add_parser(name, help=help)
     # show help if no args provided to the command group
     group.set_defaults(call_me=usage_exit(group))
+    if args_pre_processor:
+        group.set_defaults(args_pre_processor=args_pre_processor)
     subcommands = group.add_subparsers()
 
     for cmd in cmds:
@@ -120,12 +128,37 @@ def add_command_group(parent: _SubParsersAction, name: str, help: str, cmds: Lis
                 parser.add_argument(*arg.args, **arg.kwargs)
 
 
-def dispatch(parser: ArgumentParser, args: List[str]) -> None:
-    parsed_args = parser.parse_args(args)
-    v = vars(parsed_args)
-    if not v.get("call_me"):
+def prettify(result):
+    # prettify the result
+    if isinstance(result, list):
+        prettified = pretty_table(as_table(result))
+        return prettified if prettified else "No results"
+    elif isinstance(result, dict):
+        return json.dumps(result, default=str)
+    else:
+        return result
+
+
+def inject_config(config_file: str) -> Callable[[Namespace], None]:
+    def inner(namespace: Namespace) -> None:
+        # replace the "config" arg value with a dict loaded from the config file
+        setattr(namespace, "config", config.load_config(config_file, namespace.config))
+
+    return inner
+
+
+def dispatch(parser: ArgumentParser, args: List[str]) -> Any:
+    pargs = parser.parse_args(args)
+
+    if "args_pre_processor" in pargs:
+        pargs.args_pre_processor(pargs)
+        delattr(pargs, "args_pre_processor")
+
+    if "call_me" not in pargs:
         parser.print_usage()
         parser.exit(1, "{}: no command specified\n".format(parser.prog))
-    call_me = v.get("call_me")
-    del v["call_me"]
-    call_me(**v)
+
+    call_me = pargs.call_me
+    # remove call_me kwarg
+    delattr(pargs, "call_me")
+    return call_me(**vars(pargs))

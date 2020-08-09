@@ -15,14 +15,15 @@ def build_parser() -> ArgumentParser:
     parser = argparse.ArgumentParser(description="aws easy cli", formatter_class=ArgumentDefaultsHelpFormatter)
     subparsers = parser.add_subparsers()
 
-    cli.add_command_group(subparsers, "ec2", "ec2 commands", tools.ec2.cli2)
+    cli.add_command_group(subparsers, "ec2", "ec2 commands", tools.ec2.cli2, cli.inject_config("~/.aec/ec2.toml"))
     cli.add_command_group(subparsers, "configure", "configure commands", tools.configure.cli)
 
     return parser
 
 
 def main(args: List[str] = sys.argv[1:]) -> None:
-    cli.dispatch(build_parser(), args)
+    result = cli.dispatch(build_parser(), args)
+    print(cli.prettify(result))
 
     # parser = argh.ArghParser()
     # for cli in [tools.ec2.cli, tools.sqs.cli]:

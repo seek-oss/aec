@@ -164,7 +164,6 @@ def launch(
 
 
 @arg("--name", help="Filter to hosts with this Name tag", default=None)
-@cli.cmd
 def describe(config: Dict[str, Any], name: Optional[str] = None) -> List[Dict[str, Any]]:
     """List EC2 instances in the region."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
