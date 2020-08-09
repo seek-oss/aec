@@ -10,7 +10,7 @@ optional arguments:
 
 subcommands:
   {delete-image,describe,describe-images,launch,modify,share-image,start,stop,terminate}
-    delete-image        Deregister an AMI and deletes its snapshot.
+    delete-image        Deregister an AMI and delete its snapshot.
     describe            List EC2 instances in the region.
     describe-images     List AMIs.
     launch              Launch a tagged EC2 instance with an EBS volume.
