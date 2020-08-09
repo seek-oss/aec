@@ -6,7 +6,7 @@ import boto3
 
 
 def delete_image(config: Dict[str, Any], ami: str) -> None:
-    """Deregister an AMI and deletes its snapshot."""
+    """Deregister an AMI and delete its snapshot."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
     response = describe_images(config, ami)
