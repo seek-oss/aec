@@ -1,3 +1,4 @@
+import json
 from typing import Any, Dict, List, Optional, Sequence
 
 
@@ -46,3 +47,14 @@ def pretty_table(table: Optional[Sequence[Sequence[Optional[str]]]]) -> str:
             for row in table
         ]
     )
+
+
+def prettify(result):
+    """prettify, instead of showing a dict, or list of dicts."""
+    if isinstance(result, list):
+        prettified = pretty_table(as_table(result))
+        return prettified if prettified else "No results"
+    elif isinstance(result, dict):
+        return json.dumps(result, default=str)
+    else:
+        return result

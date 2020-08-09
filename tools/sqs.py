@@ -6,8 +6,6 @@ from typing import Any, Dict
 import boto3
 import pyjq as pyjq
 
-from tools.cli import Cli
-
 # TODO support multiple queues, via config rather than profile
 
 

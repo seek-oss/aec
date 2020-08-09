@@ -1,12 +1,11 @@
 import argparse
 import sys
-from argparse import Action, ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace, _SubParsersAction
-from typing import Callable, List
-
-import argh
+from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
+from typing import List
 
 import tools.cli as cli
 import tools.configure as configure
+import tools.display as display
 import tools.ec2 as ec2
 import tools.sqs as sqs
 from tools.cli import Arg, Cmd
@@ -89,19 +88,7 @@ def build_parser() -> ArgumentParser:
 
 def main(args: List[str] = sys.argv[1:]) -> None:
     result = cli.dispatch(build_parser(), args)
-    print(cli.prettify(result))
-
-    # parser = argh.ArghParser()
-    # for cli in [tools.ec2.cli, tools.sqs.cli]:
-    #     parser.add_commands(
-    #         sorted(cli.commands, key=lambda f: f.__name__),
-    #         namespace=cli.namespace,
-    #         namespace_kwargs=cli.namespace_kwargs,
-    #     )
-    # parser.add_commands(
-    #     [tools.configure.example], namespace="configure", namespace_kwargs=tools.configure.namespace_kwargs
-    # )
-    # parser.dispatch()
+    print(display.prettify(result))
 
 
 if __name__ == "__main__":

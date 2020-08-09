@@ -1,16 +1,8 @@
-import argparse
-import collections
 import os
 import os.path
-import sys
 from typing import Any, AnyStr, Dict, List, Optional
 
 import boto3
-from argh import arg
-
-from tools.cli import Arg, Cli, Cmd
-
-cli = Cli(config_file="~/.aec/ec2.toml", namespace="ec2", title="ec2 commands")
 
 
 def delete_image(config: Dict[str, Any], ami: str) -> None:
