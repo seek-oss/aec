@@ -1,5 +1,6 @@
 import inspect
 import json
+from argparse import Action, ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace, _SubParsersAction
 from functools import wraps
 from typing import Any, Callable, Optional
 
@@ -70,7 +71,7 @@ class Cli:
         return wrapper
 
 
-from argparse import ArgumentParser
+from argparse import ArgumentParser, Namespace
 from dataclasses import dataclass
 from typing import Any, Callable, List
 
@@ -89,5 +90,22 @@ class Cmd:
     args: Optional[List[Arg]] = None
 
 
-def add_args(parser: ArgumentParser, cmds: List[Cmd]) -> None:
-    pass
+def usage_exit(parser: ArgumentParser) -> Callable[[Namespace], None]:
+    def inner(args: Namespace) -> None:
+        parser.print_usage()
+        parser.exit(1, "{}: no subcommand specified\n".format(parser.prog))
+
+    return inner
+
+
+def add_command_group(parent: _SubParsersAction, name: str, help: str, cmds: List[Cmd]) -> None:
+    group = parent.add_parser(name, help=help)
+    # show help if no args provided to the command group
+    group.set_defaults(func=usage_exit(group))
+    subcommands = group.add_subparsers()
+
+    for cmd in cmds:
+        parser = subcommands.add_parser(cmd.name, help=cmd.help, formatter_class=ArgumentDefaultsHelpFormatter)
+        if cmd.args:
+            for arg in cmd.args:
+                parser.add_argument(*arg.args, **arg.kwargs)

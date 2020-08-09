@@ -5,33 +5,18 @@ from typing import Callable, List
 
 import argh
 
-import tools.cli
+import tools.cli as cli
 import tools.configure
 import tools.ec2
 import tools.sqs
-from tools.cli import Cmd
-
-
-def help_func(parser: ArgumentParser) -> Callable[[Namespace], None]:
-    def print_help(args: Namespace) -> None:
-        parser.print_help()
-
-    return print_help
-
-
-def add_subparser(subparsers: _SubParsersAction, name: str, title: str, cmds: List[Cmd]) -> None:
-    parser = subparsers.add_parser(name, help=title)
-    tools.cli.add_args(parser, cmds)
-    # show help if no args provided to the command
-    parser.set_defaults(func=help_func(parser))
 
 
 def build_parser() -> ArgumentParser:
     parser = argparse.ArgumentParser(description="aws easy cli", formatter_class=ArgumentDefaultsHelpFormatter)
     subparsers = parser.add_subparsers()
 
-    add_subparser(subparsers, "ec2", "ec2 commands", tools.ec2.cli2)
-    add_subparser(subparsers, "configure", "configure commands", tools.configure.cli)
+    cli.add_command_group(subparsers, "ec2", "ec2 commands", tools.ec2.cli2)
+    cli.add_command_group(subparsers, "configure", "configure commands", tools.configure.cli)
 
     return parser
 
