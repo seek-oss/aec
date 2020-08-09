@@ -19,19 +19,19 @@ Currently supports the following AWS services:
 
 ## Install
 
-Run the following to install the latest master version:
+Run the following to install the latest master version using [pipx](https://github.com/pipxproject/pipx):
 
 ```
-pip3 install --upgrade git+https://github.com/seek-oss/aec.git
+pipx install git+https://github.com/seek-oss/aec.git
 ```
 
-Rerun the same command when you want to upgrade to the latest version.
+If you have previously installed aec, run `pipx upgrade aec` to upgrade to the latest version.
 
 ## Configure
 
-Before you can use aec, you will need to create the config files in `~/.aec/`.
-Use config files provided by your organisation, or install the example config files by running `aec configure example`
-and update them as necessary.
+Before you can use aec, you will need to create the config files in `~/.aec/`. The config files contain settings for your AWS account including VPC details and additional tagging requirements.
+
+To get started, run `aec configure example` to install the [example config files](tools/config-example/) and then update them as needed.
 
 ## Handy aliases
 
