@@ -1,6 +1,5 @@
 import argparse
 import sys
-from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser
 from typing import List
 
 import tools.cli as cli
@@ -75,8 +74,8 @@ sqs_cli = [
 # fmt: on
 
 
-def build_parser() -> ArgumentParser:
-    parser = argparse.ArgumentParser(description="aws easy cli", formatter_class=ArgumentDefaultsHelpFormatter)
+def build_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(description="aws easy cli")
     subparsers = parser.add_subparsers(title="commands")
 
     cli.add_command_group(subparsers, "configure", "configure subcommands", configure_cli)
@@ -89,7 +88,3 @@ def build_parser() -> ArgumentParser:
 def main(args: List[str] = sys.argv[1:]) -> None:
     result = cli.dispatch(build_parser(), args)
     print(display.prettify(result))
-
-
-if __name__ == "__main__":
-    main()

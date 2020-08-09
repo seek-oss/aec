@@ -1,6 +1,7 @@
+"""Helper functions for describing and building a CLI with command groups, which contain many subcommands."""
+
 import inspect
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace, _SubParsersAction
-from dataclasses import dataclass
 from typing import Any, Callable, List, Optional
 
 import tools.config as config
@@ -12,22 +13,24 @@ class Arg:
         self.kwargs = kwargs
 
 
-@dataclass
 class Cmd:
-    # dispatch to this function
-    call_me: Callable[..., Any]
-    args: Optional[List[Arg]] = None
-    name: Optional[str] = None
-    help: Optional[str] = None
+    def __init__(
+        self,
+        call_me: Callable[..., Any],
+        args: Optional[List[Arg]] = None,
+        name: Optional[str] = None,
+        help: Optional[str] = None,
+    ):
+        # dispatch() will call this function
+        self.call_me = call_me
+        # args for ArgumentParser
+        self.args = args
+        # fallback to call_me's name in kebab case
+        self.name: str = self.call_me.__name__.replace("_", "-") if name is None else name
+        # fallback to call_me's docstring for help
+        self.help = inspect.getdoc(self.call_me) if help is None else help
 
-    def __post_init__(self):
-        if self.name is None:
-            self.name = self.call_me.__name__.replace("_", "-")
-        if self.help is None:
-            # use call_me's docstring for help
-            self.help = inspect.getdoc(self.call_me)
-
-        # check all args are specified
+        # check all function params have args specified
         call_me_num_args = len(inspect.signature(self.call_me).parameters)
         if self.args and len(self.args) != call_me_num_args:
             raise Exception(
@@ -35,7 +38,6 @@ class Cmd:
             )
         elif not self.args and call_me_num_args > 0:
             raise Exception(f"{self.call_me.__name__} has {call_me_num_args} args but none defined for the cli")
-        # inspect.signature(call_me)
 
 
 def usage_exit(parser: ArgumentParser) -> Callable[[], None]:
@@ -91,6 +93,6 @@ def dispatch(parser: ArgumentParser, args: List[str]) -> Any:
         parser.exit(1, "{}: no command specified\n".format(parser.prog))
 
     call_me = pargs.call_me
-    # remove call_me arg because call_me doesn't expect it
+    # remove call_me arg because the call_me function doesn't expect it
     delattr(pargs, "call_me")
     return call_me(**vars(pargs))
