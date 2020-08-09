@@ -22,16 +22,7 @@ def build_parser() -> ArgumentParser:
 
 
 def main(args: List[str] = sys.argv[1:]) -> None:
-    parser = build_parser()
-
-    ## dispatch
-
-    parsed_args = parser.parse_args(args)
-    v = vars(parsed_args)
-    if not v.get("func"):
-        parser.print_usage()
-        parser.exit(1, "{}: no command specified\n".format(parser.prog))
-    parsed_args.func(parsed_args)
+    cli.dispatch(build_parser(), args)
 
     # parser = argh.ArghParser()
     # for cli in [tools.ec2.cli, tools.sqs.cli]:

@@ -276,11 +276,11 @@ def read_file(filepath) -> AnyStr:
 
 # fmt: off
 cli2 = [
-    Cmd("delete-image", delete_image, "deregister AMI", [
+    Cmd("delete-image", delete_image, [
         Arg("--config", help="Section of the config file to use"),
         Arg("ami", help="ami id")
     ]),
-    Cmd("describe", describe, "describing", [
+    Cmd("describe", describe, [
         Arg("--config", help="Section of the config file to use"),
         Arg("--name", help="Filter to hosts with this Name tag")
     ]),

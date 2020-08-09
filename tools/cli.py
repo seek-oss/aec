@@ -85,13 +85,19 @@ class Arg:
 @dataclass
 class Cmd:
     name: str
-    func: Callable[..., Any]
-    help: str
+    # dispatch to this function
+    call_me: Callable[..., Any]
     args: Optional[List[Arg]] = None
+    help: Optional[str] = None
+
+    def __post_init__(self):
+        if self.help is None:
+            ## use call_me's docstring for help
+            self.help = inspect.getdoc(self.call_me)
 
 
-def usage_exit(parser: ArgumentParser) -> Callable[[Namespace], None]:
-    def inner(args: Namespace) -> None:
+def usage_exit(parser: ArgumentParser) -> Callable[[], None]:
+    def inner() -> None:
         parser.print_usage()
         parser.exit(1, "{}: no subcommand specified\n".format(parser.prog))
 
@@ -101,11 +107,25 @@ def usage_exit(parser: ArgumentParser) -> Callable[[Namespace], None]:
 def add_command_group(parent: _SubParsersAction, name: str, help: str, cmds: List[Cmd]) -> None:
     group = parent.add_parser(name, help=help)
     # show help if no args provided to the command group
-    group.set_defaults(func=usage_exit(group))
+    group.set_defaults(call_me=usage_exit(group))
     subcommands = group.add_subparsers()
 
     for cmd in cmds:
-        parser = subcommands.add_parser(cmd.name, help=cmd.help, formatter_class=ArgumentDefaultsHelpFormatter)
+        parser = subcommands.add_parser(
+            cmd.name, help=cmd.help, description=cmd.help, formatter_class=ArgumentDefaultsHelpFormatter
+        )
+        parser.set_defaults(call_me=cmd.call_me)
         if cmd.args:
             for arg in cmd.args:
                 parser.add_argument(*arg.args, **arg.kwargs)
+
+
+def dispatch(parser: ArgumentParser, args: List[str]) -> None:
+    parsed_args = parser.parse_args(args)
+    v = vars(parsed_args)
+    if not v.get("call_me"):
+        parser.print_usage()
+        parser.exit(1, "{}: no command specified\n".format(parser.prog))
+    call_me = v.get("call_me")
+    del v["call_me"]
+    call_me(**v)

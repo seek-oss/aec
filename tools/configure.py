@@ -19,6 +19,6 @@ def example():
 
 # fmt: off
 cli = [
-    Cmd("example", example, "deregister AMI")
+    Cmd("example", example)
 ]
 # fmt: on
