@@ -6,7 +6,7 @@ namespace_kwargs = {"title": "configure commands", "description": "create config
 
 
 def example():
-    """create example config files."""
+    """create example config files in ~/.aec/."""
 
     with resources.path("tools", "config-example") as example_path:
         config_dir = os.path.expanduser("~/.aec/")
