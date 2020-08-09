@@ -86,8 +86,8 @@ class Cmd:
     name: str
     func: Callable[..., Any]
     help: str
-    args: List[Arg]
+    args: Optional[List[Arg]] = None
 
 
-def add_args(parser: ArgumentParser, arg: List[Cmd]) -> None:
+def add_args(parser: ArgumentParser, cmds: List[Cmd]) -> None:
     pass

@@ -1,6 +1,6 @@
 import argparse
 import sys
-from argparse import Action, ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace
+from argparse import Action, ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace, _SubParsersAction
 from typing import Callable, List
 
 import argh
@@ -9,6 +9,7 @@ import tools.cli
 import tools.configure
 import tools.ec2
 import tools.sqs
+from tools.cli import Cmd
 
 
 def help_func(parser: ArgumentParser) -> Callable[[Namespace], None]:
@@ -18,19 +19,19 @@ def help_func(parser: ArgumentParser) -> Callable[[Namespace], None]:
     return print_help
 
 
-def add_subparser(parser: ArgumentParser) -> Action:
-    subparser = parser.add_subparsers()
-    help_parser = subparser.add_parser("help", help="show help for this command")
-    help_parser.set_defaults(func=help_func(parser))
-    return subparser
+def add_subparser(subparsers: _SubParsersAction, name: str, title: str, cmds: List[Cmd]) -> None:
+    parser = subparsers.add_parser(name, help=title)
+    tools.cli.add_args(parser, cmds)
+    # show help if no args provided to the command
+    parser.set_defaults(func=help_func(parser))
 
 
 def build_parser() -> ArgumentParser:
     parser = argparse.ArgumentParser(description="aws easy cli", formatter_class=ArgumentDefaultsHelpFormatter)
+    subparsers = parser.add_subparsers()
 
-    add_subparser(parser)
-
-    tools.cli.add_args(parser, tools.ec2.args)
+    add_subparser(subparsers, "ec2", "ec2 commands", tools.ec2.cli2)
+    add_subparser(subparsers, "configure", "configure commands", tools.configure.cli)
 
     return parser
 

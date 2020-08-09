@@ -2,6 +2,8 @@ import os
 import shutil
 from importlib import resources
 
+from tools.cli import Cmd
+
 namespace_kwargs = {"title": "configure commands", "description": "create config files in ~/.aec/"}
 
 
@@ -13,3 +15,10 @@ def example():
         shutil.copytree(example_path, config_dir)
 
     print("Created example config in", config_dir)
+
+
+# fmt: off
+cli = [
+    Cmd("example", example, "deregister AMI")
+]
+# fmt: on

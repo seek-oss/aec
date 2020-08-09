@@ -275,7 +275,7 @@ def read_file(filepath) -> AnyStr:
 
 
 # fmt: off
-args = [
+cli2 = [
     Cmd("delete-image", delete_image, "deregister AMI", [
         Arg("--config", help="Section of the config file to use"),
         Arg("ami", help="ami id")
