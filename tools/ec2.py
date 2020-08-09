@@ -72,6 +72,7 @@ def launch(
     ami: str,
     dist: str = "amazon",
     volume_size: int = 100,
+    encrypted: bool = True,
     instance_type: str = "t2.medium",
     key_name: Optional[str] = None,
     userdata: Optional[str] = None,
@@ -85,6 +86,8 @@ def launch(
     tags = [{"Key": "Name", "Value": name}] + [{"Key": k, "Value": v} for k, v in additional_tags.items()]
 
     root_device = root_devices[dist]
+
+    kms_key_id = config.get("kms_key_id", None)
 
     security_group = config["vpc"]["security_group"]
 
@@ -113,7 +116,12 @@ def launch(
         "BlockDeviceMappings": [
             {
                 "DeviceName": root_device,
-                "Ebs": {"VolumeSize": volume_size, "DeleteOnTermination": True, "VolumeType": "gp2"},
+                "Ebs": {
+                    "VolumeSize": volume_size,
+                    "DeleteOnTermination": True,
+                    "VolumeType": "gp2",
+                    "Encrypted": encrypted,
+                },
             }
         ],
     }
@@ -125,6 +133,9 @@ def launch(
     iam_instance_profile_arn = config.get("iam_instance_profile_arn", None)
     if iam_instance_profile_arn:
         kwargs["IamInstanceProfile"] = {"Arn": iam_instance_profile_arn}
+
+    if kms_key_id is not None:
+        kwargs["BlockDeviceMappings"][0]["Ebs"]["KmsKeyId"] = kms_key_id
 
     if userdata:
         kwargs["UserData"] = read_file(userdata)
