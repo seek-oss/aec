@@ -12,7 +12,7 @@ def test_cli_injects_config():
         assert thing == "cheese"
         assert temp == "warm"
 
-    cmds = [Cmd("eat", eat, [Arg("--config"), Arg("thing"), Arg("--temp")])]
+    cmds = [Cmd(eat, [Arg("--config"), Arg("thing"), Arg("--temp")])]
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()

@@ -84,16 +84,28 @@ class Arg:
 
 @dataclass
 class Cmd:
-    name: str
     # dispatch to this function
     call_me: Callable[..., Any]
     args: Optional[List[Arg]] = None
+    name: Optional[str] = None
     help: Optional[str] = None
 
     def __post_init__(self):
+        if self.name is None:
+            self.name = self.call_me.__name__.replace("_", "-")
         if self.help is None:
-            ## use call_me's docstring for help
+            # use call_me's docstring for help
             self.help = inspect.getdoc(self.call_me)
+
+        # check all args are specified
+        call_me_num_args = len(inspect.signature(self.call_me).parameters)
+        if self.args and len(self.args) != call_me_num_args:
+            raise Exception(
+                f"{self.call_me.__name__} has {call_me_num_args} args but {len(self.args)} defined for the cli"
+            )
+        elif not self.args and call_me_num_args > 0:
+            raise Exception(f"{self.call_me.__name__} has {call_me_num_args} args but none defined for the cli")
+        # inspect.signature(call_me)
 
 
 def usage_exit(parser: ArgumentParser) -> Callable[[], None]:
@@ -116,7 +128,7 @@ def add_command_group(
     group.set_defaults(call_me=usage_exit(group))
     if args_pre_processor:
         group.set_defaults(args_pre_processor=args_pre_processor)
-    subcommands = group.add_subparsers()
+    subcommands = group.add_subparsers(title="subcommands")
 
     for cmd in cmds:
         parser = subcommands.add_parser(
@@ -129,7 +141,7 @@ def add_command_group(
 
 
 def prettify(result):
-    # prettify the result
+    """prettify, instead of showing a dict, or list of dicts."""
     if isinstance(result, list):
         prettified = pretty_table(as_table(result))
         return prettified if prettified else "No results"
@@ -142,7 +154,8 @@ def prettify(result):
 def inject_config(config_file: str) -> Callable[[Namespace], None]:
     def inner(namespace: Namespace) -> None:
         # replace the "config" arg value with a dict loaded from the config file
-        setattr(namespace, "config", config.load_config(config_file, namespace.config))
+        if "config" in namespace:
+            setattr(namespace, "config", config.load_config(config_file, namespace.config))
 
     return inner
 
@@ -159,6 +172,6 @@ def dispatch(parser: ArgumentParser, args: List[str]) -> Any:
         parser.exit(1, "{}: no command specified\n".format(parser.prog))
 
     call_me = pargs.call_me
-    # remove call_me kwarg
+    # remove call_me arg because call_me doesn't expect it
     delattr(pargs, "call_me")
     return call_me(**vars(pargs))

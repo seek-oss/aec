@@ -1,5 +1,8 @@
 import argparse
+import collections
+import os
 import os.path
+import sys
 from typing import Any, AnyStr, Dict, List, Optional
 
 import boto3
@@ -8,11 +11,6 @@ from argh import arg
 from tools.cli import Arg, Cli, Cmd
 
 cli = Cli(config_file="~/.aec/ec2.toml", namespace="ec2", title="ec2 commands")
-
-
-def ami(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
-    parser.add_argument("ami", help="ami id")
-    return parser
 
 
 def delete_image(config: Dict[str, Any], ami: str) -> None:
@@ -26,9 +24,6 @@ def delete_image(config: Dict[str, Any], ami: str) -> None:
     ec2_client.delete_snapshot(SnapshotId=response[0]["SnapshotId"])
 
 
-@arg("ami", help="ami id")
-@arg("account", help="account id")
-@cli.cmd
 def share_image(config: Dict[str, Any], ami: str, account: str) -> None:
     """Share an AMI with another account."""
 
@@ -44,8 +39,6 @@ def share_image(config: Dict[str, Any], ami: str, account: str) -> None:
     )
 
 
-@arg("--ami", help="filter to this ami id", default=None)
-@cli.cmd
 def describe_images(config: Dict[str, Any], ami: Optional[str] = None) -> List[Dict[str, Any]]:
     """List AMIs."""
 
@@ -78,23 +71,15 @@ def describe_images(config: Dict[str, Any], ami: Optional[str] = None) -> List[D
 root_devices = {"amazon": "/dev/xvda", "ubuntu": "/dev/sda1"}
 
 
-@arg("name", help="Name tag")
-@arg("ami", help="ami id")
-@arg("--dist", help="linux distribution", choices=root_devices.keys(), default="amazon")
-@arg("--volume-size", help="ebs volume size (GB)", default=100)
-@arg("--instance-type", help="instance type", default="t2.medium")
-@arg("--key-name", help="key name", default=None)
-@arg("--userdata", help="path to user data file", default=None)
-@cli.cmd
 def launch(
     config: Dict[str, Any],
     name: str,
     ami: str,
     dist: str = "amazon",
     volume_size: int = 100,
-    instance_type="t2.medium",
-    key_name=None,
-    userdata=None,
+    instance_type: str = "t2.medium",
+    key_name: Optional[str] = None,
+    userdata: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """Launch a tagged EC2 instance with an EBS volume."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -117,7 +102,7 @@ def launch(
         "MinCount": 1,
         "KeyName": key_name,
         "InstanceType": instance_type,
-        "TagSpecifications": [{"ResourceType": "instance", "Tags": tags}, {"ResourceType": "volume", "Tags": tags},],
+        "TagSpecifications": [{"ResourceType": "instance", "Tags": tags}, {"ResourceType": "volume", "Tags": tags}],
         "EbsOptimized": False if instance_type.startswith("t2") else True,
         "NetworkInterfaces": [
             {
@@ -132,7 +117,7 @@ def launch(
         "BlockDeviceMappings": [
             {
                 "DeviceName": root_device,
-                "Ebs": {"VolumeSize": volume_size, "DeleteOnTermination": True, "VolumeType": "gp2",},
+                "Ebs": {"VolumeSize": volume_size, "DeleteOnTermination": True, "VolumeType": "gp2"},
             }
         ],
     }
@@ -163,7 +148,6 @@ def launch(
     return describe(config=config, name=name)
 
 
-@arg("--name", help="Filter to hosts with this Name tag", default=None)
 def describe(config: Dict[str, Any], name: Optional[str] = None) -> List[Dict[str, Any]]:
     """List EC2 instances in the region."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -190,8 +174,6 @@ def describe(config: Dict[str, Any], name: Optional[str] = None) -> List[Dict[st
     return sorted(instances, key=lambda i: i["State"] + str(i["Name"]))
 
 
-@arg("name", help="Name tag of instance")
-@cli.cmd
 def start(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
     """Start EC2 instances by name."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -212,8 +194,6 @@ def start(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
     return describe(config, name)
 
 
-@arg("name", help="Name tag")
-@cli.cmd
 def stop(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
     """Stop EC2 instances by name."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -228,8 +208,6 @@ def stop(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
     return [{"State": i["CurrentState"]["Name"], "InstanceId": i["InstanceId"]} for i in response["StoppingInstances"]]
 
 
-@arg("name", help="Name tag of instance")
-@cli.cmd
 def terminate(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
     """Terminate EC2 instances by name."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -246,9 +224,6 @@ def terminate(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
     ]
 
 
-@arg("name", help="Name tag of instance")
-@arg("type", help="Type of instance")
-@cli.cmd
 def modify(config: Dict[str, Any], name: str, type: str) -> List[Dict[str, Any]]:
     """Change an instance's type."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -264,24 +239,10 @@ def modify(config: Dict[str, Any], name: str, type: str) -> List[Dict[str, Any]]
     return describe(config, name)
 
 
-def first_or_else(l: List[Any], default: Any) -> Any:
-    return l[0] if len(l) > 0 else default
+def first_or_else(li: List[Any], default: Any) -> Any:
+    return li[0] if len(li) > 0 else default
 
 
 def read_file(filepath) -> AnyStr:
     with open(os.path.expanduser(filepath)) as file:
         return file.read()
-
-
-# fmt: off
-cli2 = [
-    Cmd("delete-image", delete_image, [
-        Arg("--config", help="Section of the config file to use"),
-        Arg("ami", help="ami id")
-    ]),
-    Cmd("describe", describe, [
-        Arg("--config", help="Section of the config file to use"),
-        Arg("--name", help="Filter to hosts with this Name tag")
-    ]),
-]
-# fmt: on

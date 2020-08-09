@@ -8,17 +8,10 @@ namespace_kwargs = {"title": "configure commands", "description": "create config
 
 
 def example():
-    """create example config files."""
+    """create example config files in ~/.aec/."""
 
     with resources.path("tools", "config-example") as example_path:
         config_dir = os.path.expanduser("~/.aec/")
         shutil.copytree(example_path, config_dir)
 
     print("Created example config in", config_dir)
-
-
-# fmt: off
-cli = [
-    Cmd("example", example)
-]
-# fmt: on
