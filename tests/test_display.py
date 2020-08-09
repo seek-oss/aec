@@ -38,14 +38,14 @@ def test_as_table_empty_list():
 
 def test_pretty():
     table = [["a", "b", "c"], ["aaaaaaaaaa", "b", "c"], ["a", "bbbbbbbbbb", "c"]]
-    expected = f"a           b           c  \n" f"aaaaaaaaaa  b           c  \n" f"a           bbbbbbbbbb  c  "
+    expected = "a           b           c  \naaaaaaaaaa  b           c  \na           bbbbbbbbbb  c  "
     actual = pretty_table(table)
     assert actual == expected
 
 
 def test_pretty_with_none():
     table = [["a", "b", "c"], [None, "e", "f"]]
-    expected = f"a  b  c  \n" f"   e  f  "
+    expected = "a  b  c  \n   e  f  "
     actual = pretty_table(table)
     assert actual == expected
 

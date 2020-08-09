@@ -1,12 +1,15 @@
+from pathlib import Path
+
 from setuptools import find_packages, setup
 
-install_requires = open("requirements.txt").read().strip().split("\n")
-extras_dev = open("requirements.dev.txt").read().strip().split("\n")
-long_description = open("README.md").read()
+install_requires = Path("requirements.txt").read_text()
+extras_dev = Path("requirements.dev.txt").read_text()
+
+long_description = Path("README.md").read_text()
 
 setup(
     name="aec",
-    version="0.3.0",
+    version="0.4.0",
     description="AWS Easy CLI",
     long_description=long_description,
     long_description_content_type="text/markdown",
