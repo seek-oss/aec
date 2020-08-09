@@ -1,16 +1,20 @@
+import argparse
 import os.path
 from typing import Any, AnyStr, Dict, List, Optional
 
 import boto3
 from argh import arg
 
-from tools.cli import Cli
+from tools.cli import Arg, Cli, Cmd
 
 cli = Cli(config_file="~/.aec/ec2.toml", namespace="ec2", title="ec2 commands")
 
 
-@arg("ami", help="ami id")
-@cli.cmd
+def ami(parser: argparse.ArgumentParser) -> argparse.ArgumentParser:
+    parser.add_argument("ami", help="ami id")
+    return parser
+
+
 def delete_image(config: Dict[str, Any], ami: str) -> None:
     """Deregister an AMI and deletes its snapshot."""
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -268,3 +272,17 @@ def first_or_else(l: List[Any], default: Any) -> Any:
 def read_file(filepath) -> AnyStr:
     with open(os.path.expanduser(filepath)) as file:
         return file.read()
+
+
+# fmt: off
+args = [
+    Cmd("delete-image", delete_image, "deregister AMI", [
+        Arg("--config", help="Section of the config file to use"),
+        Arg("ami", help="ami id")
+    ]),
+    Cmd("describe", describe, "describing", [
+        Arg("--config", help="Section of the config file to use"),
+        Arg("--name", help="Filter to hosts with this Name tag")
+    ]),
+]
+# fmt: on

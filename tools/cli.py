@@ -68,3 +68,26 @@ class Cli:
 
         # TODO: just register and return unwrapped func
         return wrapper
+
+
+from argparse import ArgumentParser
+from dataclasses import dataclass
+from typing import Any, Callable, List
+
+
+class Arg:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        self.args = args
+        self.kwargs = kwargs
+
+
+@dataclass
+class Cmd:
+    name: str
+    func: Callable[..., Any]
+    help: str
+    args: List[Arg]
+
+
+def add_args(parser: ArgumentParser, arg: List[Cmd]) -> None:
+    pass
