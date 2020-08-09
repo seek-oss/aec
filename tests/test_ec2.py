@@ -150,3 +150,26 @@ def test_terminate(mock_aws_config):
 
 def test_share_image(mock_aws_config):
     share_image(AMIS[0]["ami_id"], "123456789012", config=mock_aws_config)
+
+
+@pytest.mark.skip(
+    reason="EBS is not working properly on moto yet. This will be fix in 3.1.15 https://github.com/spulec/moto/issues/3219"
+)
+def test_ebs_enabled_by_default(mock_aws_config):
+    ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
+    launch("alice", AMIS[0]["ami_id"], config=mock_aws_config)
+    volumes = ec2_client.describe_volumes()
+    assert volumes["Volumes"][0]["Encrypted"] is True
+    assert volumes["Volumes"][0]["KmsKeyId"]
+
+
+@pytest.mark.skip(
+    reason="EBS is not working properly on moto yet. This will be fix in 3.1.15 https://github.com/spulec/moto/issues/3219"
+)
+def test_ebs_enabled_by_default(mock_aws_config):
+    mock_aws_config["kms_key_id"] = "arn:aws:kms:ap-southeast-2:123456789012:key/abcdef"
+    ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
+    launch("alice", AMIS[0]["ami_id"], config=mock_aws_config)
+    volumes = ec2_client.describe_volumes()
+    assert volumes["Volumes"][0]["Encrypted"] is True
+    assert volumes["Volumes"][0]["KmsKeyId"] == "arn:aws:kms:ap-southeast-2:123456789012:key/abcdef"
