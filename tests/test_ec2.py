@@ -157,7 +157,7 @@ def test_share_image(mock_aws_config):
 )
 def test_ebs_encrypted_by_default(mock_aws_config):
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
-    launch("alice", AMIS[0]["ami_id"], config=mock_aws_config)
+    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
     volumes = ec2_client.describe_volumes()
     assert volumes["Volumes"][0]["Encrypted"] is True
     assert volumes["Volumes"][0]["KmsKeyId"]
@@ -169,7 +169,7 @@ def test_ebs_encrypted_by_default(mock_aws_config):
 def test_ebs_encrypt_with_kms(mock_aws_config):
     mock_aws_config["kms_key_id"] = "arn:aws:kms:ap-southeast-2:123456789012:key/abcdef"
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
-    launch("alice", AMIS[0]["ami_id"], config=mock_aws_config)
+    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
     volumes = ec2_client.describe_volumes()
     assert volumes["Volumes"][0]["Encrypted"] is True
     assert volumes["Volumes"][0]["KmsKeyId"] == "arn:aws:kms:ap-southeast-2:123456789012:key/abcdef"
