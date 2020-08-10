@@ -37,6 +37,7 @@ ec2_cli = [
         Arg("ami", help="AMI id"),
         Arg("--dist", help="linux distribution", choices=ec2.root_devices.keys(), default="amazon"),
         Arg("--volume-size", help="ebs volume size (GB)", default=100),
+        Arg("--encrypted", help="Whether the EBS volume is encrypted", default=True),
         Arg("--instance-type", help="instance type", default="t2.medium"),
         Arg("--key-name", help="key name"),
         Arg("--userdata", help="path to user data file")   
