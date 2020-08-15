@@ -24,12 +24,12 @@ $(venv): requirements.txt requirements.dev.txt setup.py $(pip)
 install: $(venv) $(if $(value CI),,install-hooks)
 
 ## lint
-check: lint
+lint:
+	pre-commit run --all-files --hook-stage push flake8
 
-## lint
-lint: files ?= $(src)
-lint: $(venv)
-	$(venv)/bin/pylint $(files)
+## check
+check:
+	pre-commit run --all-files --hook-stage push pyright
 
 ## run tests
 test: $(venv)
@@ -37,7 +37,7 @@ test: $(venv)
 
 ## run pre-commit hooks on all files
 hooks: install-hooks
-	pre-commit run --all-files
+	pre-commit run --all-files --hook-stage push
 
 install-hooks: .git/hooks/pre-commit .git/hooks/pre-push
 

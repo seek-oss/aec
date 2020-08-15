@@ -1,0 +1,13 @@
+[flake8]
+max-line-length=120
+exclude =
+    .git,
+    __pycache__,
+    dist,
+    docs
+
+# The following are ignored because they will be fixed by black/isort
+ignore = E101,E111,E114,E115,E116,E117,E12,E13,E2,E3,E401,E5,E70,W1,W2,W3,W5
+
+# flake8-colors
+format = ${cyan}%(path)s${reset}:${yellow_bold}%(row)d${reset}:${green_bold}%(col)d${reset}: ${red_bold}%(code)s${reset} %(text)s
