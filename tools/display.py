@@ -14,11 +14,8 @@ def as_table(dicts: Optional[Sequence[Dict[str, Any]]], keys: Optional[List[str]
         return []
 
     if keys is None:
-        header: List[Optional[str]] = list(dicts[0].keys())
-    else:
-        header: List[Optional[str]] = list(keys)
-
-    return [ header ] + [[str(d.get(f, "")) if d.get(f, "") else None for f in keys] for d in dicts]
+        keys = list(dicts[0].keys())
+    return [keys] + [[str(d.get(f, "")) if d.get(f, "") else None for f in keys] for d in dicts]  # type: ignore
 
 
 def pretty_table(table: Optional[Sequence[Sequence[Optional[str]]]]) -> str:

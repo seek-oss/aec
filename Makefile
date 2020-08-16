@@ -12,24 +12,29 @@ pip := $(venv)/bin/pip
 src := tools tests
 
 $(pip):
-	# create empty virtualenv with basics like pip
+	# create empty virtualenv with pip
 	$(if $(value VIRTUAL_ENV),$(error Cannot create a virtualenv when running in a virtualenv. Please deactivate the current virtual env $(VIRTUAL_ENV)),)
 	python3 -m venv --clear $(venv)
+	$(pip) install --upgrade pip
 
-$(venv): requirements.txt requirements.dev.txt setup.py $(pip)
+$(venv): requirements.txt requirements.dev.txt requirements.node.dev.txt setup.py $(pip)
 	$(pip) install -e '.[dev]'
+	$(venv)/bin/nodeenv -p -n system -r requirements.node.dev.txt
 	touch $(venv)
 
 ## create venv, install this package in dev mode, and install hooks (if not in CI)
 install: $(venv) $(if $(value CI),,install-hooks)
 
+## lint code and run static type check
+check: lint pyright
+
 ## lint
 lint:
 	pre-commit run --all-files --hook-stage push flake8
 
-## check
-check:
-	pre-commit run --all-files --hook-stage push pyright
+## pyright
+pyright: $(venv)
+	source $(venv)/bin/activate && pyright
 
 ## run tests
 test: $(venv)

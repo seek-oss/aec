@@ -31,11 +31,10 @@ repos:
     hooks:
       - id: pyright
         name: pyright
-        entry: ./.pre-commit-pyright.sh
-        language: node
+        entry: make pyright
         pass_filenames: false
+        language: system
         types: [python]
-        additional_dependencies: ['pyright@1.1.62']
       - id: test
         name: test
         entry: make test

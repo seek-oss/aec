@@ -91,5 +91,6 @@ def main(args: List[str] = sys.argv[1:]) -> None:
     result = cli.dispatch(build_parser(), args)
     print(display.prettify(result))
 
+
 if __name__ == "__main__":
     main()
