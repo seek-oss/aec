@@ -4,5 +4,6 @@
         "tests"
     ],
     "strictDictionaryInference": true,
-    "strictParameterNoneValue": true
+    "strictParameterNoneValue": true,
+    "useLibraryCodeForTypes": false
 }
