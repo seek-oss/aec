@@ -12,12 +12,11 @@ pip := $(venv)/bin/pip
 src := tools tests
 
 $(pip):
-	# create empty virtualenv with pip
+	# create empty virtualenv containing pip
 	$(if $(value VIRTUAL_ENV),$(error Cannot create a virtualenv when running in a virtualenv. Please deactivate the current virtual env $(VIRTUAL_ENV)),)
 	python3 -m venv --clear $(venv)
-	$(pip) install --upgrade pip
 
-$(venv): requirements.txt requirements.dev.txt requirements.node.dev.txt setup.py $(pip)
+$(venv): requirements.* setup.py $(pip)
 	$(pip) install -e '.[dev]'
 	$(venv)/bin/nodeenv -p -n system -r requirements.node.dev.txt
 	touch $(venv)
