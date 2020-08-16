@@ -45,7 +45,7 @@ hooks: install-hooks
 
 install-hooks: .git/hooks/pre-commit .git/hooks/pre-push
 
-.git/hooks/pre-commit: 
+.git/hooks/pre-commit:
 	pre-commit install -t pre-commit
 
 .git/hooks/pre-push:

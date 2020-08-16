@@ -51,7 +51,7 @@ ec2_cli = [
         config_arg,
         Arg("ami", type=str, help="AMI id"),
         Arg("account", type=str, help="Account id"),
-    ]), 
+    ]),
     Cmd(ec2.start, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance")

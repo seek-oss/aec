@@ -5,6 +5,9 @@ repos:
     rev: v3.1.0
     hooks:
       - id: requirements-txt-fixer
+      - id: trailing-whitespace
+        args: [--markdown-linebreak-ext=md]
+        stages: [push]
   - repo: https://github.com/ambv/black
     rev: stable
     hooks:
@@ -25,8 +28,8 @@ repos:
         additional_dependencies: [
             'flake8-colors==0.1.6'
         ]
-        args: [--statistics,--count] 
-  # these hooks require the project's virtualenv so need to be local and language: system    
+        args: [--statistics,--count]
+  # these hooks require the project's virtualenv so need to be local and language: system
   - repo: local
     hooks:
       - id: pyright
