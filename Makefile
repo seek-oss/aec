@@ -19,6 +19,18 @@ $(pip):
 $(venv): requirements.* setup.py $(pip)
 	$(pip) install -e '.[dev]'
 	$(venv)/bin/nodeenv -p -n system -r requirements.node.dev.txt
+
+	rm -rf typings/ 
+
+	# workaround for https://github.com/vemel/mypy_boto3_builder/issues/39
+	mkdir -p typings/boto3
+	cp $(venv)/lib/python*/site-packages/mypy_boto3/boto3_init_gen.py typings/boto3/__init__.pyi
+	
+	# needed for pyright to detect type errors on boto client/resources, and also autocomplete in vscode 
+	mkdir -p typings/mypy_boto3_ec2 
+	for f in __init__ client paginater service_resource type_defs waiter; do \
+		cp $(venv)/lib/python*/site-packages/mypy_boto3_ec2/$$f.py typings/mypy_boto3_ec2/$$f.pyi; done
+
 	touch $(venv)
 
 ## create venv, install this package in dev mode, and install hooks (if not in CI)
