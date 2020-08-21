@@ -4,7 +4,8 @@ from typing import Any, AnyStr, Dict, List, Optional, TypeVar, Union
 
 import boto3
 
-E = TypeVar
+E = TypeVar("E")
+T = TypeVar("T")
 
 
 def delete_image(config: Dict[str, Any], ami: str) -> None:
@@ -251,7 +252,7 @@ def modify(config: Dict[str, Any], name: str, type: str) -> List[Dict[str, Any]]
     return describe(config, name)
 
 
-def first_or_else(li: List[E], default: Union[E, None]) -> Union[E, None]:
+def first_or_else(li: List[E], default: T) -> Union[E, T]:
     return li[0] if len(li) > 0 else default
 
 

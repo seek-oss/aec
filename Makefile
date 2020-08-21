@@ -39,7 +39,7 @@ pyright: $(venv)
 test: $(venv)
 	$(venv)/bin/pytest
 
-## run pre-commit hooks on all files
+## run pre-commit git hooks on all files
 hooks: install-hooks
 	pre-commit run --all-files --hook-stage push
 
