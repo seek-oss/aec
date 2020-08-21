@@ -8,6 +8,8 @@ repos:
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
         stages: [push]
+      - id: end-of-file-fixer
+        stages: [push]
   - repo: https://github.com/ambv/black
     rev: stable
     hooks:
