@@ -47,9 +47,10 @@ alias sqs='aec sqs'
 Pre-reqs:
 * make
 * [pre-commit](https://pre-commit.com/)
+* node (required for pyright)
 
 To get started run `make install`. This will:
-* install git hooks for formatting before commit, and running tests before push
+* install git hooks for formatting & linting on git push
 * create the virtualenv
 * install this package in editable mode
 

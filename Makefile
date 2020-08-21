@@ -12,36 +12,40 @@ pip := $(venv)/bin/pip
 src := tools tests
 
 $(pip):
-	# create empty virtualenv with basics like pip
+	# create empty virtualenv containing pip
 	$(if $(value VIRTUAL_ENV),$(error Cannot create a virtualenv when running in a virtualenv. Please deactivate the current virtual env $(VIRTUAL_ENV)),)
 	python3 -m venv --clear $(venv)
 
-$(venv): requirements.txt requirements.dev.txt setup.py $(pip)
+$(venv): requirements.* setup.py $(pip)
 	$(pip) install -e '.[dev]'
+	$(venv)/bin/nodeenv -p -n system -r requirements.node.dev.txt
 	touch $(venv)
 
 ## create venv, install this package in dev mode, and install hooks (if not in CI)
 install: $(venv) $(if $(value CI),,install-hooks)
 
-## lint
-check: lint
+## lint code and run static type check
+check: lint pyright
 
 ## lint
-lint: files ?= $(src)
-lint: $(venv)
-	$(venv)/bin/pylint $(files)
+lint:
+	pre-commit run --all-files --hook-stage push flake8
+
+## pyright
+pyright: $(venv)
+	source $(venv)/bin/activate && pyright
 
 ## run tests
 test: $(venv)
 	$(venv)/bin/pytest
 
-## run pre-commit hooks on all files
+## run pre-commit git hooks on all files
 hooks: install-hooks
-	pre-commit run --all-files
+	pre-commit run --all-files --hook-stage push
 
 install-hooks: .git/hooks/pre-commit .git/hooks/pre-push
 
-.git/hooks/pre-commit: 
+.git/hooks/pre-commit:
 	pre-commit install -t pre-commit
 
 .git/hooks/pre-push:

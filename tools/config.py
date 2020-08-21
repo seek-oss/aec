@@ -17,21 +17,22 @@ def inject_config(config_file: str) -> Callable[[Namespace], None]:
 
 
 # TODO add tests for this
-def load_config(config_file: str, profile: Optional[str] = None):
+def load_config(config_file: str, profile_override: Optional[str] = None):
     """
     Load profile from the config file.
 
     :param config_file:
-    :param profile: If None, use the value of the default key in the config file
+    :param profile_override: override the value of the default profile in the config file
     :return:
     """
     config_filepath = os.path.expanduser(config_file)
     config = load_user_config_file(config_filepath)
 
-    # set profile to the value of the default key
+    profile = profile_override
     if not profile:
+        # set prof to the value of the default key
         if "default_profile" not in config:
-            raise Exception(f"No profile supplied, or default profile set in {config_filepath}")
+            raise Exception(f"No profile override supplied, or default profile set in {config_filepath}")
         profile = config["default_profile"]
 
     # make top level keys available in the profile
@@ -41,7 +42,7 @@ def load_config(config_file: str, profile: Optional[str] = None):
     try:
         return config[profile]
     except KeyError:
-        raise Exception(f"Missing profile {profile} in {config_filepath}")
+        raise Exception(f"Missing profile {profile_override} in {config_filepath}")
 
 
 def load_user_config_file(config_filepath) -> Dict[str, Any]:

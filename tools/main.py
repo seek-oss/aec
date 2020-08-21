@@ -51,7 +51,7 @@ ec2_cli = [
         config_arg,
         Arg("ami", type=str, help="AMI id"),
         Arg("account", type=str, help="Account id"),
-    ]), 
+    ]),
     Cmd(ec2.start, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance")
@@ -90,3 +90,7 @@ def build_parser() -> argparse.ArgumentParser:
 def main(args: List[str] = sys.argv[1:]) -> None:
     result = cli.dispatch(build_parser(), args)
     print(display.prettify(result))
+
+
+if __name__ == "__main__":
+    main()

@@ -18,12 +18,6 @@ jobs:
       with:
         path: ~/.virtualenvs
         key: ${{ runner.os }}-venv-${{ hashFiles('**/requirements.*') }}
-    - name: Install requirements
-      run: |
-        make install
-    - name: Lint
-      run: |
-        make lint
-    - name: Test
-      run: |
-        make test
+    - uses: pre-commit/action@v2.0.0
+      with:
+        extra_args: --all-files --hook-stage push
