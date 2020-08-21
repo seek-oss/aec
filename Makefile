@@ -28,8 +28,8 @@ install: $(venv) $(if $(value CI),,install-hooks)
 check: lint pyright
 
 ## lint
-lint:
-	pre-commit run --all-files --hook-stage push flake8
+lint: install-hooks
+	$(venv)/bin/pre-commit run --all-files --hook-stage push flake8
 
 ## pyright
 pyright: $(venv)
@@ -41,15 +41,15 @@ test: $(venv)
 
 ## run pre-commit git hooks on all files
 hooks: install-hooks
-	pre-commit run --all-files --hook-stage push
+	$(venv)/bin/pre-commit run --all-files --hook-stage push
 
 install-hooks: .git/hooks/pre-commit .git/hooks/pre-push
 
-.git/hooks/pre-commit:
-	pre-commit install -t pre-commit
+.git/hooks/pre-commit: $(venv)
+	$(venv)/bin/pre-commit install -t pre-commit
 
-.git/hooks/pre-push:
-	pre-commit install -t pre-push
+.git/hooks/pre-push: $(venv)
+	$(venv)/bin/pre-commit install -t pre-push
 
 ## build source dist
 dist: $(src) setup.py MANIFEST.in
