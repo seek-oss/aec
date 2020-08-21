@@ -41,5 +41,6 @@ repos:
       - id: test
         name: test
         entry: make test
+        pass_filenames: false
         language: system
         types: [python]
