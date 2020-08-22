@@ -12,7 +12,7 @@ T = TypeVar("T")
 def delete_image(config: Dict[str, Any], ami: str) -> None:
     """Deregister an AMI and delete its snapshot."""
 
-    ec2_client:Client = boto3.client("ec2", region_name=config["region"])
+    ec2_client: Client = boto3.client("ec2", region_name=config["region"])
 
     response = describe_images(config, ami)
 
@@ -24,7 +24,7 @@ def delete_image(config: Dict[str, Any], ami: str) -> None:
 def share_image(config: Dict[str, Any], ami: str, account: str) -> None:
     """Share an AMI with another account."""
 
-    ec2_client:Client = boto3.client("ec2", region_name=config["region"])
+    ec2_client: Client = boto3.client("ec2", region_name=config["region"])
 
     ec2_client.modify_image_attribute(
         ImageId=ami,
@@ -39,7 +39,7 @@ def share_image(config: Dict[str, Any], ami: str, account: str) -> None:
 def describe_images(config: Dict[str, Any], ami: Optional[str] = None) -> List[Dict[str, Any]]:
     """List AMIs."""
 
-    ec2_client:Client = boto3.client("ec2", region_name=config["region"])
+    ec2_client: Client = boto3.client("ec2", region_name=config["region"])
 
     owners = config["describe_images_owners"] if config.get("describe_images_owners", None) else "self"
 
@@ -49,7 +49,7 @@ def describe_images(config: Dict[str, Any], ami: Optional[str] = None) -> List[D
     if ami:
         response = ec2_client.describe_images(ImageIds=[ami])
     else:
-        response = ec2_client.describe_images(Owners=owners)        # type: ignore
+        response = ec2_client.describe_images(Owners=owners)  # type: ignore
 
     images = [
         {
@@ -81,7 +81,7 @@ def launch(
 ) -> List[Dict[str, Any]]:
     """Launch a tagged EC2 instance with an EBS volume."""
 
-    ec2_client:Client = boto3.client("ec2", region_name=config["region"])
+    ec2_client: Client = boto3.client("ec2", region_name=config["region"])
 
     additional_tags = config["additional_tags"] if config.get("additional_tags", None) else {}
 
@@ -160,7 +160,7 @@ def launch(
 def describe(config: Dict[str, Any], name: Optional[str] = None) -> List[Dict[str, Any]]:
     """List EC2 instances in the region."""
 
-    ec2_client:Client = boto3.client("ec2", region_name=config["region"])
+    ec2_client: Client = boto3.client("ec2", region_name=config["region"])
 
     filters = [] if name is None else [{"Name": "tag:Name", "Values": [name]}]
     response = ec2_client.describe_instances(Filters=filters)
@@ -187,7 +187,7 @@ def describe(config: Dict[str, Any], name: Optional[str] = None) -> List[Dict[st
 def start(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
     """Start EC2 instances by name."""
 
-    ec2_client:Client = boto3.client("ec2", region_name=config["region"])
+    ec2_client: Client = boto3.client("ec2", region_name=config["region"])
 
     print(f"Starting instances with the name {name} ... ")
 
@@ -208,7 +208,7 @@ def start(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
 def stop(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
     """Stop EC2 instances by name."""
 
-    ec2_client:Client = boto3.client("ec2", region_name=config["region"])
+    ec2_client: Client = boto3.client("ec2", region_name=config["region"])
 
     instances = describe(config, name)
 
@@ -223,7 +223,7 @@ def stop(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
 def terminate(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
     """Terminate EC2 instances by name."""
 
-    ec2_client:Client = boto3.client("ec2", region_name=config["region"])
+    ec2_client: Client = boto3.client("ec2", region_name=config["region"])
 
     instances = describe(config, name)
 
@@ -240,7 +240,7 @@ def terminate(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
 def modify(config: Dict[str, Any], name: str, type: str) -> List[Dict[str, Any]]:
     """Change an instance's type."""
 
-    ec2_client:Client = boto3.client("ec2", region_name=config["region"])
+    ec2_client: Client = boto3.client("ec2", region_name=config["region"])
 
     instances = describe(config, name)
 
