@@ -27,8 +27,9 @@ $(venv): requirements.* setup.py $(pip)
 	cp $(venv)/lib/python*/site-packages/mypy_boto3/boto3_init_gen.py typings/boto3/__init__.pyi
 	
 	# needed for pyright to detect type errors on boto client/resources, and also autocomplete in vscode 
+	# NB: type_defs is not included because it takes 20 sec for pyright to parse!
 	mkdir -p typings/mypy_boto3_ec2 
-	for f in __init__ client paginater service_resource type_defs waiter; do \
+	for f in __init__ client paginater service_resource waiter; do \
 		cp $(venv)/lib/python*/site-packages/mypy_boto3_ec2/$$f.py typings/mypy_boto3_ec2/$$f.pyi; done
 
 	touch $(venv)

@@ -4,7 +4,6 @@ from typing import Any, AnyStr, Dict, List, Optional, TypeVar, Union
 
 import boto3
 from mypy_boto3_ec2 import Client
-from mypy_boto3_ec2.type_defs import FilterTypeDef
 
 E = TypeVar("E")
 T = TypeVar("T")
@@ -50,7 +49,7 @@ def describe_images(config: Dict[str, Any], ami: Optional[str] = None) -> List[D
     if ami:
         response = ec2_client.describe_images(ImageIds=[ami])
     else:
-        response = ec2_client.describe_images(Owners=owners)
+        response = ec2_client.describe_images(Owners=owners)        # type: ignore
 
     images = [
         {
@@ -163,7 +162,7 @@ def describe(config: Dict[str, Any], name: Optional[str] = None) -> List[Dict[st
 
     ec2_client:Client = boto3.client("ec2", region_name=config["region"])
 
-    filters: List[FilterTypeDef] = [] if name is None else [{"Name": "tag:Name", "Values": [name]}]
+    filters = [] if name is None else [{"Name": "tag:Name", "Values": [name]}]
     response = ec2_client.describe_instances(Filters=filters)
 
     # print(response["Reservations"][0]["Instances"][0])
