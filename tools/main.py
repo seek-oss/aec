@@ -89,7 +89,7 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(args: List[str] = sys.argv[1:]) -> None:
     result = cli.dispatch(build_parser(), args)
-    print(display.prettify(result))
+    display.pretty_print(result)
 
 
 if __name__ == "__main__":
