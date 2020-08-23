@@ -1,7 +1,7 @@
 import json
 from typing import Any, Dict, List, Optional, Sequence, cast
-from rich import box
 
+from rich import box
 from rich.console import Console
 from rich.table import Table
 
@@ -65,7 +65,7 @@ def pretty_print(result):
             return
 
         column_names = cast(List[str], rows[0])
-        table = Table(box = box.SIMPLE)
+        table = Table(box=box.SIMPLE)
         for c in column_names:
             table.add_column(c)
 
