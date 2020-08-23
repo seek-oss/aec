@@ -20,8 +20,10 @@ $(venv): requirements.* setup.py $(pip)
 	$(pip) install -e '.[dev]'
 	$(venv)/bin/nodeenv -p -n system -r requirements.node.dev.txt
 
-	# install stubs into typings/ for pyright to detect type errors on boto client/resources, and 
-	# autocomplete in vscode
+	touch $(venv)
+
+# install pyright stubs
+typings: $(venv)
 	rm -rf typings/
 
 	$(venv)/bin/python -m mypy_boto3
@@ -30,20 +32,20 @@ $(venv): requirements.* setup.py $(pip)
 	mkdir -p typings/boto3
 	cp $(venv)/lib/python*/site-packages/mypy_boto3/boto3_init_gen.py typings/boto3/__init__.pyi
 
-	# install generated stubs
+	# install generated stubs for implicit type inference on boto3.client/boto3.resource
 	mkdir -p typings/mypy_boto3/ec2
 	for f in __init__ client paginator service_resource waiter type_defs; do \
 		cp $(venv)/lib/python*/site-packages/mypy_boto3/ec2/$$f.py typings/mypy_boto3/ec2/$$f.pyi; done
 
-	# install packaged stubs (used by the generated stubs)
+	# install packaged stubs for explicit type annotation (also used by the generated stubs)
 	mkdir -p typings/mypy_boto3_ec2
 	for f in __init__ client paginator service_resource waiter type_defs; do \
 		cp $(venv)/lib/python*/site-packages/mypy_boto3_ec2/$$f.py typings/mypy_boto3_ec2/$$f.pyi; done
 
-	touch $(venv)
+	touch typings
 
-## create venv, install this package in dev mode, and install hooks (if not in CI)
-install: $(venv) $(if $(value CI),,install-hooks)
+## create venv, install this package in dev mode, create stubs, and install hooks (if not in CI)
+install: $(venv) typings $(if $(value CI),,install-hooks)
 
 ## lint code and run static type check
 check: lint pyright
@@ -53,7 +55,7 @@ lint: install-hooks
 	$(venv)/bin/pre-commit run --all-files --hook-stage push flake8
 
 ## pyright
-pyright: $(venv)
+pyright: typings $(venv)
 	source $(venv)/bin/activate && pyright
 
 ## run tests
