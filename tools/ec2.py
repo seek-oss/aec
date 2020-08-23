@@ -41,15 +41,19 @@ def describe_images(config: Dict[str, Any], ami: Optional[str] = None) -> List[D
 
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
-    owners = config["describe_images_owners"] if config.get("describe_images_owners", None) else "self"
-
-    if isinstance(owners, str):
-        owners = [owners]
-
     if ami:
         response = ec2_client.describe_images(ImageIds=[ami])
     else:
-        response = ec2_client.describe_images(Owners=owners)  # type: ignore
+        describe_images_owners = config.get("describe_images_owners", None)
+
+        if not describe_images_owners:
+            owners = ["self"]
+        elif isinstance(describe_images_owners, str):
+            owners = [describe_images_owners]
+        else:
+            owners: List[str] = describe_images_owners
+
+        response = ec2_client.describe_images(Owners=owners)
 
     images = [
         {
