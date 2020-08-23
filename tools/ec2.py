@@ -3,6 +3,7 @@ import os.path
 from typing import Any, AnyStr, Dict, List, Optional, TypeVar, Union
 
 import boto3
+from mypy_boto3_ec2.type_defs import FilterTypeDef
 
 E = TypeVar("E")
 T = TypeVar("T")
@@ -161,7 +162,7 @@ def describe(config: Dict[str, Any], name: Optional[str] = None) -> List[Dict[st
 
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
-    filters = [] if name is None else [{"Name": "tag:Name", "Values": [name]}]
+    filters: List[FilterTypeDef] = [] if name is None else [{"Name": "tag:Name", "Values": [name]}]
     response = ec2_client.describe_instances(Filters=filters)
 
     # print(response["Reservations"][0]["Instances"][0])
