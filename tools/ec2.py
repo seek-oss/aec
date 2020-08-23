@@ -3,6 +3,7 @@ import os.path
 from typing import Any, AnyStr, Dict, List, Optional, TypeVar, Union
 
 import boto3
+from mypy_boto3_ec2.type_defs import FilterTypeDef
 
 E = TypeVar("E")
 T = TypeVar("T")
@@ -40,14 +41,18 @@ def describe_images(config: Dict[str, Any], ami: Optional[str] = None) -> List[D
 
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
-    owners = config["describe_images_owners"] if config.get("describe_images_owners", None) else "self"
-
-    if isinstance(owners, str):
-        owners = [owners]
-
     if ami:
         response = ec2_client.describe_images(ImageIds=[ami])
     else:
+        describe_images_owners = config.get("describe_images_owners", None)
+
+        if not describe_images_owners:
+            owners = ["self"]
+        elif isinstance(describe_images_owners, str):
+            owners = [describe_images_owners]
+        else:
+            owners: List[str] = describe_images_owners
+
         response = ec2_client.describe_images(Owners=owners)
 
     images = [
@@ -161,7 +166,7 @@ def describe(config: Dict[str, Any], name: Optional[str] = None) -> List[Dict[st
 
     ec2_client = boto3.client("ec2", region_name=config["region"])
 
-    filters = [] if name is None else [{"Name": "tag:Name", "Values": [name]}]
+    filters: List[FilterTypeDef] = [] if name is None else [{"Name": "tag:Name", "Values": [name]}]
     response = ec2_client.describe_instances(Filters=filters)
 
     # print(response["Reservations"][0]["Instances"][0])
