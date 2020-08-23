@@ -57,9 +57,8 @@ def describe_images(config: Dict[str, Any], ami: Optional[str] = None) -> List[D
 
     images = [
         {
-            "ImageId": i["ImageId"],
             "Name": i.get("Name", None),
-            "Description": i.get("Description", None),
+            "ImageId": i["ImageId"],
             "CreationDate": i["CreationDate"],
             "SnapshotId": i["BlockDeviceMappings"][0]["Ebs"]["SnapshotId"] if i["BlockDeviceMappings"] else None,
         }

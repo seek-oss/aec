@@ -1,5 +1,9 @@
 import json
-from typing import Any, Dict, List, Optional, Sequence
+from typing import Any, Dict, List, Optional, Sequence, cast
+
+from rich import box
+from rich.console import Console
+from rich.table import Table
 
 
 def as_table(dicts: Optional[Sequence[Dict[str, Any]]], keys: Optional[List[str]] = None) -> List[List[Optional[str]]]:
@@ -49,12 +53,27 @@ def pretty_table(table: Optional[Sequence[Sequence[Optional[str]]]]) -> str:
     )
 
 
-def prettify(result):
-    """prettify, instead of showing a dict, or list of dicts."""
+def pretty_print(result):
+    """print table/json, instead of showing a dict, or list of dicts."""
+
+    console = Console()
+
     if isinstance(result, list):
-        prettified = pretty_table(as_table(result))
-        return prettified if prettified else "No results"
+        rows = as_table(result)
+        if len(rows) == 0:
+            console.print("No results")
+            return
+
+        column_names = cast(List[str], rows[0])
+        table = Table(box=box.SIMPLE)
+        for c in column_names:
+            table.add_column(c)
+
+        for r in rows[1:]:
+            table.add_row(*r)
+
+        console.print(table)
     elif isinstance(result, dict):
-        return json.dumps(result, default=str)
+        console.print(json.dumps(result, default=str))
     else:
-        return result
+        console.print(result)
