@@ -61,7 +61,7 @@ def pretty_print(result):
     if isinstance(result, list):
         rows = as_table(result)
         if len(rows) == 0:
-            console.print("No results", style="red")
+            console.print("No results")
             return
 
         column_names = cast(List[str], rows[0])
