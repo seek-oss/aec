@@ -20,16 +20,24 @@ $(venv): requirements.* setup.py $(pip)
 	$(pip) install -e '.[dev]'
 	$(venv)/bin/nodeenv -p -n system -r requirements.node.dev.txt
 
+	# install stubs into typings/ for pyright to detect type errors on boto client/resources, and 
+	# autocomplete in vscode
 	rm -rf typings/
+
+	$(venv)/bin/python -m mypy_boto3
 
 	# workaround for https://github.com/vemel/mypy_boto3_builder/issues/39
 	mkdir -p typings/boto3
 	cp $(venv)/lib/python*/site-packages/mypy_boto3/boto3_init_gen.py typings/boto3/__init__.pyi
 
-	# needed for pyright to detect type errors on boto client/resources, and also autocomplete in vscode
-	# NB: type_defs is not included because it takes 20 sec for pyright to parse!
+	# install generated stubs
+	mkdir -p typings/mypy_boto3/ec2
+	for f in __init__ client paginator service_resource waiter type_defs; do \
+		cp $(venv)/lib/python*/site-packages/mypy_boto3/ec2/$$f.py typings/mypy_boto3/ec2/$$f.pyi; done
+
+	# install packaged stubs (used by the generated stubs)
 	mkdir -p typings/mypy_boto3_ec2
-	for f in __init__ client paginator service_resource waiter; do \
+	for f in __init__ client paginator service_resource waiter type_defs; do \
 		cp $(venv)/lib/python*/site-packages/mypy_boto3_ec2/$$f.py typings/mypy_boto3_ec2/$$f.pyi; done
 
 	touch $(venv)
