@@ -19,16 +19,18 @@ cp "$VIRTUAL_ENV"/lib/python*/site-packages/mypy_boto3/boto3_init_gen.py typings
 for d in "$VIRTUAL_ENV"/lib/python*/site-packages/mypy_boto3/[!_]*/
 do
     service=$(basename "$d")
-    echo "$service"
-ls 
+    echo "Installing pyright stubs into typings/ for $service"
+ 
     mkdir -p typings/mypy_boto3/"$service"
     mkdir -p typings/mypy_boto3_"$service"
-    for f in __init__ client paginator service_resource waiter type_defs; do
+    for f in "$VIRTUAL_ENV"/lib/python*/site-packages/mypy_boto3/"$service"/*.py; do
+        module=$(basename -s .py "$f")
+
         # install generated stubs used by the overloads
-        cp "$VIRTUAL_ENV"/lib/python*/site-packages/mypy_boto3/"$service"/$f.py typings/mypy_boto3/"$service"/$f.pyi
+        cp "$VIRTUAL_ENV"/lib/python*/site-packages/mypy_boto3/"$service"/"$module".py typings/mypy_boto3/"$service"/"$module".pyi
 
         # install packaged stubs for explicit type annotation (also used by the generated stubs)
-        cp "$VIRTUAL_ENV"/lib/python*/site-packages/mypy_boto3_"$service"/$f.py typings/mypy_boto3_"$service"/$f.pyi
+        cp "$VIRTUAL_ENV"/lib/python*/site-packages/mypy_boto3_"$service"/"$module".py typings/mypy_boto3_"$service"/"$module".pyi
     done
 done
 
@@ -41,11 +43,7 @@ done
 #     esac
 # done
 
-# exit 0
-
-
-
-
+# exit 
 
 
 # mkdir -p typings/mypy_boto3_ec2
