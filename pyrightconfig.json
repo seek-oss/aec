@@ -1,6 +1,6 @@
 {
     "include": [
-        "tools",
+        "aec",
         "tests"
     ],
     "strictDictionaryInference": true,

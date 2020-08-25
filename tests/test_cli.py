@@ -1,9 +1,9 @@
 import argparse
 from typing import Any, Dict, Optional
 
-import tools.cli as cli
-import tools.config as config
-from tools.cli import Arg, Cmd
+import aec.cli as cli
+import aec.config as config
+from aec.cli import Arg, Cmd
 
 
 def test_cli_injects_config():
@@ -17,7 +17,7 @@ def test_cli_injects_config():
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
-    cli.add_command_group(subparsers, "food", "food help", cmds, config.inject_config("tools/config-example/ec2.toml"))
+    cli.add_command_group(subparsers, "food", "food help", cmds, config.inject_config("aec/config-example/ec2.toml"))
 
     cli.dispatch(parser, args=["food", "eat", "cheese", "--temp", "warm", "--config", "us"])
     cli.dispatch(parser, args=["food", "eat", "cheese", "--config", "us", "--temp", "warm"])

@@ -2,13 +2,13 @@ import argparse
 import sys
 from typing import List
 
-import tools.cli as cli
-import tools.config as config
-import tools.configure as configure
-import tools.display as display
-import tools.ec2 as ec2
-import tools.sqs as sqs
-from tools.cli import Arg, Cmd
+import aec.cli as cli
+import aec.config as config
+import aec.configure as configure
+import aec.display as display
+import aec.ec2 as ec2
+import aec.sqs as sqs
+from aec.cli import Arg, Cmd
 
 config_arg = Arg("--config", help="Section of the config file to use")
 

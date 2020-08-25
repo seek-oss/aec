@@ -2,7 +2,7 @@ import boto3
 import pytest
 from moto import mock_sqs
 
-from tools.sqs import drain
+from aec.sqs import drain
 
 
 @pytest.fixture

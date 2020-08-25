@@ -2,7 +2,7 @@ import datetime
 
 from dateutil.tz import tzutc
 
-from tools.display import as_table, pretty_table
+from aec.display import as_table, pretty_table
 
 
 def test_as_table():

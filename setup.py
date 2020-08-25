@@ -9,13 +9,13 @@ long_description = Path("README.md").read_text()
 
 setup(
     name="aec",
-    version="0.4.2",
+    version="0.4.3",
     description="AWS Easy CLI",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/seek-oss/aec",
     license="MIT",
-    entry_points={"console_scripts": ["aec = tools.main:main"]},
+    entry_points={"console_scripts": ["aec = aec.main:main"]},
     python_requires=">=3.7",
     packages=find_packages(exclude=["tests"]),
     include_package_data=True,
