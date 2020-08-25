@@ -9,7 +9,7 @@ help:
 
 venv = ~/.virtualenvs/aec
 pip := $(venv)/bin/pip
-src := tools tests
+src := aec tests
 
 $(pip):
 	# create empty virtualenv containing pip

@@ -25,7 +25,7 @@ tasks:
       - pyproject.toml
       - .pylintrc
       - tests
-      - tools
+      - aec
       - conf
     command:
       make lint

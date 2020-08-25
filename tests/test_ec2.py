@@ -4,7 +4,7 @@ from moto import mock_ec2
 from moto.ec2 import ec2_backends
 from moto.ec2.models import AMIS
 
-from tools.ec2 import delete_image, describe, describe_images, launch, modify, share_image, start, stop, terminate
+from aec.ec2 import delete_image, describe, describe_images, launch, modify, share_image, start, stop, terminate
 
 
 @pytest.fixture
@@ -63,7 +63,7 @@ def test_launch_has_userdata(mock_aws_config):
             mock_aws_config,
             "test_userdata",
             AMIS[0]["ami_id"],
-            userdata="tools/config-example/userdata/amzn-install-docker.yaml",
+            userdata="aec/config-example/userdata/amzn-install-docker.yaml",
         )
     )
 
