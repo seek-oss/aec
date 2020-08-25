@@ -9,7 +9,7 @@ long_description = Path("README.md").read_text()
 
 setup(
     name="aec",
-    version="0.4.2",
+    version="0.4.3",
     description="AWS Easy CLI",
     long_description=long_description,
     long_description_content_type="text/markdown",
