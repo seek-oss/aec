@@ -33,20 +33,3 @@ do
         cp "$VIRTUAL_ENV"/lib/python*/site-packages/mypy_boto3_"$service"/"$module".py typings/mypy_boto3_"$service"/"$module".pyi
     done
 done
-
-
-# for service in $VIRTUAL_ENV/lib/python*/site-packages/mypy_boto3_*/
-# do
-#     case $service in
-#         *.dist-info/) ;; # ignore
-#         *) basename $service
-#     esac
-# done
-
-# exit 
-
-
-# mkdir -p typings/mypy_boto3_ec2
-# for f in __init__ client paginator service_resource waiter type_defs; do
-#     cp "$VIRTUAL_ENV"/lib/python*/site-packages/mypy_boto3_ec2/$f.py typings/mypy_boto3_ec2/$f.pyi
-# done
