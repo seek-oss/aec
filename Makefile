@@ -25,23 +25,7 @@ $(venv): requirements.* setup.py $(pip)
 # install pyright stubs
 typings: $(venv)
 	rm -rf typings/
-
-	$(venv)/bin/python -m mypy_boto3
-
-	# workaround for https://github.com/vemel/mypy_boto3_builder/issues/39
-	mkdir -p typings/boto3
-	cp $(venv)/lib/python*/site-packages/mypy_boto3/boto3_init_gen.py typings/boto3/__init__.pyi
-
-	# install generated stubs for implicit type inference on boto3.client/boto3.resource
-	mkdir -p typings/mypy_boto3/ec2
-	for f in __init__ client paginator service_resource waiter type_defs; do \
-		cp $(venv)/lib/python*/site-packages/mypy_boto3/ec2/$$f.py typings/mypy_boto3/ec2/$$f.pyi; done
-
-	# install packaged stubs for explicit type annotation (also used by the generated stubs)
-	mkdir -p typings/mypy_boto3_ec2
-	for f in __init__ client paginator service_resource waiter type_defs; do \
-		cp $(venv)/lib/python*/site-packages/mypy_boto3_ec2/$$f.py typings/mypy_boto3_ec2/$$f.pyi; done
-
+	VIRTUAL_ENV=$(venv) ./.install-typings-boto3.sh
 	touch typings
 
 ## create venv, install this package in dev mode, create stubs, and install hooks (if not in CI)
