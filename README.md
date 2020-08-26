@@ -6,17 +6,17 @@ CLI tools for doing things on AWS easier. Defaults (eg: subnet, tags etc.) only 
 
 Currently supports the following AWS services:
 
-* [EC2](docs/ec2.md) - manipulate EC2 instances by name, and launch them with EBS volumes of any size, as per the settings in the configuration file (subnet, tags etc).
-* [SQS](docs/sqs.md) - drain configured SQS queues to a file, pretty printing deleted messages using a jq filter
-* [Compute Optimizer](docs/compute-optimizer.md) - show over-provisioned instances
+- [EC2](docs/ec2.md) - manipulate EC2 instances by name, and launch them with EBS volumes of any size, as per the settings in the configuration file (subnet, tags etc).
+- [SQS](docs/sqs.md) - drain configured SQS queues to a file, pretty printing deleted messages using a jq filter
+- [Compute Optimizer](docs/compute-optimizer.md) - show over-provisioned instances
 
 ## Prerequisites
 
-* python 3.7+
-* pip3
-* automake & libtool:  
-  * Ubuntu: `sudo apt install automake libtool`
-  * macOS: `brew install automake libtool`
+- python 3.7+
+- pip3
+- automake & libtool:
+  - Ubuntu: `sudo apt install automake libtool`
+  - macOS: `brew install automake libtool`
 
 ## Install
 
@@ -46,13 +46,15 @@ alias sqs='aec sqs'
 ## Development
 
 Pre-reqs:
-* make
-* node (required for pyright)
+
+- make
+- node (required for pyright)
 
 To get started run `make install`. This will:
-* install git hooks for formatting & linting on git push
-* create the virtualenv
-* install this package in editable mode
+
+- install git hooks for formatting & linting on git push
+- create the virtualenv
+- install this package in editable mode
 
 Then run `make` to see the options for running checks, tests etc.
 

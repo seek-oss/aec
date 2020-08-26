@@ -30,7 +30,7 @@ aec ec2 describe-images
 To launch a t2.medium instance named `lady gaga` with a 100gb EBS volume, with other settings read from the config file
 
 ```
-aec ec2 launch "lady gaga" ami-0bfe6b818fce462af --instance-type t2.medium --volume-size 100  
+aec ec2 launch "lady gaga" ami-0bfe6b818fce462af --instance-type t2.medium --volume-size 100
 ```
 
 Stop the instance
@@ -42,5 +42,5 @@ aec ec2 stop "lady gaga"
 By default, commands will use the default profile as specified in the config file. To list ec2 instances using the non-default config `us`
 
 ```
-aec ec2 describe --config us  
+aec ec2 describe --config us
 ```
