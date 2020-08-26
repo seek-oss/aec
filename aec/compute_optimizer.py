@@ -4,7 +4,7 @@ import boto3
 
 
 def over_provisioned(config: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """Return recommendations for over-provisioned EC2 instances."""
+    """Show recommendations for over-provisioned EC2 instances."""
 
     client = boto3.client("compute-optimizer", region_name=config["region"])
 
