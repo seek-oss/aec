@@ -23,7 +23,6 @@ tasks:
     input_paths:
       - setup.py
       - pyproject.toml
-      - .pylintrc
       - tests
       - aec
       - conf

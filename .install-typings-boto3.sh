@@ -20,7 +20,7 @@ for d in "$VIRTUAL_ENV"/lib/python*/site-packages/mypy_boto3/[!_]*/
 do
     service=$(basename "$d")
     echo "Installing pyright stubs into typings/ for $service"
- 
+
     mkdir -p typings/mypy_boto3/"$service"
     mkdir -p typings/mypy_boto3_"$service"
     for f in "$VIRTUAL_ENV"/lib/python*/site-packages/mypy_boto3/"$service"/*.py; do
