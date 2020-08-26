@@ -8,6 +8,7 @@ import aec.configure as configure
 import aec.display as display
 import aec.ec2 as ec2
 import aec.sqs as sqs
+import aec.compute_optimizer as compute_optimizer
 from aec.cli import Arg, Cmd
 
 config_arg = Arg("--config", help="Section of the config file to use")
@@ -73,6 +74,12 @@ sqs_cli = [
         Arg("--keep", type=str, help="Keep messages, don't delete them", default=False)
     ])
 ]
+
+compute_optimizer_cli = [
+    Cmd(compute_optimizer.over_provisioned, [
+        config_arg
+    ])
+]
 # fmt: on
 
 
@@ -83,6 +90,7 @@ def build_parser() -> argparse.ArgumentParser:
     cli.add_command_group(subparsers, "configure", "Configure subcommands", configure_cli)
     cli.add_command_group(subparsers, "ec2", "EC2 subcommands", ec2_cli, config.inject_config("~/.aec/ec2.toml"))
     cli.add_command_group(subparsers, "sqs", "SQS subcommands", sqs_cli, config.inject_config("~/.aec/sqs.toml"))
+    cli.add_command_group(subparsers, "co", "Compute optimizer subcommands", compute_optimizer_cli, config.inject_config("~/.aec/ec2.toml"))
 
     return parser
 

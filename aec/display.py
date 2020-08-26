@@ -74,6 +74,6 @@ def pretty_print(result):
 
         console.print(table)
     elif isinstance(result, dict):
-        console.print(json.dumps(result, default=str))
+        print(json.dumps(result, default=str))
     else:
-        console.print(result)
+        print(result)
