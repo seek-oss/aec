@@ -13,7 +13,7 @@ subcommands:
     over-provisioned  Show recommendations for over-provisioned EC2 instances.
 ```
 
-To show recommendations for over-provisioned instanctes:
+To show recommendations for over-provisioned instances:
 
 ```
 $ aec co over-provisioned
