@@ -187,6 +187,22 @@ def describe(config: Dict[str, Any], name: Optional[str] = None) -> List[Dict[st
     return sorted(instances, key=lambda i: i["State"] + str(i["Name"]))
 
 
+def describe_instances_names(config: Dict[str, Any]) -> Dict[str, Optional[str]]:
+    """List EC2 instance names in the region."""
+
+    ec2_client = boto3.client("ec2", region_name=config["region"])
+
+    response = ec2_client.describe_instances()
+
+    instances = {
+        i["InstanceId"]: first_or_else([t["Value"] for t in i.get("Tags", []) if t["Key"] == "Name"], None)
+        for r in response["Reservations"]
+        for i in r["Instances"]
+    }
+
+    return instances
+
+
 def start(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
     """Start EC2 instances by name."""
 

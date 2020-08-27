@@ -5,6 +5,7 @@ from typing import List
 import aec.command.compute_optimizer as compute_optimizer
 import aec.command.ec2 as ec2
 import aec.command.sqs as sqs
+import aec.command.ssm as ssm
 import aec.util.cli as cli
 import aec.util.config as config
 import aec.util.configure as configure
@@ -80,6 +81,12 @@ compute_optimizer_cli = [
         config_arg
     ])
 ]
+
+ssm_cli = [
+    Cmd(ssm.describe, [
+        config_arg
+    ])
+]
 # fmt: on
 
 
@@ -97,6 +104,7 @@ def build_parser() -> argparse.ArgumentParser:
         compute_optimizer_cli,
         config.inject_config("~/.aec/ec2.toml"),
     )
+    cli.add_command_group(subparsers, "ssm", "SSM subcommands", ssm_cli, config.inject_config("~/.aec/ec2.toml"))
 
     return parser
 
