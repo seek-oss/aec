@@ -1,4 +1,4 @@
-boto3-stubs[ec2,sqs]==1.14.46.0
+boto3-stubs[ec2,sqs,compute-optimizer]==1.14.46.0
 pyjq==2.4.0
 pytoml==0.1.21
 rich==5.2.1

@@ -16,7 +16,7 @@ subcommands:
 To drain the queue configured in the `app1` profile to `dlq.txt`, pretty printing the deleted messages:
 
 ```
-$ sqs drain --profile app1 dlq.txt
+$ aec sqs drain --profile app1 dlq.txt
 822167373.json	RequestId: 393e79a4-cee5-423f-8273-8ea10f1a1fc6 Process exited before completing request
 Drained 1 messages.
 ```
