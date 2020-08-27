@@ -5,7 +5,7 @@ import aec.command.ec2 as ec2
 
 
 def describe(config: Dict[str, Any]) -> List[Dict[str, Any]]:
-    """Describe instances with the SSM agent."""
+    """Describe instances running the SSM agent."""
 
     instances_names = ec2.describe_instances_names(config)
 
