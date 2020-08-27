@@ -18,10 +18,10 @@ To show recommendations for over-provisioned instances (eg: idle instances runni
 ```
 $ aec co over-provisioned
 
-  ID                    Name                                            Instance Type   Recommendation   Utilization
- ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  i-01579de1b005846cb   instance A                                      m5.4xlarge      r5.2xlarge       CPU MAX 4.0
-  i-070c800a592bc6d73   instance B                                      m5.large        t3.large         CPU MAX 47.0
-  i-0ad199cc5b65c621d   instance C                                      m5.xlarge       r5.large         CPU MAX 4.0
+  ID                    Name         Instance Type   Recommendation   Utilization
+ ─────────────────────────────────────────────────────────────────────────────────
+  i-01579de1b005846cb   instance A   m5.4xlarge      r5.2xlarge       CPU MAX 4.0
+  i-070c800a592bc6d73   instance B   m5.large        t3.large         CPU MAX 47.0
+  i-0ad199cc5b65c621d   instance C   m5.xlarge       r5.large         CPU MAX 4.0
 
 ```
