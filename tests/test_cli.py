@@ -1,9 +1,9 @@
 import argparse
 from typing import Any, Dict, Optional
 
-import aec.cli as cli
-import aec.config as config
-from aec.cli import Arg, Cmd
+import aec.util.cli as cli
+import aec.util.config as config
+from aec.util.cli import Arg, Cmd
 
 
 def test_cli_injects_config():
