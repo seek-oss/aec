@@ -1,10 +1,13 @@
 from typing import Any, Dict, List
 
 import boto3
+import aec.command.ec2 as ec2
 
 
 def describe(config: Dict[str, Any]) -> List[Dict[str, Any]]:
     """Describe instances with the SSM agent."""
+
+    instances_names = ec2.describe_instances_names(config)
 
     client = boto3.client("ssm", region_name=config["region"])
 
@@ -13,9 +16,10 @@ def describe(config: Dict[str, Any]) -> List[Dict[str, Any]]:
     instances = [
         {
             "ID": i["InstanceId"],
+            "Name": instances_names.get(i["InstanceId"], None),
             "PingStatus": i["PingStatus"],
-            "PlatformName": i["PlatformName"],
-            "PlatformVersion": i["PlatformVersion"],
+            "Platform": f'{i["PlatformName"]} {i["PlatformVersion"]}',
+            "AgentVersion": i["AgentVersion"],
         }
         for i in response["InstanceInformationList"]
     ]
