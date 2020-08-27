@@ -2,14 +2,14 @@ import argparse
 import sys
 from typing import List
 
-import aec.cli as cli
-import aec.compute_optimizer as compute_optimizer
-import aec.config as config
-import aec.configure as configure
-import aec.display as display
-import aec.ec2 as ec2
-import aec.sqs as sqs
-from aec.cli import Arg, Cmd
+import aec.util.cli as cli
+import aec.command.compute_optimizer as compute_optimizer
+import aec.util.config as config
+import aec.util.configure as configure
+import aec.util.display as display
+import aec.command.ec2 as ec2
+import aec.command.sqs as sqs
+from aec.util.cli import Arg, Cmd
 
 config_arg = Arg("--config", help="Section of the config file to use")
 
