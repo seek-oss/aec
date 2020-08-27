@@ -3,9 +3,9 @@ import sys
 from typing import List
 
 import aec.command.compute_optimizer as compute_optimizer
-import aec.command.ssm as ssm
 import aec.command.ec2 as ec2
 import aec.command.sqs as sqs
+import aec.command.ssm as ssm
 import aec.util.cli as cli
 import aec.util.config as config
 import aec.util.configure as configure

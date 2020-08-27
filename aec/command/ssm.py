@@ -1,6 +1,7 @@
 from typing import Any, Dict, List
 
 import boto3
+
 import aec.command.ec2 as ec2
 
 
@@ -25,4 +26,3 @@ def describe(config: Dict[str, Any]) -> List[Dict[str, Any]]:
     ]
 
     return instances
-

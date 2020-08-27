@@ -1,6 +1,6 @@
 import os
 import os.path
-from typing import Any, AnyStr, Dict, List, Optional, TypeVar, Union, cast
+from typing import Any, AnyStr, Dict, List, Optional, TypeVar, Union
 
 import boto3
 from mypy_boto3_ec2.type_defs import FilterTypeDef
@@ -185,6 +185,7 @@ def describe(config: Dict[str, Any], name: Optional[str] = None) -> List[Dict[st
     ]
 
     return sorted(instances, key=lambda i: i["State"] + str(i["Name"]))
+
 
 def describe_instances_names(config: Dict[str, Any]) -> Dict[str, Optional[str]]:
     """List EC2 instance names in the region."""
