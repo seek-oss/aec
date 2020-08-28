@@ -160,7 +160,9 @@ def launch(
     return describe(config=config, name=name)
 
 
-def describe(config: Dict[str, Any], name: Optional[str] = None) -> List[Dict[str, Any]]:
+def describe(
+    config: Dict[str, Any], name: Optional[str] = None, name_contains: Optional[str] = None
+) -> List[Dict[str, Any]]:
     """List EC2 instances in the region."""
 
     ec2_client = boto3.client("ec2", region_name=config["region"])
@@ -170,7 +172,7 @@ def describe(config: Dict[str, Any], name: Optional[str] = None) -> List[Dict[st
 
     # print(response["Reservations"][0]["Instances"][0])
 
-    instances = [
+    instances: List[Dict[str, Any]] = [
         {
             "State": i["State"]["Name"],
             "Name": first_or_else([t["Value"] for t in i.get("Tags", []) if t["Key"] == "Name"], None),
@@ -183,6 +185,9 @@ def describe(config: Dict[str, Any], name: Optional[str] = None) -> List[Dict[st
         for r in response["Reservations"]
         for i in r["Instances"]
     ]
+
+    if name_contains:
+        instances = [i for i in instances if i["Name"] and name_contains in i["Name"]]
 
     return sorted(instances, key=lambda i: i["State"] + str(i["Name"]))
 

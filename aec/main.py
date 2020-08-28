@@ -27,7 +27,8 @@ ec2_cli = [
     ]),
     Cmd(ec2.describe, [
         config_arg,
-        Arg("name", type=str, nargs='?', help="Filter to hosts with this Name tag")
+        Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag"),
+        Arg("-q", type=str, dest='name_contains', help="Filter to instances with a Name tag containing NAME_CONTAINS")
     ]),
     Cmd(ec2.describe_images, [
         config_arg,
