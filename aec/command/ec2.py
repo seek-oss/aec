@@ -172,7 +172,7 @@ def describe(
 
     # print(response["Reservations"][0]["Instances"][0])
 
-    instances = [
+    instances: List[Dict[str, Any]] = [
         {
             "State": i["State"]["Name"],
             "Name": first_or_else([t["Value"] for t in i.get("Tags", []) if t["Key"] == "Name"], None),
