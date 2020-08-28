@@ -111,6 +111,7 @@ def test_describe_by_name(mock_aws_config):
     assert len(instances) == 1
     assert instances[0]["Name"] == "alice"
 
+
 def test_describe_by_name_contains(mock_aws_config):
     launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
 
@@ -119,6 +120,7 @@ def test_describe_by_name_contains(mock_aws_config):
 
     assert len(instances) == 1
     assert instances[0]["Name"] == "alice"
+
 
 def describe_instance0(region_name, instance_id):
     ec2_client = boto3.client("ec2", region_name=region_name)

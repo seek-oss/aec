@@ -160,7 +160,9 @@ def launch(
     return describe(config=config, name=name)
 
 
-def describe(config: Dict[str, Any], name: Optional[str] = None, name_contains: Optional[str] = None) -> List[Dict[str, Any]]:
+def describe(
+    config: Dict[str, Any], name: Optional[str] = None, name_contains: Optional[str] = None
+) -> List[Dict[str, Any]]:
     """List EC2 instances in the region."""
 
     ec2_client = boto3.client("ec2", region_name=config["region"])
