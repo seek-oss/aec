@@ -27,7 +27,7 @@ ec2_cli = [
     ]),
     Cmd(ec2.describe, [
         config_arg,
-        Arg("--name", type=str, help="Filter to hosts with this Name tag")
+        Arg("name", type=str, nargs='?', help="Filter to hosts with this Name tag")
     ]),
     Cmd(ec2.describe_images, [
         config_arg,
