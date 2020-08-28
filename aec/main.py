@@ -29,10 +29,6 @@ ec2_cli = [
         config_arg,
         Arg("--name", type=str, help="Filter to hosts with this Name tag")
     ]),
-    Cmd(ec2.logs, [
-        config_arg,
-        Arg("name", type=str, help="Name of instance")
-    ]),
     Cmd(ec2.describe_images, [
         config_arg,
         Arg("--ami", type=str, help="Filter to this AMI id")
@@ -47,6 +43,10 @@ ec2_cli = [
         Arg("--instance-type", type=str, help="Instance type", default="t2.medium"),
         Arg("--key-name", type=str, help="Key name"),
         Arg("--userdata", type=str, help="Path to user data file")
+    ]),
+    Cmd(ec2.logs, [
+        config_arg,
+        Arg("name", type=str, help="Name of instance")
     ]),
     Cmd(ec2.modify, [
         config_arg,

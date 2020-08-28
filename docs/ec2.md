@@ -3,17 +3,20 @@
 To see the help, run `aec ec2 -h`
 
 ```
-usage: aec ec2 [-h] {delete-image,describe,describe-images,launch,modify,share-image,start,stop,terminate} ...
+usage: aec ec2 [-h]
+               {delete-image,describe,describe-images,launch,logs,modify,share-image,start,stop,terminate}
+               ...
 
 optional arguments:
   -h, --help            show this help message and exit
 
 subcommands:
-  {delete-image,describe,describe-images,launch,modify,share-image,start,stop,terminate}
+  {delete-image,describe,describe-images,launch,logs,modify,share-image,start,stop,terminate}
     delete-image        Deregister an AMI and delete its snapshot.
     describe            List EC2 instances in the region.
     describe-images     List AMIs.
     launch              Launch a tagged EC2 instance with an EBS volume.
+    logs                Show the system logs.
     modify              Change an instance's type.
     share-image         Share an AMI with another account.
     start               Start EC2 instances by name.
