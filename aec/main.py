@@ -44,6 +44,10 @@ ec2_cli = [
         Arg("--key-name", type=str, help="Key name"),
         Arg("--userdata", type=str, help="Path to user data file")
     ]),
+    Cmd(ec2.logs, [
+        config_arg,
+        Arg("name", type=str, help="Name of instance")
+    ]),
     Cmd(ec2.modify, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance"),

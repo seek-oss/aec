@@ -272,6 +272,22 @@ def modify(config: Dict[str, Any], name: str, type: str) -> List[Dict[str, Any]]
     return describe(config, name)
 
 
+def logs(config: Dict[str, Any], name: str) -> str:
+    """Show the system logs."""
+
+    ec2_client = boto3.client("ec2", region_name=config["region"])
+
+    instances = describe(config, name)
+
+    if not instances:
+        raise Exception(f"No instances named {name}")
+
+    instance_id = instances[0]["InstanceId"]
+    response = ec2_client.get_console_output(InstanceId=instance_id)
+
+    return response["Output"]
+
+
 def first_or_else(li: List[E], default: T) -> Union[E, T]:
     return li[0] if len(li) > 0 else default
 
