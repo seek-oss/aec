@@ -4,7 +4,18 @@ from moto import mock_ec2
 from moto.ec2 import ec2_backends
 from moto.ec2.models import AMIS
 
-from aec.command.ec2 import delete_image, describe, describe_images, launch, logs, modify, share_image, start, stop, terminate
+from aec.command.ec2 import (
+    delete_image,
+    describe,
+    describe_images,
+    launch,
+    logs,
+    modify,
+    share_image,
+    start,
+    stop,
+    terminate,
+)
 
 
 @pytest.fixture
@@ -145,10 +156,12 @@ def test_terminate(mock_aws_config):
 
     terminate(config=mock_aws_config, name="alice")
 
+
 def test_logs(mock_aws_config):
     launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
 
     logs(config=mock_aws_config, name="alice")
+
 
 def test_share_image(mock_aws_config):
     share_image(mock_aws_config, AMIS[0]["ami_id"], "123456789012")

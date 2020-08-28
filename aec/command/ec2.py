@@ -271,6 +271,7 @@ def modify(config: Dict[str, Any], name: str, type: str) -> List[Dict[str, Any]]
 
     return describe(config, name)
 
+
 def logs(config: Dict[str, Any], name: str) -> str:
     """Show the system logs."""
 
@@ -285,6 +286,7 @@ def logs(config: Dict[str, Any], name: str) -> str:
     response = ec2_client.get_console_output(InstanceId=instance_id)
 
     return response["Output"]
+
 
 def first_or_else(li: List[E], default: T) -> Union[E, T]:
     return li[0] if len(li) > 0 else default
