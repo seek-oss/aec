@@ -1,23 +1,16 @@
-import boto3
+
 import pytest
 from moto import mock_ec2
 from moto.ec2 import ec2_backends
 from moto.ec2.models import AMIS
 
+from aec.command.compute_optimizer import describe_instances_uptime
 from aec.command.ec2 import (
-    delete_image,
-    describe,
-    describe_images,
+
     launch,
-    logs,
-    modify,
-    share_image,
-    start,
-    stop,
-    terminate,
+ 
 )
 
-from aec.command.compute_optimizer import describe_instances_uptime
 
 @pytest.fixture
 def mock_aws_config():
@@ -36,6 +29,7 @@ def mock_aws_config():
         },
         "iam_instance_profile_arn": "test_profile",
     }
+
 
 def test_describe_instances_uptime(mock_aws_config):
     launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
