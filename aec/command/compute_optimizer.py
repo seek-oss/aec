@@ -1,10 +1,10 @@
+from datetime import datetime
 from typing import Any, Dict, List
 
 import boto3
-from mypy_boto3_compute_optimizer.type_defs import UtilizationMetricTypeDef
 import pytz
-from datetime import datetime
 from dateutil import relativedelta
+from mypy_boto3_compute_optimizer.type_defs import UtilizationMetricTypeDef
 
 
 def over_provisioned(config: Dict[str, Any]) -> List[Dict[str, Any]]:
@@ -68,4 +68,3 @@ def difference_in_words(date1: datetime, date2: datetime) -> str:
             words = f"{difference.seconds} seconds"
 
     return words
-
