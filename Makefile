@@ -71,3 +71,8 @@ test-dist: $(venv)
 
 	# recreate distribution package (sdist) and run aec help
 	$(venv)/bin/tox -v -r -e py
+
+test-dist-no-tox: $(venv) dist
+	$(venv)/bin/python3 -m venv --clear /tmp/aec-test-dist
+	/tmp/aec-test-dist/bin/pip install dist/*.tar.gz
+	/tmp/aec-test-dist/bin/aec ec2 -h
