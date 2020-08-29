@@ -60,6 +60,14 @@ install-hooks: .git/hooks/pre-commit .git/hooks/pre-push
 
 ## build source dist
 dist: $(src) setup.py MANIFEST.in
-	rm -rf aec.egg-info
-	rm -rf dist
-	python setup.py sdist
+	# remove previous build remnants
+	rm -rf *.egg-info
+	$(venv)/bin/python setup.py sdist
+
+## test the distribution is correctly packaged
+test-dist: $(venv)
+	# remove previous build remnants (tox builds in . so sees this too)
+	rm -rf *.egg-info
+
+	# recreate distribution package (sdist) and run aec help
+	$(venv)/bin/tox -v -r -e py
