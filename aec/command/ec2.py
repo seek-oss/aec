@@ -1,12 +1,11 @@
 import os
 import os.path
-from typing import Any, AnyStr, Dict, List, Optional, TypeVar, Union
+from typing import Any, AnyStr, Dict, List, Optional
 
 import boto3
 from mypy_boto3_ec2.type_defs import FilterTypeDef
 
-E = TypeVar("E")
-T = TypeVar("T")
+from aec.util.list import first_or_else
 
 
 def delete_image(config: Dict[str, Any], ami: str) -> None:
@@ -145,7 +144,7 @@ def launch(
     if userdata:
         kwargs["UserData"] = read_file(userdata)
 
-    region_name = ec2_client.meta.region_name            # type: ignore
+    region_name = ec2_client.meta.region_name  # type: ignore
 
     print(f"Launching a {instance_type} in {region_name} named {name} in " f"vpc {config['vpc']['name']}... ")
     response = ec2_client.run_instances(**kwargs)
@@ -277,10 +276,6 @@ def logs(config: Dict[str, Any], name: str) -> str:
     response = ec2_client.get_console_output(InstanceId=instance_id)
 
     return response["Output"]
-
-
-def first_or_else(li: List[E], default: T) -> Union[E, T]:
-    return li[0] if len(li) > 0 else default
 
 
 def read_file(filepath) -> AnyStr:

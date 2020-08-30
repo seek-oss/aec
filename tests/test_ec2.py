@@ -1,4 +1,5 @@
 import os
+
 import boto3
 import pytest
 from moto import mock_ec2
@@ -55,9 +56,10 @@ def test_launch_without_instance_profile(mock_aws_config):
 
 def test_launch_no_region_specified(mock_aws_config):
     del mock_aws_config["region"]
-    os.environ['AWS_DEFAULT_REGION'] = 'ap-southeast-2'
+    os.environ["AWS_DEFAULT_REGION"] = "ap-southeast-2"
     instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
     assert "amazonaws.com" in instances[0]["DnsName"]
+
 
 @pytest.mark.skip(reason="failing because of https://github.com/spulec/moto/pull/2651")
 def test_launch_without_public_ip_address(mock_aws_config):
