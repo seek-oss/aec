@@ -22,3 +22,6 @@ vpc = { name = "private B", subnet = "subnet-87654321",  security_group = ["sg-0
 
 # include these accounts when listing AMIs
 describe_images_owners = [ "self", "123456789012"]
+
+[no-region]
+# no region specified so will default to $AWS_DEFAULT_REGION, and then ~/.aws/config
