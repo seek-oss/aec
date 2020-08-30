@@ -21,7 +21,7 @@ def drain(config: Dict[str, Any], file_name: str, keep: bool = False) -> None:
         print(f"{file_name} already exists", file=sys.stderr)
         exit(1)
 
-    sqs_client = boto3.client("sqs", region_name=config["region"])
+    sqs_client = boto3.client("sqs", region_name=config.get("region", None))
 
     with open(file_name, "wb", buffering=0) as o:
         for message in receive_and_delete_messages(sqs_client, queue_url, keep):

@@ -15,7 +15,7 @@ def over_provisioned(config: Dict[str, Any]) -> List[Dict[str, Any]]:
 
     instances_uptime = describe_instances_uptime(config)
 
-    client = boto3.client("compute-optimizer", region_name=config["region"])
+    client = boto3.client("compute-optimizer", region_name=config.get("region", None))
 
     response = client.get_ec2_instance_recommendations(filters=[{"name": "Finding", "values": ["Overprovisioned"]}])
 
@@ -37,7 +37,7 @@ def over_provisioned(config: Dict[str, Any]) -> List[Dict[str, Any]]:
 def describe_instances_uptime(config: Dict[str, Any]) -> Dict[str, str]:
     """List EC2 instance uptimes in the region."""
 
-    ec2_client = boto3.client("ec2", region_name=config["region"])
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     response = ec2_client.describe_instances()
 
