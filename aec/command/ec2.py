@@ -144,7 +144,7 @@ def launch(
     if userdata:
         kwargs["UserData"] = read_file(userdata)
 
-    region_name = ec2_client.meta.region_name  # type: ignore
+    region_name = ec2_client.meta.region_name
 
     print(f"Launching a {instance_type} in {region_name} named {name} in " f"vpc {config['vpc']['name']}... ")
     response = ec2_client.run_instances(**kwargs)
