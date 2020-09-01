@@ -11,3 +11,4 @@ dist/
 .DS_Store
 typings/
 .tox/
+pip-wheel-metadata/
