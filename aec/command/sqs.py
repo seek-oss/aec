@@ -46,7 +46,10 @@ def receive_and_delete_messages(sqs_client, queue_url, keep):
     """
     while True:
         resp = sqs_client.receive_message(
-            QueueUrl=queue_url, AttributeNames=["All"], MessageAttributeNames=["All"], MaxNumberOfMessages=10,
+            QueueUrl=queue_url,
+            AttributeNames=["All"],
+            MessageAttributeNames=["All"],
+            MaxNumberOfMessages=10,
         )
 
         try:
