@@ -2,7 +2,7 @@
 default_stages: [push]
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.1.0
+    rev: v3.2.0
     hooks:
       - id: requirements-txt-fixer
       - id: trailing-whitespace
@@ -11,11 +11,11 @@ repos:
       - id: end-of-file-fixer
         stages: [push]
   - repo: https://github.com/ambv/black
-    rev: 19.10b0
+    rev: 20.8b1
     hooks:
       - id: black
   - repo: https://github.com/timothycrosley/isort
-    rev: 5.1.1
+    rev: 5.4.2
     hooks:
       - id: isort
   - repo: https://github.com/myint/docformatter
