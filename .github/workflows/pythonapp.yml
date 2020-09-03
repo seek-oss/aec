@@ -10,13 +10,13 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Set up Python 3.7
+      id: setup-python
       uses: actions/setup-python@v1
       with:
         python-version: 3.7
-      outputs:
-        version:
-          description: "python version"
-          value: ${{ installed.version }}
+    - name: installed python version
+      run: |
+        echo ${{ steps.setup-python.outputs.python-version }}
     - name: Cache virtualenv
       uses: actions/cache@v2
       with:
