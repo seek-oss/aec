@@ -24,6 +24,6 @@ setup(
         "rich==5.2.1",
     ],
     extras_require={
-        "dev": ["black==19.10b0", "flake8==3.8.3", "moto==1.3.14", "pre-commit==2.6.0", "pytest==6.0.1", "tox==3.19.0"]
+        "dev": ["black==19.10b0", "flake8==3.8.3", "moto==1.3.14", "pre-commit==2.7.1", "pytest==6.0.1", "tox==3.19.0"]
     },
 )
