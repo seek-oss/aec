@@ -12,3 +12,4 @@ dist/
 typings/
 .tox/
 pip-wheel-metadata/
+node_modules/
