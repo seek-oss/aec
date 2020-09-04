@@ -2,9 +2,6 @@ from pathlib import Path
 
 from setuptools import find_packages, setup
 
-install_requires = Path("requirements.txt").read_text()
-extras_dev = Path("requirements.dev.txt").read_text()
-
 long_description = Path("README.md").read_text()
 
 setup(
@@ -19,6 +16,14 @@ setup(
     python_requires=">=3.7",
     packages=find_packages(exclude=["tests"]),
     include_package_data=True,
-    install_requires=install_requires,
-    extras_require={"dev": extras_dev},
+    install_requires=[
+        "boto3-stubs[ec2,sqs,compute-optimizer,ssm]==1.14.52.1",
+        "pyjq==2.4.0",
+        "pytoml==0.1.21",
+        "pytz==2020.1",
+        "rich==5.2.1",
+    ],
+    extras_require={
+        "dev": ["black==19.10b0", "flake8==3.8.3", "moto==1.3.14", "pre-commit==2.6.0", "pytest==6.0.1", "tox==3.19.0"]
+    },
 )
