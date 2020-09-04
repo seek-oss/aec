@@ -18,8 +18,6 @@ $(pip):
 
 $(venv): requirements.* setup.py $(pip)
 	$(pip) install -e '.[dev]'
-	$(venv)/bin/nodeenv -p -n system -r requirements.node.dev.txt
-
 	touch $(venv)
 
 # install pyright stubs
@@ -38,9 +36,13 @@ check: lint pyright
 lint: install-hooks
 	$(venv)/bin/pre-commit run --all-files --hook-stage push flake8
 
+node_modules: package.json
+	npm install
+	touch node_modules
+
 ## pyright
-pyright: typings $(venv)
-	source $(venv)/bin/activate && pyright
+pyright: node_modules typings $(venv)
+	source $(venv)/bin/activate && node_modules/.bin/pyright
 
 ## run tests
 test: $(venv)
