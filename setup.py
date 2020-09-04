@@ -17,7 +17,7 @@ setup(
     packages=find_packages(exclude=["tests"]),
     include_package_data=True,
     install_requires=[
-        "boto3-stubs[ec2,sqs,compute-optimizer,ssm]==1.14.52.1",
+        "boto3-stubs[ec2,sqs,compute-optimizer,ssm]==1.14.55.2",
         "pyjq==2.4.0",
         "pytoml==0.1.21",
         "pytz==2020.1",
