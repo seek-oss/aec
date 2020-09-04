@@ -16,7 +16,7 @@ $(pip):
 	$(if $(value VIRTUAL_ENV),$(error Cannot create a virtualenv when running in a virtualenv. Please deactivate the current virtual env $(VIRTUAL_ENV)),)
 	python3 -m venv --clear $(venv)
 
-$(venv): requirements.* setup.py $(pip)
+$(venv): setup.py $(pip)
 	$(pip) install -e '.[dev]'
 	touch $(venv)
 
