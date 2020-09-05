@@ -66,7 +66,7 @@ def receive_and_delete_messages(sqs_client: SQSClient, queue_url: str, keep: boo
         entries = [{"Id": msg["MessageId"], "ReceiptHandle": msg["ReceiptHandle"]} for msg in resp["Messages"]]
 
         if not keep:
-            resp = sqs_client.delete_message_batch(QueueUrl=queue_url, Entries=entries)  # type: ignore
+            resp = sqs_client.delete_message_batch(QueueUrl=queue_url, Entries=entries)  # type: ignore see https://github.com/microsoft/pyright/issues/1008
 
             if len(resp["Successful"]) != len(entries):
                 raise RuntimeError(f"Failed to delete messages: entries={entries!r} resp={resp!r}")
