@@ -21,7 +21,7 @@ setup(
         "pyjq==2.4.0",
         "pytoml==0.1.21",
         "pytz==2020.1",
-        "rich==5.2.1",
+        "rich==6.0.0",
     ],
     extras_require={
         "dev": [
