@@ -8,11 +8,11 @@ from rich.table import Table
 
 def as_table(dicts: Optional[Sequence[Dict[str, Any]]], keys: Optional[List[str]] = None) -> List[List[Optional[str]]]:
     """
-    Converts a list of dictionaries to a nested list, ordered by specified keys.
+    Converts a list of dictionaries to a list of lists (table), ordered by specified keys.
 
     :param dicts: list of dictionaries
     :param keys: ordered list of keys to include in each row, or None to use the keys from the first dict
-    :return:
+    :return: list of lists, with None values if there's no value for a key
     """
     if not dicts:
         return []
@@ -23,12 +23,7 @@ def as_table(dicts: Optional[Sequence[Dict[str, Any]]], keys: Optional[List[str]
 
 
 def pretty_table(table: Optional[Sequence[Sequence[Optional[str]]]]) -> str:
-    """
-    Formats a table as a pretty string for printing.
-
-    :param table:
-    :return:
-    """
+    """Formats a table as a pretty string for printing."""
     if not table:
         return ""
 

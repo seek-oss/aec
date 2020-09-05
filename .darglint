@@ -1,0 +1,4 @@
+[darglint]
+strictness=long
+docstring_style=sphinx
+message_template={path}:{line} {msg_id}: {obj} {msg} 
