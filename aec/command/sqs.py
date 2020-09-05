@@ -1,10 +1,12 @@
 import json
 import os.path
 import sys
-from typing import Any, Dict
+from typing import Any, Dict, Iterator
 
 import boto3
 import pyjq as pyjq
+from mypy_boto3_sqs.client import SQSClient
+from mypy_boto3_sqs.type_defs import MessageTypeDef
 
 # TODO support multiple queues, via config rather than profile
 
@@ -34,15 +36,19 @@ def drain(config: Dict[str, Any], file_name: str, keep: bool = False) -> None:
     print("Drained " + str(count) + " messages.")
 
 
-def receive_and_delete_messages(sqs_client, queue_url, keep):
+def receive_and_delete_messages(sqs_client: SQSClient, queue_url: str, keep: bool) -> Iterator[MessageTypeDef]:
     """
-    Receives messages from an SQS queue.
+    Receives and yields messages from an SQS queue, before deleting them.
 
     Note: this continues to receive messages until the queue is empty.
     Every message on the queue will be deleted.
 
+    :param sqs_client: boto3 SQS client
     :param queue_url: URL of the SQS queue to drain.
     :param keep: keep message, don't delete them
+
+    :raises RuntimeError: if messages cannot be deleted
+    :yield: messages
     """
     while True:
         resp = sqs_client.receive_message(
@@ -60,7 +66,7 @@ def receive_and_delete_messages(sqs_client, queue_url, keep):
         entries = [{"Id": msg["MessageId"], "ReceiptHandle": msg["ReceiptHandle"]} for msg in resp["Messages"]]
 
         if not keep:
-            resp = sqs_client.delete_message_batch(QueueUrl=queue_url, Entries=entries)
+            resp = sqs_client.delete_message_batch(QueueUrl=queue_url, Entries=entries)  # type: ignore see https://github.com/microsoft/pyright/issues/1008
 
             if len(resp["Successful"]) != len(entries):
                 raise RuntimeError(f"Failed to delete messages: entries={entries!r} resp={resp!r}")

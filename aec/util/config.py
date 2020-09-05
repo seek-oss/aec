@@ -17,13 +17,14 @@ def inject_config(config_file: str) -> Callable[[Namespace], None]:
 
 
 # TODO add tests for this
-def load_config(config_file: str, profile_override: Optional[str] = None):
+def load_config(config_file: str, profile_override: Optional[str] = None) -> Dict[str, Any]:
     """
     Load profile from the config file.
 
-    :param config_file:
+    :param config_file: path to config file
     :param profile_override: override the value of the default profile in the config file
-    :return:
+    :raises Exception: if problem loading the config
+    :return: config dictionary
     """
     config_filepath = os.path.expanduser(config_file)
     config = load_user_config_file(config_filepath)
