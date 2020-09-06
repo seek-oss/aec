@@ -14,7 +14,7 @@ Currently supports the following AWS services:
 ## Prerequisites
 
 - python 3.7+
-- pip3
+  - Ubuntu: `sudo apt install python3 python3-pip python3-dev python3-venv`
 - automake & libtool:
   - Ubuntu: `sudo apt install automake libtool`
   - macOS: `brew install automake libtool`
