@@ -1,12 +1,12 @@
 import json
 import os.path
 import sys
-from typing import Any, Dict, Iterator
+from typing import Any, Dict, Iterator, List
 
 import boto3
 import pyjq as pyjq
 from mypy_boto3_sqs.client import SQSClient
-from mypy_boto3_sqs.type_defs import MessageTypeDef
+from mypy_boto3_sqs.type_defs import DeleteMessageBatchRequestEntryTypeDef, MessageTypeDef
 
 # TODO support multiple queues, via config rather than profile
 
@@ -63,10 +63,12 @@ def receive_and_delete_messages(sqs_client: SQSClient, queue_url: str, keep: boo
         except KeyError:
             return
 
-        entries = [{"Id": msg["MessageId"], "ReceiptHandle": msg["ReceiptHandle"]} for msg in resp["Messages"]]
+        entries: List[DeleteMessageBatchRequestEntryTypeDef] = [
+            {"Id": msg["MessageId"], "ReceiptHandle": msg["ReceiptHandle"]} for msg in resp["Messages"]
+        ]
 
         if not keep:
-            resp = sqs_client.delete_message_batch(QueueUrl=queue_url, Entries=entries)  # type: ignore see https://github.com/microsoft/pyright/issues/1008
+            resp = sqs_client.delete_message_batch(QueueUrl=queue_url, Entries=entries)
 
             if len(resp["Successful"]) != len(entries):
                 raise RuntimeError(f"Failed to delete messages: entries={entries!r} resp={resp!r}")
