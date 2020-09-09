@@ -278,6 +278,6 @@ def logs(config: Dict[str, Any], name: str) -> str:
     return response["Output"]
 
 
-def read_file(filepath) -> AnyStr:
+def read_file(filepath: str) -> AnyStr:
     with open(os.path.expanduser(filepath)) as file:
         return file.read()

@@ -46,7 +46,7 @@ def load_config(config_file: str, profile_override: Optional[str] = None) -> Dic
         raise Exception(f"Missing profile {profile_override} in {config_filepath}")
 
 
-def load_user_config_file(config_filepath) -> Dict[str, Any]:
+def load_user_config_file(config_filepath: str) -> Dict[str, Any]:
     if not os.path.isfile(config_filepath):
         raise Exception(f"No config file {config_filepath}")
 
