@@ -31,7 +31,8 @@ repos:
     hooks:
       - id: flake8
         additional_dependencies: [
-            'flake8-colors==0.1.6'
+            'flake8-colors==0.1.6',
+            'flake8-annotations==2.3.0'
         ]
         args: [--statistics,--count]
   # these hooks require the project's virtualenv so need to be local and language: system

@@ -48,7 +48,7 @@ def pretty_table(table: Optional[Sequence[Sequence[Optional[str]]]]) -> str:
     )
 
 
-def pretty_print(result):
+def pretty_print(result: Any) -> None:
     """print table/json, instead of showing a dict, or list of dicts."""
 
     console = Console()

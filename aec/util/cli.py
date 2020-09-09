@@ -6,7 +6,7 @@ from typing import Any, Callable, List, Optional
 
 
 class Arg:
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, *args: Any, **kwargs: Any):
         self.args = args
         self.kwargs = kwargs
 

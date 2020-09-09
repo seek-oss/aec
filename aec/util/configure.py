@@ -5,7 +5,7 @@ from importlib import resources
 namespace_kwargs = {"title": "configure commands", "description": "create config files in ~/.aec/"}
 
 
-def example():
+def example() -> None:
     """create example config files in ~/.aec/."""
 
     with resources.path("aec", "config-example") as example_path:
