@@ -6,7 +6,7 @@ exclude =
     dist,
     docs
 
-ignore = 
+ignore =
     # The following are ignored because they will be fixed by black/isort
     E101,E111,E114,E115,E116,E117,E12,E13,E2,E3,E401,E5,E70,W1,W2,W3,W5
     # allow untyped self and cls args, and no return type from dunder methods
