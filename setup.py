@@ -29,6 +29,7 @@ setup(
             "darglint==1.5.4",
             "flake8==3.8.3",
             "flake8-annotations==2.3.0",
+            "flake8-colors==0.1.6",
             "moto==1.3.14",
             "pre-commit==2.7.1",
             "pytest==6.0.1",
