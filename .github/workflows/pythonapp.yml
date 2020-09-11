@@ -17,8 +17,11 @@ jobs:
     - name: Cache virtualenv
       uses: actions/cache@v2
       with:
-        path: ~/.virtualenvs
+        path: venv
         key: ${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-venv-${{ hashFiles('setup.py') }}
+    - name: install
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: make install
     - uses: pre-commit/action@v2.0.0
       with:
         extra_args: --all-files --hook-stage push
