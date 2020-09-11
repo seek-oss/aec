@@ -1,10 +1,6 @@
 [flake8]
 max-line-length=120
-exclude =
-    .git,
-    __pycache__,
-    dist,
-    docs
+exclude = .git,__pycache__,node_modules,typings,.tox,build,dist,venv
 
 ignore =
     # The following are ignored because they will be fixed by black/isort
@@ -12,10 +8,14 @@ ignore =
     # allow untyped self and cls args, and no return type from dunder methods
     ANN101, ANN102, ANN204
 
+# test functions don't need type annotations
+per-file-ignores = tests/*:ANN001,ANN201
+
 # flake8-colors
 format = ${cyan}%(path)s${reset}:${yellow_bold}%(row)d${reset}:${green_bold}%(col)d${reset}: ${red_bold}%(code)s${reset} %(text)s
 
 max-complexity = 10
 
-# test functions don't need type annotations
-per-file-ignores = tests/*:ANN001,ANN201
+
+statistics = True
+count = True

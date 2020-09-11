@@ -9,10 +9,14 @@ repos:
         stages: [push]
       - id: end-of-file-fixer
         stages: [push]
-  - repo: https://github.com/ambv/black
-    rev: 20.8b1
+  # we want vscode/the cli to use black too so it has been installed into the virtualenv
+  - repo: local
     hooks:
       - id: black
+        name: black
+        entry: venv/bin/black
+        language: system
+        types: [python]
   - repo: https://github.com/timothycrosley/isort
     rev: 5.4.2
     hooks:
@@ -22,20 +26,15 @@ repos:
     hooks:
       - id: docformatter
         args: [--wrap-summaries,'120',--wrap-descriptions,'120',--pre-summary-newline,--in-place]
-  - repo: https://github.com/terrencepreilly/darglint
-    rev: v1.5.4
-    hooks:
-      - id: darglint
-  - repo: https://gitlab.com/pycqa/flake8
-    rev: 3.8.3
+  # we want vscode/the cli to use flake8 too so it has been installed into the virtualenv
+  - repo: local
     hooks:
       - id: flake8
-        additional_dependencies: [
-            'flake8-colors==0.1.6',
-            'flake8-annotations==2.3.0'
-        ]
-        args: [--statistics,--count]
-  # these hooks require the project's virtualenv so need to be local and language: system
+        name: flake8
+        entry: venv/bin/flake8
+        language: system
+        types: [python]
+  # these hooks require the project's virtualenv and need to run on all files
   - repo: local
     hooks:
       - id: pyright
