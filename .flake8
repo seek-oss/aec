@@ -16,6 +16,6 @@ format = ${cyan}%(path)s${reset}:${yellow_bold}%(row)d${reset}:${green_bold}%(co
 
 max-complexity = 10
 
-
+# print stats & count
 statistics = True
 count = True
