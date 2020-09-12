@@ -1,7 +1,7 @@
 MAKEFLAGS += --warn-undefined-variables
 SHELL = /bin/bash -o pipefail
 .DEFAULT_GOAL := help
-.PHONY: help install test lint check hooks install-hooks
+.PHONY: help install check flake8 pyright test hooks install-hooks
 
 ## display help message
 help:
@@ -28,7 +28,7 @@ typings: $(venv)
 	touch typings
 
 ## create venv, install this package in dev mode, create stubs, and install hooks (if not in CI)
-install: $(venv) typings $(if $(value CI),,install-hooks)
+install: $(venv) node_modules typings $(if $(value CI),,install-hooks)
 
 ## lint code and run static type check
 check: flake8 pyright
@@ -50,7 +50,7 @@ test: $(venv)
 	$(venv)/bin/pytest
 
 ## run pre-commit git hooks on all files
-hooks: install-hooks
+hooks: install-hooks $(venv)
 	$(venv)/bin/pre-commit run --all-files --hook-stage push
 
 install-hooks: .git/hooks/pre-commit .git/hooks/pre-push

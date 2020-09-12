@@ -1,4 +1,4 @@
-image: python:3.6-slim
+image: python:3.7-slim
 tasks:
   packages-update:
     command:
@@ -7,29 +7,41 @@ tasks:
     dependencies:
       - packages-update
     command:
-      apt-get install -y gcc automake make libtool git
-  install-reqs:
+      apt-get install -y gcc automake make libtool git curl
+  install-node:
     dependencies:
       - packages-install
+    command: |
+      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+      . ~/.nvm/nvm.sh
+      nvm install node
+  install:
+    dependencies:
+      - install-node
     input_paths:
       - Makefile
-      - requirements.txt
-      - requirements.dev.txt
-    command: |
-      make install-reqs
-  lint:
-    dependencies:
-      - install-reqs
-    input_paths:
       - setup.py
-      - pyproject.toml
-      - tests
-      - aec
-      - conf
-    command:
-      make lint
-  test:
+      - README.md
+      - package.json
+      - package-lock.json
+      - .install-typings-boto3.sh
+    environment:
+      CI: true
+    command: |
+      . ~/.nvm/nvm.sh
+      make install
+  check-test:
     dependencies:
-      - lint
-    command:
-      make test
+      - install
+    input_paths:
+      - .darglint
+      - .flake8
+      - pyproject.toml
+      - pyrightconfig.json
+      - aec/
+      - tests/
+    environment:
+      CI: true
+    command: |
+      . ~/.nvm/nvm.sh
+      make check test
