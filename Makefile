@@ -9,7 +9,7 @@ help:
 
 venv = venv
 pip := $(venv)/bin/pip
-src := aec tests
+src := src tests
 
 $(pip):
 	# create empty virtualenv containing pip
@@ -63,17 +63,18 @@ install-hooks: .git/hooks/pre-commit .git/hooks/pre-push
 
 ## build source dist
 dist: $(src) setup.py MANIFEST.in
-	# remove previous build remnants
-	rm -rf *.egg-info
 	$(venv)/bin/python setup.py sdist
+
+	# clean up after ourselves (see setuptools/#2347)
+	rm -rf src/*.egg-info
 
 ## test the distribution is correctly packaged
 test-dist: $(venv)
-	# remove previous build remnants (tox builds in . so sees this too)
-	rm -rf *.egg-info
-
 	# recreate distribution package (sdist) and run aec help
 	$(venv)/bin/tox -v -r -e py
+
+	# clean up after ourselves (see setuptools/#2347)
+	rm -rf src/*.egg-info
 
 test-dist-no-tox: $(venv) dist
 	$(venv)/bin/python3 -m venv --clear /tmp/aec-test-dist
