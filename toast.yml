@@ -29,6 +29,7 @@ tasks:
       CI: true
     command: |
       . ~/.nvm/nvm.sh
+      mkdir src
       make install
   check-test:
     dependencies:
@@ -38,7 +39,7 @@ tasks:
       - .flake8
       - pyproject.toml
       - pyrightconfig.json
-      - aec/
+      - src/aec/
       - tests/
     environment:
       CI: true
