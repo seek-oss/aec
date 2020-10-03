@@ -30,7 +30,7 @@ setup(
             "flake8==3.8.3",
             "flake8-annotations==2.4.1",
             "flake8-colors==0.1.6",
-            "moto==1.3.14",
+            "moto==1.3.16",
             "pre-commit==2.7.1",
             "pytest==6.1.0",
             "tox==3.20.0",
