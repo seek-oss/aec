@@ -17,7 +17,9 @@ def test_cli_injects_config():
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
-    cli.add_command_group(subparsers, "food", "food help", cmds, config.inject_config("aec/config-example/ec2.toml"))
+    cli.add_command_group(
+        subparsers, "food", "food help", cmds, config.inject_config("src/aec/config-example/ec2.toml")
+    )
 
     cli.dispatch(parser, args=["food", "eat", "cheese", "--temp", "warm", "--config", "us"])
     cli.dispatch(parser, args=["food", "eat", "cheese", "--config", "us", "--temp", "warm"])

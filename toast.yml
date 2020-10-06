@@ -25,6 +25,7 @@ tasks:
       - package.json
       - package-lock.json
       - .install-typings-boto3.sh
+      - src/
     environment:
       CI: true
     command: |
@@ -38,7 +39,6 @@ tasks:
       - .flake8
       - pyproject.toml
       - pyrightconfig.json
-      - aec/
       - tests/
     environment:
       CI: true

@@ -1,9 +1,8 @@
 {
     "include": [
-        "aec",
+        "src",
         "tests"
     ],
     "strictDictionaryInference": true,
-    "strictParameterNoneValue": true,
-    "useLibraryCodeForTypes": false
+    "strictParameterNoneValue": true
 }

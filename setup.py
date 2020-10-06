@@ -6,7 +6,7 @@ long_description = Path("README.md").read_text()
 
 setup(
     name="aec",
-    version="0.4.7",
+    version="0.4.8",
     description="AWS Easy CLI",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -14,7 +14,8 @@ setup(
     license="MIT",
     entry_points={"console_scripts": ["aec = aec.main:main"]},
     python_requires=">=3.7",
-    packages=find_packages(exclude=["tests"]),
+    packages=find_packages(where="src"),
+    package_dir={"": "src"},
     include_package_data=True,
     install_requires=[
         "boto3-stubs[ec2,sqs,compute-optimizer,ssm]==1.14.52.1",
