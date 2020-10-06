@@ -25,11 +25,11 @@ tasks:
       - package.json
       - package-lock.json
       - .install-typings-boto3.sh
+      - src/
     environment:
       CI: true
     command: |
       . ~/.nvm/nvm.sh
-      mkdir src
       make install
   check-test:
     dependencies:
@@ -39,7 +39,6 @@ tasks:
       - .flake8
       - pyproject.toml
       - pyrightconfig.json
-      - src/aec/
       - tests/
     environment:
       CI: true
