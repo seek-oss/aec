@@ -3,6 +3,7 @@
         "src",
         "tests"
     ],
+    "strictListInference": true,
     "strictDictionaryInference": true,
     "strictParameterNoneValue": true
 }

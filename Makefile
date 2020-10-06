@@ -30,11 +30,16 @@ typings: $(venv)
 ## create venv, install this package in dev mode, create stubs, and install hooks (if not in CI)
 install: $(venv) node_modules typings $(if $(value CI),,install-hooks)
 
+## format all code
+format: $(venv)
+	$(venv)/bin/black .
+	$(venv)/bin/isort .
+
 ## lint code and run static type check
-check: flake8 pyright
+check: lint pyright
 
 ## lint using flake8
-flake8: $(venv)
+lint: $(venv)
 	$(venv)/bin/flake8
 
 node_modules: package.json
