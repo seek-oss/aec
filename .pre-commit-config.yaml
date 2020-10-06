@@ -9,7 +9,7 @@ repos:
         stages: [push]
       - id: end-of-file-fixer
         stages: [push]
-  # vscode/the cli uses black too so it has been installed into the virtualenv
+  # vscode/the cli uses black/isort too so it has been installed into the virtualenv
   - repo: local
     hooks:
       - id: black
@@ -17,10 +17,11 @@ repos:
         entry: venv/bin/black
         language: system
         types: [python]
-  - repo: https://github.com/timothycrosley/isort
-    rev: 5.4.2
-    hooks:
       - id: isort
+        name: isort
+        entry: venv/bin/isort
+        language: system
+        types: [python]
   - repo: https://github.com/myint/docformatter
     rev: v1.3.1
     hooks:
@@ -34,18 +35,20 @@ repos:
         entry: venv/bin/flake8
         language: system
         types: [python]
-  # these hooks require the project's virtualenv and need to run on all files
+  # these hooks require the project's virtualenv
   - repo: local
     hooks:
       - id: pyright
         name: pyright
         entry: make pyright
+        # run on all files
         pass_filenames: false
         language: system
         types: [python]
       - id: test
         name: test
         entry: make test
+        # run on all files
         pass_filenames: false
         language: system
         types: [python]
