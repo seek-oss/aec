@@ -27,7 +27,7 @@ setup(
     extras_require={
         "dev": [
             "black==20.8b1",
-            "darglint==1.5.4",
+            "darglint==1.5.5",
             # pin importlib_metadata to avoid conflict, must be <2
             "importlib_metadata==1.7.0",
             "isort==5.5.4",
