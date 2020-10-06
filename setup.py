@@ -29,7 +29,7 @@ setup(
             "black==20.8b1",
             "darglint==1.5.4",
             # pin importlib_metadata to avoid conflict, must be <2
-            "importlib_metadata==1.7.0",
+            "importlib_metadata==2.0.0",
             "isort==5.5.4",
             "flake8==3.8.4",
             "flake8-annotations==2.4.1",
