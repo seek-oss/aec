@@ -162,7 +162,10 @@ def launch(
 
 
 def describe(
-    config: Dict[str, Any], name: Optional[str] = None, name_contains: Optional[str] = None
+    config: Dict[str, Any],
+    name: Optional[str] = None,
+    name_contains: Optional[str] = None,
+    include_terminated: bool = False,
 ) -> List[Dict[str, Any]]:
     """List EC2 instances in the region."""
 
@@ -185,6 +188,7 @@ def describe(
         }
         for r in response["Reservations"]
         for i in r["Instances"]
+        if include_terminated or i["State"]["Name"] != "terminated"
     ]
 
     if name_contains:
