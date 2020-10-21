@@ -131,6 +131,21 @@ def test_describe_by_name_contains(mock_aws_config):
     assert instances[0]["Name"] == "alice"
 
 
+def test_describe_terminated(mock_aws_config):
+    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    launch(mock_aws_config, "sam", AMIS[0]["ami_id"])
+    terminate(mock_aws_config, "sam")
+
+    # by default don't show terminated instances
+    instances = describe(config=mock_aws_config)
+    assert len(instances) == 1
+    assert instances[0]["Name"] == "alice"
+
+    # when requested, show terminated instances
+    instances = describe(config=mock_aws_config, include_terminated=True)
+    assert len(instances) == 2
+
+
 def describe_instance0(region_name, instance_id):
     ec2_client = boto3.client("ec2", region_name=region_name)
     instances = ec2_client.describe_instances(InstanceIds=[instance_id])
