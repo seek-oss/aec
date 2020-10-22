@@ -121,10 +121,10 @@ def test_describe_by_name(mock_aws_config):
     assert instances[0]["Name"] == "alice"
 
 
-def test_describe_by_name_contains(mock_aws_config):
+def test_describe_by_name_match(mock_aws_config):
     launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
 
-    instances = describe(config=mock_aws_config, name_contains="lic")
+    instances = describe(config=mock_aws_config, name_match="lic")
     print(instances)
 
     assert len(instances) == 1
@@ -164,12 +164,12 @@ def test_describe_images(mock_aws_config):
     assert images[1]["Name"] == "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20170721"
 
 
-def test_describe_images_name_contains(mock_aws_config):
+def test_describe_images_name_match(mock_aws_config):
     # describe images defined by moto
     # see https://github.com/spulec/moto/blob/master/moto/ec2/resources/amis.json
     canonical_account_id = "099720109477"
     mock_aws_config["describe_images_owners"] = canonical_account_id
-    images = describe_images(config=mock_aws_config, name_contains="*trusty*")
+    images = describe_images(config=mock_aws_config, name_match="*trusty*")
 
     assert len(images) == 1
     assert images[0]["Name"] == "ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-20170727"

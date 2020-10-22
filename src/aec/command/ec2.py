@@ -38,7 +38,7 @@ def share_image(config: Dict[str, Any], ami: str, account: str) -> None:
 def describe_images(
     config: Dict[str, Any],
     ami: Optional[str] = None,
-    name_contains: Optional[str] = None,
+    name_match: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """List AMIs."""
 
@@ -56,12 +56,10 @@ def describe_images(
         else:
             owners: List[str] = describe_images_owners
 
-        if name_contains is None:
-            name_contains = config.get("describe_images_name_contains", None)
+        if name_match is None:
+            name_match = config.get("describe_images_name_match", None)
 
-        filters: List[FilterTypeDef] = (
-            [] if name_contains is None else [{"Name": "name", "Values": [f"*{name_contains}*"]}]
-        )
+        filters: List[FilterTypeDef] = [] if name_match is None else [{"Name": "name", "Values": [f"*{name_match}*"]}]
 
         response = ec2_client.describe_images(Owners=owners, Filters=filters)
 
@@ -175,7 +173,7 @@ def launch(
 def describe(
     config: Dict[str, Any],
     name: Optional[str] = None,
-    name_contains: Optional[str] = None,
+    name_match: Optional[str] = None,
     include_terminated: bool = False,
 ) -> List[Dict[str, Any]]:
     """List EC2 instances in the region."""
@@ -185,8 +183,8 @@ def describe(
     filters: List[FilterTypeDef] = []
     if name:
         filters = [{"Name": "tag:Name", "Values": [name]}]
-    elif name_contains:
-        filters = [{"Name": "tag:Name", "Values": [f"*{name_contains}*"]}]
+    elif name_match:
+        filters = [{"Name": "tag:Name", "Values": [f"*{name_match}*"]}]
 
     response = ec2_client.describe_instances(Filters=filters)
 
