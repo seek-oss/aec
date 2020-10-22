@@ -40,9 +40,11 @@ To get started, run `aec configure example` to install the [example config files
 For even faster access to aec subcommands, you may like to add the following aliases to your .bashrc:
 
 ```
-alias ec2='aec ec2'
-alias sqs='aec sqs'
+alias ec2='COLUMNS=$COLUMNS aec ec2'
+alias sqs='COLUMNS=$COLUMNS aec sqs'
 ```
+
+`COLUMNS=$COLUMNS` will ensure output is formatted to the width of your terminal when piped.
 
 ## Development
 
