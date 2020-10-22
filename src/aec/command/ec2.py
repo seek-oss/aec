@@ -35,7 +35,11 @@ def share_image(config: Dict[str, Any], ami: str, account: str) -> None:
     )
 
 
-def describe_images(config: Dict[str, Any], ami: Optional[str] = None) -> List[Dict[str, Any]]:
+def describe_images(
+    config: Dict[str, Any],
+    ami: Optional[str] = None,
+    name_contains: Optional[str] = None,
+) -> List[Dict[str, Any]]:
     """List AMIs."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -52,7 +56,14 @@ def describe_images(config: Dict[str, Any], ami: Optional[str] = None) -> List[D
         else:
             owners: List[str] = describe_images_owners
 
-        response = ec2_client.describe_images(Owners=owners)
+        if name_contains is None:
+            name_contains = config.get("describe_images_name_contains", None)
+
+        filters: List[FilterTypeDef] = (
+            [] if name_contains is None else [{"Name": "name", "Values": [f"*{name_contains}*"]}]
+        )
+
+        response = ec2_client.describe_images(Owners=owners, Filters=filters)
 
     images = [
         {
@@ -171,7 +182,12 @@ def describe(
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    filters: List[FilterTypeDef] = [] if name is None else [{"Name": "tag:Name", "Values": [name]}]
+    filters: List[FilterTypeDef] = []
+    if name:
+        filters = [{"Name": "tag:Name", "Values": [name]}]
+    elif name_contains:
+        filters = [{"Name": "tag:Name", "Values": [f"*{name_contains}*"]}]
+
     response = ec2_client.describe_instances(Filters=filters)
 
     # print(response["Reservations"][0]["Instances"][0])
@@ -190,9 +206,6 @@ def describe(
         for i in r["Instances"]
         if include_terminated or i["State"]["Name"] != "terminated"
     ]
-
-    if name_contains:
-        instances = [i for i in instances if i["Name"] and name_contains in i["Name"]]
 
     return sorted(instances, key=lambda i: i["State"] + str(i["Name"]))
 
