@@ -30,10 +30,10 @@ To list AMIs (owned by accounts specified in the config file)
 aec ec2 describe-images
 ```
 
-To launch a t2.medium instance named `lady gaga` with a 100gb EBS volume, with other settings read from the config file
+To launch a t2.medium instance named `lady gaga` with a 50gb EBS volume, with other settings read from the config file
 
 ```
-aec ec2 launch "lady gaga" ami-0bfe6b818fce462af --instance-type t2.medium --volume-size 100
+aec ec2 launch "lady gaga" ubuntu1804 --instance-type t2.medium --volume-size 50
 ```
 
 Stop the instance

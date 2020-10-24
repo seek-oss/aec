@@ -74,9 +74,7 @@ def describe_images(
 
         filters: List[FilterTypeDef] = [] if name_match is None else [{"Name": "name", "Values": [f"*{name_match}*"]}]
 
-        print(
-            f"Describing images owned by {owners_filter} with name matching {name_match if name_match else '*'}"
-        )
+        print(f"Describing images owned by {owners_filter} with name matching {name_match if name_match else '*'}")
         response = ec2_client.describe_images(Owners=owners_filter, Filters=filters)
 
     images: List[Image] = [
@@ -196,7 +194,9 @@ def launch(
 
     region_name = ec2_client.meta.region_name
 
-    print(f"Launching a {instance_type} in {region_name} named {name} in " f"vpc {config['vpc']['name']}... ")
+    print(
+        f"Launching a {instance_type} in {region_name} vpc {config['vpc']['name']} named {name} using {image['Name']} ... "
+    )
     response = ec2_client.run_instances(**kwargs)
 
     instance = response["Instances"][0]
