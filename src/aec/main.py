@@ -3,7 +3,8 @@ import sys
 from typing import List
 
 import aec.command.compute_optimizer as compute_optimizer
-import aec.command.ec2 as ec2
+import aec.command.ec2_images as ec2_images
+import aec.command.ec2_instances as ec2_instances
 import aec.command.sqs as sqs
 import aec.command.ssm as ssm
 import aec.util.cli as cli
@@ -16,8 +17,10 @@ config_arg = Arg("--config", help="Section of the config file to use")
 
 
 def ami_arg_checker(s: str) -> str:
-    if not (s.startswith("ami-") or s in ec2.ami_keywords.keys()):
-        raise argparse.ArgumentTypeError(f"must begin with 'ami-' or be one of {[k for k in ec2.ami_keywords.keys()]}")
+    if not (s.startswith("ami-") or s in ec2_images.ami_keywords.keys()):
+        raise argparse.ArgumentTypeError(
+            f"must begin with 'ami-' or be one of {[k for k in ec2_images.ami_keywords.keys()]}"
+        )
     return s
 
 
@@ -28,56 +31,56 @@ configure_cli = [
 ]
 
 ec2_cli = [
-    Cmd(ec2.delete_image, [
+    Cmd(ec2_images.delete_image, [
         config_arg,
         Arg("ami", type=str, help="AMI id")
     ]),
-    Cmd(ec2.describe, [
+    Cmd(ec2_instances.describe, [
         config_arg,
         Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag."),
         Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
         Arg("-it", "--include-terminated", action='store_true', dest='name_match', help="Include terminated instances"),
     ]),
-    Cmd(ec2.describe_images, [
+    Cmd(ec2_images.describe_images, [
         config_arg,
         Arg("--ami", type=str, help="Filter to this AMI id"),
         Arg("--owner", type=str, help="Filter to this owning account"),
         Arg("-q", type=str, dest='name_match', help="Filter to images with a name containing NAME_MATCH."),
         Arg("--show-snapshot-id", action='store_true', help="Show snapshot id")
     ]),
-    Cmd(ec2.launch, [
+    Cmd(ec2_instances.launch, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance"),
-        Arg("ami", type=ami_arg_checker, help=f"AMI id or a one of the keywords {[k for k in ec2.ami_keywords.keys()]}"),
+        Arg("ami", type=ami_arg_checker, help=f"AMI id or a one of the keywords {[k for k in ec2_images.ami_keywords.keys()]}"),
         Arg("--volume-size", type=int, help="EBS volume size (GB)", default=100),
         Arg("--encrypted", type=bool, help="Whether the EBS volume is encrypted", default=True),
         Arg("--instance-type", type=str, help="Instance type", default="t2.medium"),
         Arg("--key-name", type=str, help="Key name"),
         Arg("--userdata", type=str, help="Path to user data file")
     ]),
-    Cmd(ec2.logs, [
+    Cmd(ec2_instances.logs, [
         config_arg,
         Arg("name", type=str, help="Name of instance")
     ]),
-    Cmd(ec2.modify, [
+    Cmd(ec2_instances.modify, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance"),
         Arg("type", type=str, help="Type of instance")
     ]),
-    Cmd(ec2.share_image, [
+    Cmd(ec2_images.share_image, [
         config_arg,
         Arg("ami", type=str, help="AMI id"),
         Arg("account", type=str, help="Account id"),
     ]),
-    Cmd(ec2.start, [
+    Cmd(ec2_instances.start, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance")
     ]),
-    Cmd(ec2.stop, [
+    Cmd(ec2_instances.stop, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance")
     ]),
-    Cmd(ec2.terminate, [
+    Cmd(ec2_instances.terminate, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance")
     ])
