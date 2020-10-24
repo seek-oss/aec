@@ -4,6 +4,8 @@ from typing import Any, AnyStr, Dict, List, NamedTuple, Optional
 
 import boto3
 from mypy_boto3_ec2.type_defs import FilterTypeDef
+from rich import print
+from typing_extensions import TypedDict
 
 from aec.util.list import first_or_else
 
@@ -13,7 +15,7 @@ def delete_image(config: Dict[str, Any], ami: str) -> None:
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    response = describe_images(config, ami)
+    response = describe_images(config, ami, show_snapshot_id=True)
 
     ec2_client.deregister_image(ImageId=ami)
 
@@ -35,12 +37,20 @@ def share_image(config: Dict[str, Any], ami: str, account: str) -> None:
     )
 
 
+Image = TypedDict(
+    "Image",
+    {"Name": Optional[str], "ImageId": str, "CreationDate": str, "RootDeviceName": str, "SnapshotId": str},
+    total=False,
+)
+
+
 def describe_images(
     config: Dict[str, Any],
     ami: Optional[str] = None,
     owner: Optional[str] = None,
     name_match: Optional[str] = None,
-) -> List[Dict[str, Any]]:
+    show_snapshot_id: bool = False,
+) -> List[Image]:
     """List AMIs."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -65,26 +75,37 @@ def describe_images(
 
         filters: List[FilterTypeDef] = [] if name_match is None else [{"Name": "name", "Values": [f"*{name_match}*"]}]
 
+        print(
+            f"Describing images owned by {owners_filter} with name matching [not bold green]{name_match if name_match else '*'}[/not bold green]"
+        )
         response = ec2_client.describe_images(Owners=owners_filter, Filters=filters)
 
-    images = [
+    images: List[Image] = [
         {
             "Name": i.get("Name", None),
             "ImageId": i["ImageId"],
             "CreationDate": i["CreationDate"],
-            "SnapshotId": i["BlockDeviceMappings"][0]["Ebs"]["SnapshotId"] if i["BlockDeviceMappings"] else None,
+            "RootDeviceName": i["RootDeviceName"],
         }
         for i in response["Images"]
     ]
 
+    images = []
+    for i in response["Images"]:
+        image: Image = {
+            "Name": i.get("Name", None),
+            "ImageId": i["ImageId"],
+            "CreationDate": i["CreationDate"],
+            "RootDeviceName": i["RootDeviceName"],
+        }
+        if show_snapshot_id:
+            image["SnapshotId"] = i["BlockDeviceMappings"][0]["Ebs"]["SnapshotId"]
+        images.append(image)
+
     return sorted(images, key=lambda i: i["CreationDate"], reverse=True)
 
 
-root_devices = {"amazon": "/dev/xvda", "ubuntu": "/dev/sda1"}
-
-
 class AmiMatcher(NamedTuple):
-    dist: str
     owner: str
     match_string: str
 
@@ -93,10 +114,10 @@ amazon_base_account_id = "137112412989"
 canonical_account_id = "099720109477"
 
 ami_keywords = {
-    "amazon2": AmiMatcher("amazon", amazon_base_account_id, "amzn2-ami-hvm*x86_64-gp2"),
-    "ubuntu1604": AmiMatcher("ubuntu", canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64"),
-    "ubuntu1804": AmiMatcher("ubuntu", canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64"),
-    "ubuntu2004": AmiMatcher("ubuntu", canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64"),
+    "amazon2": AmiMatcher(amazon_base_account_id, "amzn2-ami-hvm*x86_64-gp2"),
+    "ubuntu1604": AmiMatcher(canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64"),
+    "ubuntu1804": AmiMatcher(canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64"),
+    "ubuntu2004": AmiMatcher(canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64"),
 }
 
 
@@ -104,7 +125,6 @@ def launch(
     config: Dict[str, Any],
     name: str,
     ami: str,
-    dist: str = "amazon",
     volume_size: int = 100,
     encrypted: bool = True,
     instance_type: str = "t2.medium",
@@ -127,22 +147,11 @@ def launch(
     if not key_name:
         key_name = config["key_name"]
 
-    ami_matcher = ami_keywords.get(ami, None)
-    if ami_matcher:
-        dist = ami_matcher.dist
-        try:
-            # lookup the latest ami
-            ami = describe_images(config, owner=ami_matcher.owner, name_match=ami_matcher.match_string)[0]["ImageId"]
-        except IndexError:
-            raise RuntimeError(
-                f"Could not find ami with name matching {ami_matcher.match_string} owned by account {ami_matcher.owner}"
-            )
-
-    root_device = root_devices[dist]
+    image = fetch_image(config, ami)
 
     # TODO: support multiple subnets
     kwargs: Dict[str, Any] = {
-        "ImageId": ami,
+        "ImageId": image["ImageId"],
         "MaxCount": 1,
         "MinCount": 1,
         "KeyName": key_name,
@@ -161,7 +170,7 @@ def launch(
         ],
         "BlockDeviceMappings": [
             {
-                "DeviceName": root_device,
+                "DeviceName": image["RootDeviceName"],
                 "Ebs": {
                     "VolumeSize": volume_size,
                     "DeleteOnTermination": True,
@@ -201,6 +210,25 @@ def launch(
     # the response from run_instances above always contains an empty string
     # for PublicDnsName, so we call describe to get it
     return describe(config=config, name=name)
+
+
+def fetch_image(config: Dict[str, Any], ami: str) -> Image:
+    ami_matcher = ami_keywords.get(ami, None)
+    if ami_matcher:
+        try:
+            # lookup the latest ami by name match
+            ami_details = describe_images(config, owner=ami_matcher.owner, name_match=ami_matcher.match_string)[0]
+        except IndexError:
+            raise RuntimeError(
+                f"Could not find ami with name matching {ami_matcher.match_string} owned by account {ami_matcher.owner}"
+            )
+    else:
+        try:
+            # lookup by ami id
+            ami_details = describe_images(config, ami=ami)[0]
+        except IndexError:
+            raise RuntimeError(f"Could not find {ami}")
+    return ami_details
 
 
 def describe(
