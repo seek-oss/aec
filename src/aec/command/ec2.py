@@ -1,6 +1,6 @@
 import os
 import os.path
-from typing import Any, AnyStr, Dict, List, Optional
+from typing import Any, AnyStr, Dict, List, NamedTuple, Optional
 
 import boto3
 from mypy_boto3_ec2.type_defs import FilterTypeDef
@@ -38,6 +38,7 @@ def share_image(config: Dict[str, Any], ami: str, account: str) -> None:
 def describe_images(
     config: Dict[str, Any],
     ami: Optional[str] = None,
+    owner: Optional[str] = None,
     name_match: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """List AMIs."""
@@ -47,21 +48,24 @@ def describe_images(
     if ami:
         response = ec2_client.describe_images(ImageIds=[ami])
     else:
-        describe_images_owners = config.get("describe_images_owners", None)
-
-        if not describe_images_owners:
-            owners = ["self"]
-        elif isinstance(describe_images_owners, str):
-            owners = [describe_images_owners]
+        if owner:
+            owners_filter = [owner]
         else:
-            owners: List[str] = describe_images_owners
+            describe_images_owners = config.get("describe_images_owners", None)
+
+            if not describe_images_owners:
+                owners_filter = ["self"]
+            elif isinstance(describe_images_owners, str):
+                owners_filter = [describe_images_owners]
+            else:
+                owners_filter: List[str] = describe_images_owners
 
         if name_match is None:
             name_match = config.get("describe_images_name_match", None)
 
         filters: List[FilterTypeDef] = [] if name_match is None else [{"Name": "name", "Values": [f"*{name_match}*"]}]
 
-        response = ec2_client.describe_images(Owners=owners, Filters=filters)
+        response = ec2_client.describe_images(Owners=owners_filter, Filters=filters)
 
     images = [
         {
@@ -77,6 +81,23 @@ def describe_images(
 
 
 root_devices = {"amazon": "/dev/xvda", "ubuntu": "/dev/sda1"}
+
+
+class AmiMatcher(NamedTuple):
+    dist: str
+    owner: str
+    match_string: str
+
+
+canonical_account_id = "099720109477"
+amazon_base_account_id = "137112412989"
+
+ami_matchers = {
+    "amazon2": AmiMatcher("amazon", amazon_base_account_id, "amzn2-ami-hvm*x86_64-gp2"),
+    "ubuntu1604": AmiMatcher("ubuntu", canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64"),
+    "ubuntu1804": AmiMatcher("ubuntu", canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64"),
+    "ubuntu2004": AmiMatcher("ubuntu", canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64"),
+}
 
 
 def launch(
@@ -95,17 +116,25 @@ def launch(
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     additional_tags = config["additional_tags"] if config.get("additional_tags", None) else {}
-
     tags = [{"Key": "Name", "Value": name}] + [{"Key": k, "Value": v} for k, v in additional_tags.items()]
-
-    root_device = root_devices[dist]
-
     kms_key_id = config.get("kms_key_id", None)
-
     security_group = config["vpc"]["security_group"]
 
     if not key_name:
         key_name = config["key_name"]
+
+    ami_matcher = ami_matchers.get(ami, None)
+    if ami_matcher:
+        dist = ami_matcher.dist
+        try:
+            # lookup the latest ami
+            ami = describe_images(config, owner=ami_matcher.owner, name_match=ami_matcher.match_string)[0]["ImageId"]
+        except IndexError:
+            raise RuntimeError(
+                f"Could not find ami with name matching {ami_matcher.match_string} owned by account {ami_matcher.owner}"
+            )
+
+    root_device = root_devices[dist]
 
     # TODO: support multiple subnets
     kwargs: Dict[str, Any] = {

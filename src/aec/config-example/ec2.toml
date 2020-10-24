@@ -20,8 +20,9 @@ key_name = "my-key-us"
 iam_instance_profile_arn = "arn:aws:iam::123456789012:instance-profile/ec2_my_default"
 vpc = { name = "private B", subnet = "subnet-87654321",  security_group = ["sg-0123456","sg-7123456789"], associate_public_ip_address = true }
 
-# include these accounts when listing AMIs
-describe_images_owners = [ "self", "123456789012"]
+# include my account and the Canonical (Ubuntu) account when listing AMIs
+describe_images_owners = ["self", "099720109477"]
+# show the ubuntu focal images
 describe_images_name_match = "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64"
 
 [no-region]
