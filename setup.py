@@ -6,7 +6,7 @@ long_description = Path("README.md").read_text()
 
 setup(
     name="aec",
-    version="0.4.10",
+    version="0.5.0",
     description="AWS Easy CLI",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -22,7 +22,7 @@ setup(
         "pyjq==2.4.0",
         "pytoml==0.1.21",
         "pytz==2020.1",
-        "rich==8.0.0",
+        "rich==9.1.0",
     ],
     extras_require={
         "dev": [

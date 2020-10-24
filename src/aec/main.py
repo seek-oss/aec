@@ -43,12 +43,12 @@ ec2_cli = [
         Arg("--ami", type=str, help="Filter to this AMI id"),
         Arg("--owner", type=str, help="Filter to this owning account"),
         Arg("-q", type=str, dest='name_match', help="Filter to images with a name containing NAME_MATCH."),
+        Arg("--show-snapshot-id", action='store_true', help="Show snapshot id")
     ]),
     Cmd(ec2.launch, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance"),
         Arg("ami", type=ami_arg_checker, help=f"AMI id or a one of the keywords {[k for k in ec2.ami_keywords.keys()]}"),
-        Arg("--dist", type=str, help="Linux distribution", choices=ec2.root_devices.keys(), default="amazon"),
         Arg("--volume-size", type=int, help="EBS volume size (GB)", default=100),
         Arg("--encrypted", type=bool, help="Whether the EBS volume is encrypted", default=True),
         Arg("--instance-type", type=str, help="Instance type", default="t2.medium"),
