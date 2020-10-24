@@ -11,31 +11,39 @@ Image = TypedDict(
 )
 
 
-def delete_image(config: Dict[str, Any], ami: str) -> None:
-    """Deregister an AMI and delete its snapshot."""
-
-    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
-
-    response = describe_images(config, ami, show_snapshot_id=True)
-
-    ec2_client.deregister_image(ImageId=ami)
-
-    ec2_client.delete_snapshot(SnapshotId=response[0]["SnapshotId"])
+class AmiMatcher(NamedTuple):
+    owner: str
+    match_string: str
 
 
-def share_image(config: Dict[str, Any], ami: str, account: str) -> None:
-    """Share an AMI with another account."""
+amazon_base_account_id = "137112412989"
+canonical_account_id = "099720109477"
 
-    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
+ami_keywords = {
+    "amazon2": AmiMatcher(amazon_base_account_id, "amzn2-ami-hvm*x86_64-gp2"),
+    "ubuntu1604": AmiMatcher(canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64"),
+    "ubuntu1804": AmiMatcher(canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64"),
+    "ubuntu2004": AmiMatcher(canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64"),
+}
 
-    ec2_client.modify_image_attribute(
-        ImageId=ami,
-        LaunchPermission={"Add": [{"UserId": account}]},
-        OperationType="add",
-        UserIds=[account],
-        Value="string",
-        DryRun=False,
-    )
+
+def fetch_image(config: Dict[str, Any], ami: str) -> Image:
+    ami_matcher = ami_keywords.get(ami, None)
+    if ami_matcher:
+        try:
+            # lookup the latest ami by name match
+            ami_details = describe_images(config, owner=ami_matcher.owner, name_match=ami_matcher.match_string)[0]
+        except IndexError:
+            raise RuntimeError(
+                f"Could not find ami with name matching {ami_matcher.match_string} owned by account {ami_matcher.owner}"
+            )
+    else:
+        try:
+            # lookup by ami id
+            ami_details = describe_images(config, ami=ami)[0]
+        except IndexError:
+            raise RuntimeError(f"Could not find {ami}")
+    return ami_details
 
 
 def describe_images(
@@ -97,36 +105,28 @@ def describe_images(
     return sorted(images, key=lambda i: i["CreationDate"], reverse=True)
 
 
-class AmiMatcher(NamedTuple):
-    owner: str
-    match_string: str
+def delete_image(config: Dict[str, Any], ami: str) -> None:
+    """Deregister an AMI and delete its snapshot."""
+
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
+
+    response = describe_images(config, ami, show_snapshot_id=True)
+
+    ec2_client.deregister_image(ImageId=ami)
+
+    ec2_client.delete_snapshot(SnapshotId=response[0]["SnapshotId"])
 
 
-amazon_base_account_id = "137112412989"
-canonical_account_id = "099720109477"
+def share_image(config: Dict[str, Any], ami: str, account: str) -> None:
+    """Share an AMI with another account."""
 
-ami_keywords = {
-    "amazon2": AmiMatcher(amazon_base_account_id, "amzn2-ami-hvm*x86_64-gp2"),
-    "ubuntu1604": AmiMatcher(canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64"),
-    "ubuntu1804": AmiMatcher(canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64"),
-    "ubuntu2004": AmiMatcher(canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64"),
-}
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-
-def fetch_image(config: Dict[str, Any], ami: str) -> Image:
-    ami_matcher = ami_keywords.get(ami, None)
-    if ami_matcher:
-        try:
-            # lookup the latest ami by name match
-            ami_details = describe_images(config, owner=ami_matcher.owner, name_match=ami_matcher.match_string)[0]
-        except IndexError:
-            raise RuntimeError(
-                f"Could not find ami with name matching {ami_matcher.match_string} owned by account {ami_matcher.owner}"
-            )
-    else:
-        try:
-            # lookup by ami id
-            ami_details = describe_images(config, ami=ami)[0]
-        except IndexError:
-            raise RuntimeError(f"Could not find {ami}")
-    return ami_details
+    ec2_client.modify_image_attribute(
+        ImageId=ami,
+        LaunchPermission={"Add": [{"UserId": account}]},
+        OperationType="add",
+        UserIds=[account],
+        Value="string",
+        DryRun=False,
+    )
