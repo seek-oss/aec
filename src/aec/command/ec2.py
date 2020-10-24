@@ -4,7 +4,6 @@ from typing import Any, AnyStr, Dict, List, NamedTuple, Optional
 
 import boto3
 from mypy_boto3_ec2.type_defs import FilterTypeDef
-from rich import print
 from typing_extensions import TypedDict
 
 from aec.util.list import first_or_else
@@ -76,7 +75,7 @@ def describe_images(
         filters: List[FilterTypeDef] = [] if name_match is None else [{"Name": "name", "Values": [f"*{name_match}*"]}]
 
         print(
-            f"Describing images owned by {owners_filter} with name matching [not bold green]{name_match if name_match else '*'}[/not bold green]"
+            f"Describing images owned by {owners_filter} with name matching {name_match if name_match else '*'}"
         )
         response = ec2_client.describe_images(Owners=owners_filter, Filters=filters)
 
