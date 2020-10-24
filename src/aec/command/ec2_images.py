@@ -4,6 +4,12 @@ import boto3
 from mypy_boto3_ec2.type_defs import FilterTypeDef
 from typing_extensions import TypedDict
 
+Image = TypedDict(
+    "Image",
+    {"Name": Optional[str], "ImageId": str, "CreationDate": str, "RootDeviceName": str, "SnapshotId": str},
+    total=False,
+)
+
 
 def delete_image(config: Dict[str, Any], ami: str) -> None:
     """Deregister an AMI and delete its snapshot."""
@@ -30,13 +36,6 @@ def share_image(config: Dict[str, Any], ami: str, account: str) -> None:
         Value="string",
         DryRun=False,
     )
-
-
-Image = TypedDict(
-    "Image",
-    {"Name": Optional[str], "ImageId": str, "CreationDate": str, "RootDeviceName": str, "SnapshotId": str},
-    total=False,
-)
 
 
 def describe_images(
