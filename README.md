@@ -33,7 +33,7 @@ If you have previously installed aec, run `pipx upgrade aec` to upgrade to the l
 
 Before you can use aec, you will need to create the config files in `~/.aec/`. The config files contain settings for your AWS account including VPC details and additional tagging requirements.
 
-To get started, run `aec configure example` to install the [example config files](aec/config-example/) and then update them as needed.
+To get started, run `aec configure example` to install the [example config files](src/aec/config-example/) and then update them as needed.
 
 ## Handy aliases
 
