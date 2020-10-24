@@ -61,11 +61,16 @@ def test_launch_no_region_specified(mock_aws_config):
     assert "amazonaws.com" in instances[0]["DnsName"]
 
 
-@pytest.mark.skip(reason="failing because of https://github.com/spulec/moto/pull/2651")
+@pytest.mark.skip(reason="failing because of https://github.com/spulec/moto/issues/2762")
 def test_launch_without_public_ip_address(mock_aws_config):
     mock_aws_config["vpc"]["associate_public_ip_address"] = False
     instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
     assert "ec2.internal" in instances[0]["DnsName"]
+
+
+def test_launch_with_ami_match_string(mock_aws_config):
+    instances = launch(mock_aws_config, "alice", "ubuntu1604")
+    assert "amazonaws.com" in instances[0]["DnsName"]
 
 
 def test_override_key_name(mock_aws_config):
