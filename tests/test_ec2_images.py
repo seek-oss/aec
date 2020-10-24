@@ -9,7 +9,10 @@ from aec.command.ec2_images import delete_image, describe_images, share_image
 def mock_aws_config():
     mock = mock_ec2()
     mock.start()
-    return {}
+
+    return {
+        "region": "ap-southeast-2",
+    }
 
 
 def test_describe_images(mock_aws_config):
