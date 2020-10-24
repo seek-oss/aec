@@ -16,8 +16,8 @@ config_arg = Arg("--config", help="Section of the config file to use")
 
 
 def ami_arg_checker(s: str) -> str:
-    if not (s.startswith("ami-") or s in ec2.ami_matchers.keys()):
-        raise argparse.ArgumentTypeError(f"must begin with 'ami-' or be one of {[k for k in ec2.ami_matchers.keys()]}")
+    if not (s.startswith("ami-") or s in ec2.ami_keywords.keys()):
+        raise argparse.ArgumentTypeError(f"must begin with 'ami-' or be one of {[k for k in ec2.ami_keywords.keys()]}")
     return s
 
 
@@ -47,7 +47,7 @@ ec2_cli = [
     Cmd(ec2.launch, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance"),
-        Arg("ami", type=ami_arg_checker, help=f"AMI id or one of {[k for k in ec2.ami_matchers.keys()]}"),
+        Arg("ami", type=ami_arg_checker, help=f"AMI id or a one of the keywords {[k for k in ec2.ami_keywords.keys()]}"),
         Arg("--dist", type=str, help="Linux distribution", choices=ec2.root_devices.keys(), default="amazon"),
         Arg("--volume-size", type=int, help="EBS volume size (GB)", default=100),
         Arg("--encrypted", type=bool, help="Whether the EBS volume is encrypted", default=True),

@@ -89,10 +89,10 @@ class AmiMatcher(NamedTuple):
     match_string: str
 
 
-canonical_account_id = "099720109477"
 amazon_base_account_id = "137112412989"
+canonical_account_id = "099720109477"
 
-ami_matchers = {
+ami_keywords = {
     "amazon2": AmiMatcher("amazon", amazon_base_account_id, "amzn2-ami-hvm*x86_64-gp2"),
     "ubuntu1604": AmiMatcher("ubuntu", canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64"),
     "ubuntu1804": AmiMatcher("ubuntu", canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64"),
@@ -111,7 +111,11 @@ def launch(
     key_name: Optional[str] = None,
     userdata: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
-    """Launch a tagged EC2 instance with an EBS volume."""
+    """
+    Launch a tagged EC2 instance with an EBS volume.
+
+    Specify an AMI keyword to select the latest AMI for that distro and version.
+    """
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
@@ -123,7 +127,7 @@ def launch(
     if not key_name:
         key_name = config["key_name"]
 
-    ami_matcher = ami_matchers.get(ami, None)
+    ami_matcher = ami_keywords.get(ami, None)
     if ami_matcher:
         dist = ami_matcher.dist
         try:
