@@ -1,6 +1,6 @@
 # AMI
 
-To see the help, run `aec ami -h`
+Run `aec ami -h` for help:
 
 ```
 usage: aec ami [-h] {delete,describe,share} ...
@@ -15,13 +15,13 @@ subcommands:
     share               Share an AMI with another account.
 ```
 
-To list images owned by accounts specified in the config file:
+List images owned by accounts specified in the config file:
 
 ```
 ami describe
 ```
 
-To list ubuntu focal images owned by Canonical:
+List ubuntu focal images owned by Canonical:
 
 ```
 $ ami describe --owner 099720109477 -q "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64"

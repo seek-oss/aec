@@ -1,6 +1,6 @@
 # Compute Optimizer Usage
 
-To see the help, run `aec co -h`
+Run `aec co -h` for help:
 
 ```
 usage: aec co [-h] {over-provisioned} ...
@@ -13,7 +13,7 @@ subcommands:
     over-provisioned  Show recommendations for over-provisioned EC2 instances.
 ```
 
-To show recommendations for over-provisioned instances (eg: idle instances running for more than 30 hours):
+Show recommendations for over-provisioned instances (eg: idle instances running for more than 30 hours):
 
 ```
 $ aec co over-provisioned

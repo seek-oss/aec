@@ -1,6 +1,6 @@
 # EC2 Usage
 
-To see the help, run `aec ec2 -h`
+Run `aec ec2 -h` for help:
 
 ```
 usage: aec ec2 [-h] {describe,launch,logs,modify,start,stop,terminate} ...
@@ -19,19 +19,19 @@ subcommands:
     terminate           Terminate EC2 instances by name.
 ```
 
-To launch a t2.medium instance named `lady gaga` with a 50gb EBS volume, with other settings read from the config file
+Launch a t2.medium instance named `lady gaga` with a 50gb EBS volume, with other settings read from the config file:
 
 ```
 aec ec2 launch "lady gaga" ubuntu1804 --instance-type t2.medium --volume-size 50
 ```
 
-Stop the instance
+Stop the instance:
 
 ```
 aec ec2 stop "lady gaga"
 ```
 
-By default, commands will use the default profile as specified in the config file. To list ec2 instances using the non-default config `us`
+By default, commands will use the default profile as specified in the config file. To list ec2 instances using the non-default config `us`:
 
 ```
 aec ec2 describe --config us
