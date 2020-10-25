@@ -7,7 +7,7 @@ long_description = Path("README.md").read_text()
 setup(
     name="aec",
     version="0.6.0",
-    description="AWS Easy CLI",
+    description="AWS EC2 CLI",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/seek-oss/aec",

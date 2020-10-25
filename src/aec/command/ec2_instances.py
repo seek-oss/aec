@@ -19,11 +19,7 @@ def launch(
     key_name: Optional[str] = None,
     userdata: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
-    """
-    Launch a tagged EC2 instance with an EBS volume.
-
-    Specify an AMI keyword to select the latest AMI for that distro and version.
-    """
+    """Launch a tagged EC2 instance with an EBS volume."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 

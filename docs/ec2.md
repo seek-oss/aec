@@ -3,9 +3,7 @@
 To see the help, run `aec ec2 -h`
 
 ```
-usage: aec ec2 [-h]
-               {delete-image,describe,describe-images,launch,logs,modify,share-image,start,stop,terminate}
-               ...
+usage: aec ec2 [-h] {delete-image,describe,describe-images,launch,logs,modify,share-image,start,stop,terminate} ...
 
 optional arguments:
   -h, --help            show this help message and exit

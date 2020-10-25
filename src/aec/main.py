@@ -50,7 +50,7 @@ ec2_cli = [
     Cmd(ec2_instances.launch, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance"),
-        Arg("ami", type=ami_arg_checker, help=f"AMI id or a one of the keywords {[k for k in ec2_images.ami_keywords.keys()]}"),
+        Arg("ami", type=ami_arg_checker, help=f"AMI id or a keyword to lookup the latest ami: {[k for k in ec2_images.ami_keywords.keys()]}"),
         Arg("--volume-size", type=int, help="EBS volume size (GB)", default=100),
         Arg("--encrypted", type=bool, help="Whether the EBS volume is encrypted", default=True),
         Arg("--instance-type", type=str, help="Instance type", default="t2.medium"),
@@ -100,7 +100,7 @@ ssm_cli = [
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="aws easy cli")
+    parser = argparse.ArgumentParser(description="aws ec2 cli")
     subparsers = parser.add_subparsers(title="commands")
 
     cli.add_command_group(subparsers, "configure", "Configure subcommands", configure_cli)
