@@ -1,8 +1,10 @@
 # AWS EC2 CLI
 
-_"Doesn't do much, easily"_.
+_"Instead of using the console, use the cli!"_.
 
-CLI tools for managing pet EC2 instances by name. Defaults (eg: subnet, tags etc.) only need to be supplied once via a config file, which supports multiple profiles (eg: for different regions or AWS accounts).
+Command-line tools for managing pet EC2 instances by name.
+
+Defaults (eg: subnet, tags etc.) only need to be supplied once via a config file, which supports multiple profiles (eg: for different regions or AWS accounts).
 
 For examples see:
 
