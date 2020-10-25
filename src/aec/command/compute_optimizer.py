@@ -6,8 +6,10 @@ import pytz
 from dateutil import relativedelta
 from mypy_boto3_compute_optimizer.type_defs import UtilizationMetricTypeDef
 
+from aec.util.config import Config
 
-def over_provisioned(config: Dict[str, Any]) -> List[Dict[str, Any]]:
+
+def over_provisioned(config: Config) -> List[Dict[str, Any]]:
     """Show recommendations for over-provisioned EC2 instances."""
 
     def util(metric: UtilizationMetricTypeDef) -> str:
@@ -34,7 +36,7 @@ def over_provisioned(config: Dict[str, Any]) -> List[Dict[str, Any]]:
     return recs
 
 
-def describe_instances_uptime(config: Dict[str, Any]) -> Dict[str, str]:
+def describe_instances_uptime(config: Config) -> Dict[str, str]:
     """List EC2 instance uptimes in the region."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))

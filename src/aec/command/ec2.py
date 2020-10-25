@@ -6,11 +6,12 @@ import boto3
 from mypy_boto3_ec2.type_defs import FilterTypeDef
 
 import aec.command.ami as ami_cmd
+from aec.util.config import Config
 from aec.util.list import first_or_else
 
 
 def launch(
-    config: Dict[str, Any],
+    config: Config,
     name: str,
     ami: str,
     volume_size: int = 100,
@@ -23,13 +24,15 @@ def launch(
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    additional_tags = config["additional_tags"] if config.get("additional_tags", None) else {}
+    additional_tags = config.get("additional_tags", {})
     tags = [{"Key": "Name", "Value": name}] + [{"Key": k, "Value": v} for k, v in additional_tags.items()]
     kms_key_id = config.get("kms_key_id", None)
     security_group = config["vpc"]["security_group"]
 
     if not key_name:
         key_name = config["key_name"]
+
+        config.get("")
 
     image = ami_cmd.fetch(config, ami)
 
@@ -99,7 +102,7 @@ def launch(
 
 
 def describe(
-    config: Dict[str, Any],
+    config: Config,
     name: Optional[str] = None,
     name_match: Optional[str] = None,
     include_terminated: bool = False,
@@ -136,7 +139,7 @@ def describe(
     return sorted(instances, key=lambda i: i["State"] + str(i["Name"]))
 
 
-def start(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
+def start(config: Config, name: str) -> List[Dict[str, Any]]:
     """Start EC2 instances by name."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -157,7 +160,7 @@ def start(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
     return describe(config, name)
 
 
-def stop(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
+def stop(config: Config, name: str) -> List[Dict[str, Any]]:
     """Stop EC2 instances by name."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -172,7 +175,7 @@ def stop(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
     return [{"State": i["CurrentState"]["Name"], "InstanceId": i["InstanceId"]} for i in response["StoppingInstances"]]
 
 
-def terminate(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
+def terminate(config: Config, name: str) -> List[Dict[str, Any]]:
     """Terminate EC2 instances by name."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -189,7 +192,7 @@ def terminate(config: Dict[str, Any], name: str) -> List[Dict[str, Any]]:
     ]
 
 
-def modify(config: Dict[str, Any], name: str, type: str) -> List[Dict[str, Any]]:
+def modify(config: Config, name: str, type: str) -> List[Dict[str, Any]]:
     """Change an instance's type."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -205,7 +208,7 @@ def modify(config: Dict[str, Any], name: str, type: str) -> List[Dict[str, Any]]
     return describe(config, name)
 
 
-def logs(config: Dict[str, Any], name: str) -> str:
+def logs(config: Config, name: str) -> str:
     """Show the system logs."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))

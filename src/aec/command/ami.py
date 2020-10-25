@@ -1,14 +1,19 @@
-from typing import Any, Dict, List, NamedTuple, Optional
+from typing import List, NamedTuple, Optional
 
 import boto3
 from mypy_boto3_ec2.type_defs import FilterTypeDef
 from typing_extensions import TypedDict
 
-Image = TypedDict(
-    "Image",
-    {"Name": Optional[str], "ImageId": str, "CreationDate": str, "RootDeviceName": str, "SnapshotId": str},
-    total=False,
-)
+from aec.util.config import Config
+
+
+class Image(TypedDict, total=False):
+    Name: Optional[str]
+    ImageId: str
+    CreationDate: str
+    RootDeviceName: str
+    # optional
+    SnapshotId: str
 
 
 class AmiMatcher(NamedTuple):
@@ -27,7 +32,7 @@ ami_keywords = {
 }
 
 
-def fetch(config: Dict[str, Any], ami: str) -> Image:
+def fetch(config: Config, ami: str) -> Image:
     ami_matcher = ami_keywords.get(ami, None)
     if ami_matcher:
         try:
@@ -47,7 +52,7 @@ def fetch(config: Dict[str, Any], ami: str) -> Image:
 
 
 def describe(
-    config: Dict[str, Any],
+    config: Config,
     ami: Optional[str] = None,
     owner: Optional[str] = None,
     name_match: Optional[str] = None,
@@ -80,16 +85,6 @@ def describe(
         print(f"Describing images owned by {owners_filter} with name matching {name_match if name_match else '*'}")
         response = ec2_client.describe_images(Owners=owners_filter, Filters=filters)
 
-    images: List[Image] = [
-        {
-            "Name": i.get("Name", None),
-            "ImageId": i["ImageId"],
-            "CreationDate": i["CreationDate"],
-            "RootDeviceName": i["RootDeviceName"],
-        }
-        for i in response["Images"]
-    ]
-
     images = []
     for i in response["Images"]:
         image: Image = {
@@ -105,7 +100,7 @@ def describe(
     return sorted(images, key=lambda i: i["CreationDate"], reverse=True)
 
 
-def delete(config: Dict[str, Any], ami: str) -> None:
+def delete(config: Config, ami: str) -> None:
     """Deregister an AMI and delete its snapshot."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -117,7 +112,7 @@ def delete(config: Dict[str, Any], ami: str) -> None:
     ec2_client.delete_snapshot(SnapshotId=response[0]["SnapshotId"])
 
 
-def share(config: Dict[str, Any], ami: str, account: str) -> None:
+def share(config: Config, ami: str, account: str) -> None:
     """Share an AMI with another account."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
