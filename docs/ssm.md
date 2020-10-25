@@ -1,6 +1,6 @@
 # SSM Usage
 
-To see the help, run `aec ssm -h`
+Run `aec ssm -h` for help:
 
 ```
 usage: aec ssm [-h] {describe} ...

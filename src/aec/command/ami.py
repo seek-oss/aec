@@ -27,12 +27,12 @@ ami_keywords = {
 }
 
 
-def fetch_image(config: Dict[str, Any], ami: str) -> Image:
+def fetch(config: Dict[str, Any], ami: str) -> Image:
     ami_matcher = ami_keywords.get(ami, None)
     if ami_matcher:
         try:
             # lookup the latest ami by name match
-            ami_details = describe_images(config, owner=ami_matcher.owner, name_match=ami_matcher.match_string)[0]
+            ami_details = describe(config, owner=ami_matcher.owner, name_match=ami_matcher.match_string)[0]
         except IndexError:
             raise RuntimeError(
                 f"Could not find ami with name matching {ami_matcher.match_string} owned by account {ami_matcher.owner}"
@@ -40,13 +40,13 @@ def fetch_image(config: Dict[str, Any], ami: str) -> Image:
     else:
         try:
             # lookup by ami id
-            ami_details = describe_images(config, ami=ami)[0]
+            ami_details = describe(config, ami=ami)[0]
         except IndexError:
             raise RuntimeError(f"Could not find {ami}")
     return ami_details
 
 
-def describe_images(
+def describe(
     config: Dict[str, Any],
     ami: Optional[str] = None,
     owner: Optional[str] = None,
@@ -105,19 +105,19 @@ def describe_images(
     return sorted(images, key=lambda i: i["CreationDate"], reverse=True)
 
 
-def delete_image(config: Dict[str, Any], ami: str) -> None:
+def delete(config: Dict[str, Any], ami: str) -> None:
     """Deregister an AMI and delete its snapshot."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    response = describe_images(config, ami, show_snapshot_id=True)
+    response = describe(config, ami, show_snapshot_id=True)
 
     ec2_client.deregister_image(ImageId=ami)
 
     ec2_client.delete_snapshot(SnapshotId=response[0]["SnapshotId"])
 
 
-def share_image(config: Dict[str, Any], ami: str, account: str) -> None:
+def share(config: Dict[str, Any], ami: str, account: str) -> None:
     """Share an AMI with another account."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))

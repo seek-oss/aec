@@ -6,7 +6,7 @@ from moto import mock_ec2
 from moto.ec2 import ec2_backends
 from moto.ec2.models import AMIS
 
-from aec.command.ec2_instances import describe, launch, logs, modify, start, stop, terminate
+from aec.command.ec2 import describe, launch, logs, modify, start, stop, terminate
 
 
 @pytest.fixture

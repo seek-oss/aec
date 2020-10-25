@@ -4,7 +4,7 @@ from moto.ec2 import ec2_backends
 from moto.ec2.models import AMIS
 
 from aec.command.compute_optimizer import describe_instances_uptime
-from aec.command.ec2_instances import launch
+from aec.command.ec2 import launch
 
 
 @pytest.fixture
