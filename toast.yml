@@ -12,9 +12,8 @@ tasks:
     dependencies:
       - packages-install
     command: |
-      curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
-      . ~/.nvm/nvm.sh
-      nvm install node
+      curl -sL https://deb.nodesource.com/setup_lts.x | bash -
+      apt-get install -y nodejs
   install:
     dependencies:
       - install-node
@@ -28,8 +27,7 @@ tasks:
       - src/
     environment:
       CI: true
-    command: |
-      . ~/.nvm/nvm.sh
+    command:
       make install
   check-test:
     dependencies:
@@ -42,6 +40,5 @@ tasks:
       - tests/
     environment:
       CI: true
-    command: |
-      . ~/.nvm/nvm.sh
+    command:
       make check test
