@@ -32,8 +32,6 @@ def launch(
     if not key_name:
         key_name = config["key_name"]
 
-        config.get("")
-
     image = ami_cmd.fetch(config, ami)
 
     # TODO: support multiple subnets
