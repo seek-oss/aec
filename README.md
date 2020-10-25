@@ -4,11 +4,11 @@ _"Instead of using the console, use the cli!"_.
 
 Command-line tools for managing pet EC2 instances by name.
 
-Defaults (eg: subnet, tags etc.) only need to be supplied once via a config file, which supports multiple profiles (eg: for different regions or AWS accounts).
+Defaults only need to be supplied once via a [config file](src/aec/config-example/ec2.toml), which supports multiple profiles for different regions or AWS accounts.
 
 For examples see:
 
-- [EC2](docs/ec2.md) - manipulate EC2 instances by name, and launch them with EBS volumes of any size, as per the settings in the configuration file (subnet, tags etc).
+- [EC2](docs/ec2.md) - manipulate EC2 instances by name, and launch them with tags and EBS volumes of any size, as per the settings in the configuration file (subnet, security group etc).
 - [Compute Optimizer](docs/compute-optimizer.md) - show over-provisioned instances
 - [SSM](docs/ssm.md) - describe SSM agent info
 
