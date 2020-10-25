@@ -5,7 +5,6 @@ from typing import List
 import aec.command.compute_optimizer as compute_optimizer
 import aec.command.ec2_images as ec2_images
 import aec.command.ec2_instances as ec2_instances
-import aec.command.sqs as sqs
 import aec.command.ssm as ssm
 import aec.util.cli as cli
 import aec.util.config as config
@@ -86,14 +85,6 @@ ec2_cli = [
     ])
 ]
 
-sqs_cli = [
-    Cmd(sqs.drain, [
-        config_arg,
-        Arg("file_name", type=str, help="File to write messages to"),
-        Arg("--keep", type=str, help="Keep messages, don't delete them", default=False)
-    ])
-]
-
 compute_optimizer_cli = [
     Cmd(compute_optimizer.over_provisioned, [
         config_arg
@@ -114,7 +105,6 @@ def build_parser() -> argparse.ArgumentParser:
 
     cli.add_command_group(subparsers, "configure", "Configure subcommands", configure_cli)
     cli.add_command_group(subparsers, "ec2", "EC2 subcommands", ec2_cli, config.inject_config("~/.aec/ec2.toml"))
-    cli.add_command_group(subparsers, "sqs", "SQS subcommands", sqs_cli, config.inject_config("~/.aec/sqs.toml"))
     cli.add_command_group(
         subparsers,
         "co",

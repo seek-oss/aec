@@ -1,23 +1,22 @@
-# AWS Easy CLI
+# AWS EC2 CLI
 
 _"Doesn't do much, easily"_.
 
-CLI tools for doing things on AWS easier. Defaults (eg: subnet, tags etc.) only need to be supplied once via a config file, which supports multiple profiles (eg: for different regions or AWS accounts).
+CLI tools for managing pet EC2 instances by name. Defaults (eg: subnet, tags etc.) only need to be supplied once via a config file, which supports multiple profiles (eg: for different regions or AWS accounts).
 
-Currently supports the following AWS services:
+For examples see:
 
 - [EC2](docs/ec2.md) - manipulate EC2 instances by name, and launch them with EBS volumes of any size, as per the settings in the configuration file (subnet, tags etc).
-- [SQS](docs/sqs.md) - drain configured SQS queues to a file, pretty printing deleted messages using a jq filter
 - [Compute Optimizer](docs/compute-optimizer.md) - show over-provisioned instances
 - [SSM](docs/ssm.md) - describe SSM agent info
 
 ## Prerequisites
 
 - python 3.7+
-  - Ubuntu: `sudo apt install python3 python3-pip python3-dev python3-venv`
+  - Ubuntu 20.04: `sudo apt install python3 python3-pip python3-dev python3-venv`
 - automake & libtool:
-  - Ubuntu: `sudo apt install automake libtool`
-  - macOS: `brew install automake libtool`
+  - Ubuntu: `sudo apt install automake`
+  - macOS: `brew install automake`
 
 ## Install
 
@@ -41,7 +40,7 @@ For even faster access to aec subcommands, you may like to add the following ali
 
 ```
 alias ec2='COLUMNS=$COLUMNS aec ec2'
-alias sqs='COLUMNS=$COLUMNS aec sqs'
+alias co='COLUMNS=$COLUMNS aec co'
 ```
 
 `COLUMNS=$COLUMNS` will ensure output is formatted to the width of your terminal when piped.

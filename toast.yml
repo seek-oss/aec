@@ -2,12 +2,12 @@ image: python:3.7-slim
 tasks:
   packages-update:
     command:
-      apt-get update
+      apt-get update && apt-get upgrade -y
   packages-install:
     dependencies:
       - packages-update
     command:
-      apt-get install -y gcc automake make libtool git curl
+      apt-get install -y gcc automake make git curl
   install-node:
     dependencies:
       - packages-install
