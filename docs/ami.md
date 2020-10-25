@@ -1,4 +1,4 @@
-# AMI
+# AMI Usage
 
 Run `aec ami -h` for help:
 

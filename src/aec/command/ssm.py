@@ -2,10 +2,11 @@ from typing import Any, Dict, List, Optional
 
 import boto3
 
+from aec.util.config import Config
 from aec.util.list import first_or_else
 
 
-def describe(config: Dict[str, Any]) -> List[Dict[str, Any]]:
+def describe(config: Config) -> List[Dict[str, Any]]:
     """Describe instances running the SSM agent."""
 
     instances_names = describe_instances_names(config)
@@ -28,7 +29,7 @@ def describe(config: Dict[str, Any]) -> List[Dict[str, Any]]:
     return instances
 
 
-def describe_instances_names(config: Dict[str, Any]) -> Dict[str, Optional[str]]:
+def describe_instances_names(config: Config) -> Dict[str, Optional[str]]:
     """List EC2 instance names in the region."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))

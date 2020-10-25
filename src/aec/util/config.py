@@ -3,6 +3,19 @@ from argparse import Namespace
 from typing import Any, Callable, Dict, Optional
 
 import pytoml as toml
+from typing_extensions import TypedDict
+
+
+class Config(TypedDict, total=False):
+    vpc: Dict[str, str]
+    key_name: str
+    # the following fields are optional
+    region: str
+    additional_tags: Dict[str, str]
+    iam_instance_profile_arn: str
+    kms_key_id: str
+    describe_images_owners: str
+    describe_images_name_match: str
 
 
 def inject_config(config_file: str) -> Callable[[Namespace], None]:
@@ -17,7 +30,7 @@ def inject_config(config_file: str) -> Callable[[Namespace], None]:
 
 
 # TODO add tests for this
-def load_config(config_file: str, profile_override: Optional[str] = None) -> Dict[str, Any]:
+def load_config(config_file: str, profile_override: Optional[str] = None) -> Config:
     """
     Load profile from the config file.
 
