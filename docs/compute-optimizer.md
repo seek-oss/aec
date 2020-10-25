@@ -23,5 +23,4 @@ $ aec co over-provisioned
   i-01579de1b005846cb   instance A   m5.4xlarge      r5.2xlarge       CPU MAX 4.0    7 days 8 hours
   i-070c800a592bc6d73   instance B   m5.large        t3.large         CPU MAX 47.0   7 days 8 hours
   i-0ad199cc5b65c621d   instance C   m5.xlarge       r5.large         CPU MAX 30.0   23 days 8 hours
-
 ```

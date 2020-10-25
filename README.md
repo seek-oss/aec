@@ -9,6 +9,7 @@ Defaults only need to be supplied once via a [config file](src/aec/config-exampl
 For examples see:
 
 - [EC2](docs/ec2.md) - manipulate EC2 instances by name, and launch them with tags and EBS volumes of any size, as per the settings in the configuration file (subnet, security group etc).
+- [AMI](docs/ami.md) - describe, delete and share images
 - [Compute Optimizer](docs/compute-optimizer.md) - show over-provisioned instances
 - [SSM](docs/ssm.md) - describe SSM agent info
 
@@ -42,7 +43,7 @@ For even faster access to aec subcommands, you may like to add the following ali
 
 ```
 alias ec2='COLUMNS=$COLUMNS aec ec2'
-alias co='COLUMNS=$COLUMNS aec co'
+alias ami='COLUMNS=$COLUMNS aec ami'
 ```
 
 `COLUMNS=$COLUMNS` will ensure output is formatted to the width of your terminal when piped.

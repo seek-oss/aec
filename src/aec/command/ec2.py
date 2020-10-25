@@ -5,7 +5,7 @@ from typing import Any, AnyStr, Dict, List, Optional
 import boto3
 from mypy_boto3_ec2.type_defs import FilterTypeDef
 
-from aec.command.ec2_images import fetch_image
+import aec.command.ami as ami_cmd
 from aec.util.list import first_or_else
 
 
@@ -31,7 +31,7 @@ def launch(
     if not key_name:
         key_name = config["key_name"]
 
-    image = fetch_image(config, ami)
+    image = ami_cmd.fetch(config, ami)
 
     # TODO: support multiple subnets
     kwargs: Dict[str, Any] = {
