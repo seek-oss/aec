@@ -32,7 +32,8 @@ ec2_cli = [
         config_arg,
         Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag."),
         Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
-        Arg("-it", "--include-terminated", action='store_true', dest='name_match', help="Include terminated instances"),
+        Arg("-r", "--show-running-only", action='store_true', help="Show running or pending instances only"),
+        Arg("-it", "--include-terminated", action='store_true', help="Include terminated instances"),
     ]),
     Cmd(ec2.launch, [
         config_arg,
