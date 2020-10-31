@@ -31,6 +31,18 @@ Stop the instance:
 aec ec2 stop "lady gaga"
 ```
 
+Modify the instance type:
+
+```
+aec ec2 modify "lady gaga" p2.xlarge
+```
+
+List instances containing `gaga` in the name:
+
+```
+aec ec2 describe -q gaga
+```
+
 By default, commands will use the default profile as specified in the config file. To list ec2 instances using the non-default config `us`:
 
 ```
@@ -44,4 +56,10 @@ aec ec2 describe --config us
                                                                 11:05:07+00:00  
   stopped   instance C   t2.nano       ip-10-17-26-180…   2020-10-22         ami-0d5f76fa1b9…   i-0882dcea73a85…  
                                                                 19:29:14+00:00  
+```
+
+Show running or pending instances only:
+
+```
+ec2 describe -r
 ```

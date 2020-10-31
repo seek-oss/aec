@@ -104,6 +104,7 @@ def describe(
     name: Optional[str] = None,
     name_match: Optional[str] = None,
     include_terminated: bool = False,
+    show_running_only: bool = False,
 ) -> List[Dict[str, Any]]:
     """List EC2 instances in the region."""
 
@@ -131,7 +132,8 @@ def describe(
         }
         for r in response["Reservations"]
         for i in r["Instances"]
-        if include_terminated or i["State"]["Name"] != "terminated"
+        if (include_terminated or i["State"]["Name"] != "terminated")
+        and (not show_running_only or i["State"]["Name"] in ["pending", "running"])
     ]
 
     return sorted(instances, key=lambda i: i["State"] + str(i["Name"]))
