@@ -35,7 +35,7 @@ setup(
             "flake8-colors==0.1.6",
             "moto==1.3.16",
             "pre-commit==2.8.2",
-            "pytest==6.1.1",
+            "pytest==6.1.2",
             "tox==3.20.0",
         ]
     },
