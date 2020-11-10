@@ -111,7 +111,9 @@ def describe(
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     filters: List[FilterTypeDef] = []
-    if name:
+    if name and name.startswith("i-"):
+        filters = [{"Name": "instance-id", "Values": [name]}]
+    elif name:
         filters = [{"Name": "tag:Name", "Values": [name]}]
     elif name_match:
         filters = [{"Name": "tag:Name", "Values": [f"*{name_match}*"]}]
@@ -140,7 +142,7 @@ def describe(
 
 
 def start(config: Config, name: str) -> List[Dict[str, Any]]:
-    """Start EC2 instances by name."""
+    """Start EC2 instance."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
@@ -149,7 +151,7 @@ def start(config: Config, name: str) -> List[Dict[str, Any]]:
     instances = describe(config, name)
 
     if not instances:
-        raise Exception(f"No instances named {name}")
+        raise Exception(f"No instances with {pretty_name_or_id(name)}")
 
     instance_ids = [instance["InstanceId"] for instance in instances]
     ec2_client.start_instances(InstanceIds=instance_ids)
@@ -161,29 +163,33 @@ def start(config: Config, name: str) -> List[Dict[str, Any]]:
 
 
 def stop(config: Config, name: str) -> List[Dict[str, Any]]:
-    """Stop EC2 instances by name."""
+    """Stop EC2 instance."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     instances = describe(config, name)
 
     if not instances:
-        raise Exception(f"No instances named {name}")
+        raise Exception(f"No instances with {pretty_name_or_id(name)}")
 
     response = ec2_client.stop_instances(InstanceIds=[instance["InstanceId"] for instance in instances])
 
     return [{"State": i["CurrentState"]["Name"], "InstanceId": i["InstanceId"]} for i in response["StoppingInstances"]]
 
 
+def pretty_name_or_id(name: str) -> str:
+    return f"instance id {name}" if name.startswith("i-") else f"name {name}"
+
+
 def terminate(config: Config, name: str) -> List[Dict[str, Any]]:
-    """Terminate EC2 instances by name."""
+    """Terminate EC2 instance."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     instances = describe(config, name)
 
     if not instances:
-        raise Exception(f"No instances named {name}")
+        raise Exception(f"No instances with {pretty_name_or_id(name)}")
 
     response = ec2_client.terminate_instances(InstanceIds=[instance["InstanceId"] for instance in instances])
 
@@ -200,7 +206,7 @@ def modify(config: Config, name: str, type: str) -> List[Dict[str, Any]]:
     instances = describe(config, name)
 
     if not instances:
-        raise Exception(f"No instances named {name}")
+        raise Exception(f"No instances with {pretty_name_or_id(name)}")
 
     instance_id = instances[0]["InstanceId"]
     ec2_client.modify_instance_attribute(InstanceId=instance_id, InstanceType={"Value": type})
@@ -216,7 +222,7 @@ def logs(config: Config, name: str) -> str:
     instances = describe(config, name)
 
     if not instances:
-        raise Exception(f"No instances named {name}")
+        raise Exception(f"No instances with {pretty_name_or_id(name)}")
 
     instance_id = instances[0]["InstanceId"]
     response = ec2_client.get_console_output(InstanceId=instance_id)
