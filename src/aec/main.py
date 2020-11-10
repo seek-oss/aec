@@ -30,7 +30,7 @@ configure_cli = [
 ec2_cli = [
     Cmd(ec2.describe, [
         config_arg,
-        Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag."),
+        Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
         Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
         Arg("-r", "--show-running-only", action='store_true', help="Show running or pending instances only"),
         Arg("-it", "--include-terminated", action='store_true', help="Include terminated instances"),
@@ -47,24 +47,24 @@ ec2_cli = [
     ]),
     Cmd(ec2.logs, [
         config_arg,
-        Arg("name", type=str, help="Name of instance")
+        Arg("name", type=str, help="Name tag of instance or instance id")
     ]),
     Cmd(ec2.modify, [
         config_arg,
-        Arg("name", type=str, help="Name tag of instance"),
+        Arg("name", type=str, help="Name tag of instance or instance id"),
         Arg("type", type=str, help="Type of instance")
     ]),
     Cmd(ec2.start, [
         config_arg,
-        Arg("name", type=str, help="Name tag of instance")
+        Arg("name", type=str, help="Name tag of instance or instance id")
     ]),
     Cmd(ec2.stop, [
         config_arg,
-        Arg("name", type=str, help="Name tag of instance")
+        Arg("name", type=str, help="Name tag of instance or instance id")
     ]),
     Cmd(ec2.terminate, [
         config_arg,
-        Arg("name", type=str, help="Name tag of instance")
+        Arg("name", type=str, help="Name tag of instance or instance id")
     ])
 ]
 
