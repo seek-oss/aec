@@ -14,9 +14,9 @@ subcommands:
     launch              Launch a tagged EC2 instance with an EBS volume.
     logs                Show the system logs.
     modify              Change an instance's type.
-    start               Start EC2 instances.
-    stop                Stop EC2 instances.
-    terminate           Terminate EC2 instances.
+    start               Start EC2 instance.
+    stop                Stop EC2 instance.
+    terminate           Terminate EC2 instance.
 ```
 
 Launch a t2.medium instance named `lady gaga` with a 50gb EBS volume, with other settings read from the config file:

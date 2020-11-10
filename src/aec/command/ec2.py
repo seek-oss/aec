@@ -142,7 +142,7 @@ def describe(
 
 
 def start(config: Config, name: str) -> List[Dict[str, Any]]:
-    """Start EC2 instances."""
+    """Start EC2 instance."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
@@ -163,7 +163,7 @@ def start(config: Config, name: str) -> List[Dict[str, Any]]:
 
 
 def stop(config: Config, name: str) -> List[Dict[str, Any]]:
-    """Stop EC2 instances."""
+    """Stop EC2 instance."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
@@ -182,7 +182,7 @@ def pretty_name_or_id(name: str) -> str:
 
 
 def terminate(config: Config, name: str) -> List[Dict[str, Any]]:
-    """Terminate EC2 instances."""
+    """Terminate EC2 instance."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
