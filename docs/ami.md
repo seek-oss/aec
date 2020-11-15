@@ -21,6 +21,12 @@ List images owned by accounts specified in the config file:
 ami describe
 ```
 
+List Amazon Deep Learning images:
+
+```
+ami describe --owner 898082745236
+```
+
 List ubuntu focal images owned by Canonical:
 
 ```

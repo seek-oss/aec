@@ -10,6 +10,10 @@ from aec.util.config import Config
 from aec.util.list import first_or_else
 
 
+def is_ebs_optimizable(instance_type: str) -> bool:
+    return not instance_type.startswith("t2")
+
+
 def launch(
     config: Config,
     name: str,
@@ -42,7 +46,7 @@ def launch(
         "KeyName": key_name,
         "InstanceType": instance_type,
         "TagSpecifications": [{"ResourceType": "instance", "Tags": tags}, {"ResourceType": "volume", "Tags": tags}],
-        "EbsOptimized": False if instance_type.startswith("t2") else True,
+        "EbsOptimized": is_ebs_optimizable(instance_type),
         "NetworkInterfaces": [
             {
                 "DeviceIndex": 0,
@@ -210,6 +214,7 @@ def modify(config: Config, name: str, type: str) -> List[Dict[str, Any]]:
 
     instance_id = instances[0]["InstanceId"]
     ec2_client.modify_instance_attribute(InstanceId=instance_id, InstanceType={"Value": type})
+    ec2_client.modify_instance_attribute(InstanceId=instance_id, EbsOptimized={"Value": is_ebs_optimizable(type)})
 
     return describe(config, name)
 

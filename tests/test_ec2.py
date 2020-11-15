@@ -66,9 +66,9 @@ def test_override_key_name(mock_aws_config):
     instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"], key_name="magic-key")
     instance_id = instances[0]["InstanceId"]
 
-    actual_key_name = describe_instance0(mock_aws_config["region"], instance_id)
+    instance = describe_instance0(mock_aws_config["region"], instance_id)
 
-    assert "magic-key" in actual_key_name["KeyName"]
+    assert "magic-key" in instance["KeyName"]
 
 
 def test_launch_has_userdata(mock_aws_config):
@@ -179,9 +179,17 @@ def test_modify(mock_aws_config):
 
     instances = modify(name="alice", type="c5.2xlarge", config=mock_aws_config)
 
-    assert len(instances) == 1
-    assert instances[0]["Name"] == "alice"
-    assert instances[0]["Type"] == "c5.2xlarge"
+    instance = describe_instance0(mock_aws_config["region"], instances[0]["InstanceId"])
+
+    assert instance["InstanceType"] == "c5.2xlarge"
+    assert instance["EbsOptimized"] is True
+
+    instances = modify(name="alice", type="t2.medium", config=mock_aws_config)
+
+    instance = describe_instance0(mock_aws_config["region"], instances[0]["InstanceId"])
+
+    assert instance["InstanceType"] == "t2.medium"
+    assert instance["EbsOptimized"] is False
 
 
 def test_terminate(mock_aws_config):
