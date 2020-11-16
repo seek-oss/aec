@@ -70,5 +70,7 @@ def pretty_print(result: Any) -> None:
         console.print(table)
     elif isinstance(result, dict):
         print(json.dumps(result, default=str))
+    elif not result:
+        print("Done ✨")
     else:
         print(result)
