@@ -11,7 +11,7 @@ class Image(TypedDict, total=False):
     Name: Optional[str]
     ImageId: str
     CreationDate: str
-    RootDeviceName: str
+    RootDeviceName: Optional[str]
     # optional
     SnapshotId: str
 
@@ -91,7 +91,7 @@ def describe(
             "Name": i.get("Name", None),
             "ImageId": i["ImageId"],
             "CreationDate": i["CreationDate"],
-            "RootDeviceName": i["RootDeviceName"],
+            "RootDeviceName": i["RootDeviceName"] if "RootDeviceName" in i else None,
         }
         if show_snapshot_id:
             image["SnapshotId"] = i["BlockDeviceMappings"][0]["Ebs"]["SnapshotId"]
