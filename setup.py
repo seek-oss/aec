@@ -21,7 +21,7 @@ setup(
         "boto3-stubs[ec2,compute-optimizer,ssm]==1.14.52.1",
         "pytoml==0.1.21",
         "pytz==2020.1",
-        "rich==9.1.0",
+        "rich==9.2.0",
     ],
     extras_require={
         "dev": [
