@@ -1,6 +1,6 @@
 import os
 import os.path
-from typing import Any, AnyStr, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import boto3
 from mypy_boto3_ec2.type_defs import FilterTypeDef
@@ -235,6 +235,6 @@ def logs(config: Config, name: str) -> str:
     return response["Output"]
 
 
-def read_file(filepath: str) -> AnyStr:
+def read_file(filepath: str) -> str:
     with open(os.path.expanduser(filepath)) as file:
         return file.read()
