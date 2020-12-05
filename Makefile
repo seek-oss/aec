@@ -21,14 +21,8 @@ $(venv): setup.py $(pip)
 	$(pip) install -e '.[dev]'
 	touch $(venv)
 
-# install pyright stubs
-typings: $(venv)
-	rm -rf typings/
-	VIRTUAL_ENV=$(venv) ./.install-typings-boto3.sh
-	touch typings
-
 ## create venv, install this package in dev mode, create stubs, and install hooks (if not in CI)
-install: $(venv) node_modules typings $(if $(value CI),,install-hooks)
+install: $(venv) node_modules $(if $(value CI),,install-hooks)
 
 ## format all code
 format: $(venv)
@@ -47,7 +41,7 @@ node_modules: package.json
 	touch node_modules
 
 ## pyright
-pyright: node_modules typings $(venv)
+pyright: node_modules $(venv)
 	source $(venv)/bin/activate && node_modules/.bin/pyright
 
 ## run tests
