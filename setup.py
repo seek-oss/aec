@@ -29,7 +29,7 @@ setup(
             "darglint==1.5.8",
             "isort==5.7.0",
             "flake8==3.8.4",
-            "flake8-annotations==2.4.1",
+            "flake8-annotations==2.5.0",
             "flake8-colors==0.1.9",
             "moto==1.3.16",
             "pre-commit==2.9.3",
