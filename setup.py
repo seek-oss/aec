@@ -18,7 +18,7 @@ setup(
     package_dir={"": "src"},
     include_package_data=True,
     install_requires=[
-        "boto3-stubs[ec2,compute-optimizer,ssm]==1.16.47.0",
+        "boto3-stubs[ec2,compute-optimizer,ssm]==1.16.63.0",
         "pytoml==0.1.21",
         "pytz==2020.5",
         "rich==9.10.0",
