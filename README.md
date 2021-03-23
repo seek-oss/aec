@@ -23,13 +23,13 @@ For examples see:
 
 ## Install
 
-Run the following to install the latest master version using [pipx](https://github.com/pipxproject/pipx):
+Run the following to install the latest master version using pip:
 
 ```
-pipx install git+https://github.com/seek-oss/aec.git
+pip install git+https://github.com/seek-oss/aec.git
 ```
 
-If you have previously installed aec, run `pipx upgrade aec` to upgrade to the latest version.
+If you have previously installed aec, run `pip upgrade aec` to upgrade to the latest version.
 
 ## Configure
 
