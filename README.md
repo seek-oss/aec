@@ -29,7 +29,10 @@ Run the following to install the latest master version using pip:
 pip install git+https://github.com/seek-oss/aec.git
 ```
 
-If you have previously installed aec, run `pip upgrade aec` to upgrade to the latest version.
+If you have previously installed aec, run the following to upgrade to the latest version:
+```
+pip install --upgrade git+https://github.com/seek-oss/aec.git
+```
 
 ## Configure
 
