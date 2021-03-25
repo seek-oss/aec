@@ -19,13 +19,13 @@ setup(
     include_package_data=True,
     install_requires=[
         "boto3==1.17.17.0",
+        "boto3-stubs[ec2,compute-optimizer,ssm]==1.17.17.0",
         "pytoml==0.1.21",
         "pytz==2021.1",
         "rich==9.12.4",
     ],
     extras_require={
         "dev": [
-            "boto3-stubs[ec2,compute-optimizer,ssm]==1.17.17.0",
             "black==20.8b1",
             "darglint==1.7.0",
             "isort==5.7.0",
