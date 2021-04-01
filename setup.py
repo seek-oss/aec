@@ -28,7 +28,7 @@ setup(
         "dev": [
             "black==20.8b1",
             "darglint==1.7.0",
-            "isort==5.7.0",
+            "isort==5.8.0",
             "flake8==3.8.4",
             "flake8-annotations==2.5.0",
             "flake8-colors==0.1.9",
