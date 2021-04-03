@@ -19,23 +19,23 @@ setup(
     include_package_data=True,
     install_requires=[
         "boto3==1.17.44",
-        "boto3-stubs[ec2,compute-optimizer,ssm]==1.17.42.0",
+        "boto3-stubs[ec2,compute-optimizer,ssm]==1.17.44.0",
         "pytoml==0.1.21",
         "pytz==2021.1",
-        "rich==10.0.1",
+        "rich==10.1.0",
     ],
     extras_require={
         "dev": [
             "black==20.8b1",
             "darglint==1.7.0",
-            "isort==5.7.0",
-            "flake8==3.8.4",
-            "flake8-annotations==2.5.0",
+            "isort==5.8.0",
+            "flake8==3.9.0",
+            "flake8-annotations==2.6.2",
             "flake8-colors==0.1.9",
             "moto[ec2]==2.0.4",
-            "pre-commit==2.10.1",
+            "pre-commit==2.11.1",
             "pytest==6.2.2",
-            "tox==3.22.0",
+            "tox==3.23.0",
         ]
     },
 )
