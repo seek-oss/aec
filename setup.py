@@ -27,13 +27,13 @@ setup(
     extras_require={
         "dev": [
             "black==20.8b1",
-            "darglint==1.7.0",
+            "darglint==1.8.0",
             "isort==5.8.0",
             "flake8==3.9.0",
             "flake8-annotations==2.6.2",
             "flake8-colors==0.1.9",
             "moto[ec2]==2.0.4",
-            "pre-commit==2.11.1",
+            "pre-commit==2.12.0",
             "pytest==6.2.2",
             "tox==3.23.0",
         ]
