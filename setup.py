@@ -18,8 +18,8 @@ setup(
     package_dir={"": "src"},
     include_package_data=True,
     install_requires=[
-        "boto3==1.17.44",
-        "boto3-stubs[ec2,compute-optimizer,ssm]==1.17.44.0",
+        "boto3==1.17.53",
+        "boto3-stubs[ec2,compute-optimizer,ssm]==1.17.53.1",
         "pytoml==0.1.21",
         "pytz==2021.1",
         "rich==10.1.0",
@@ -27,14 +27,14 @@ setup(
     extras_require={
         "dev": [
             "black==20.8b1",
-            "darglint==1.7.0",
+            "darglint==1.8.0",
             "isort==5.8.0",
-            "flake8==3.9.0",
+            "flake8==3.9.1",
             "flake8-annotations==2.6.2",
             "flake8-colors==0.1.9",
-            "moto[ec2]==2.0.4",
-            "pre-commit==2.12.0",
-            "pytest==6.2.2",
+            "moto[ec2]==2.0.5",
+            "pre-commit==2.12.1",
+            "pytest==6.2.3",
             "tox==3.23.0",
         ]
     },
