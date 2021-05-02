@@ -1,4 +1,4 @@
-name: Python application
+name: Build
 
 on: [push]
 
@@ -8,20 +8,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
+      with:
+        # so marceloprado/has-changed-path@v1 can detect changes
+        fetch-depth: 2
     - name: Set up Python 3.7
       id: setup-python
-      uses: actions/setup-python@v1
+      uses: actions/setup-python@v2
       with:
         python-version: 3.7
     - name: Cache virtualenv
+      id: cache-venv
       uses: actions/cache@v2
       with:
         path: .venv
         key: ${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-venv-${{ hashFiles('setup.py') }}
-    - name: install
-      if: steps.cache.outputs.cache-hit != 'true'
+    - name: make install
+      if: steps.cache-venv.outputs.cache-hit != 'true'
       run: make install
-    - uses: pre-commit/action@v2.0.0
+    - name: make hooks
+      run: make hooks
+    - name: Make and test distribution
+      run: make dist test-dist
+    - name: Check for version bump
+      if: github.ref == 'refs/heads/main'
+      uses: marceloprado/has-changed-path@v1
+      id: version-bump
       with:
-        extra_args: --all-files --hook-stage push
+        paths: asu/__init__.py
+    - name: Upload dist to pypi
+      if: steps.version-bump.outputs.changed == 'true'
+      env:
+        TWINE_USERNAME: __token__
+        TWINE_PASSWORD: ${{ secrets.pypi_password }}
+      run: make publish
+    - name: Read version
+      if: steps.version-bump.outputs.changed == 'true'
+      run: echo "version=$(python setup.py --version)" >> $GITHUB_ENV
+    - name: Tag commit
+      if: steps.version-bump.outputs.changed == 'true'
+      uses: tvdias/github-tagger@v0.0.1
+      with:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        tag: "${{ env.version }}"
