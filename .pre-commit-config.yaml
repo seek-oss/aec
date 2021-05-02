@@ -14,12 +14,12 @@ repos:
     hooks:
       - id: black
         name: black
-        entry: venv/bin/black
+        entry: .venv/bin/black
         language: system
         types: [python]
       - id: isort
         name: isort
-        entry: venv/bin/isort
+        entry: .venv/bin/isort
         language: system
         types: [python]
   - repo: https://github.com/myint/docformatter
@@ -32,7 +32,7 @@ repos:
     hooks:
       - id: flake8
         name: flake8
-        entry: venv/bin/flake8
+        entry: .venv/bin/flake8
         language: system
         types: [python]
   # these hooks require the project's virtualenv
