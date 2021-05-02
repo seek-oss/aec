@@ -17,7 +17,7 @@ jobs:
     - name: Cache virtualenv
       uses: actions/cache@v2
       with:
-        path: venv
+        path: .venv
         key: ${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-venv-${{ hashFiles('setup.py') }}
     - name: install
       if: steps.cache.outputs.cache-hit != 'true'
