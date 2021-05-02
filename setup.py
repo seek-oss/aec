@@ -18,8 +18,8 @@ setup(
     package_dir={"": "src"},
     include_package_data=True,
     install_requires=[
-        "boto3==1.17.53",
-        "boto3-stubs[ec2,compute-optimizer,ssm]==1.17.53.1",
+        "boto3==1.17.62",
+        "boto3-stubs[ec2,compute-optimizer,ssm]==1.17.62.0",
         "pytoml==0.1.21",
         "pytz==2021.1",
         "rich==10.1.0",
