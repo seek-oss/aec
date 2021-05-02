@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 long_description = Path("README.md").read_text()
 
 setup(
-    name="aec",
+    name="aec-cli",
     version="0.7.1",
     description="AWS EC2 CLI",
     long_description=long_description,
