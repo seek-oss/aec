@@ -35,7 +35,7 @@ jobs:
       uses: marceloprado/has-changed-path@v1
       id: version-bump
       with:
-        paths: asu/__init__.py
+        paths: src/aec/__init__.py
     - name: Upload dist to pypi
       if: steps.version-bump.outputs.changed == 'true'
       env:
