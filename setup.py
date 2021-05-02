@@ -26,7 +26,7 @@ setup(
     ],
     extras_require={
         "dev": [
-            "black==20.8b1",
+            "black==21.4b2",
             "darglint==1.8.0",
             "isort==5.8.0",
             "flake8==3.9.1",
