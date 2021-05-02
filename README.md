@@ -26,13 +26,16 @@ For examples see:
 Run the following to install the latest master version using pip:
 
 ```
-pip install git+https://github.com/seek-oss/aec.git
+pip install aec-cli
 ```
 
 If you have previously installed aec, run the following to upgrade to the latest version:
+
 ```
-pip install --upgrade git+https://github.com/seek-oss/aec.git
+pip install --upgrade aec-cli
 ```
+
+NB: Consider using [pipx](https://github.com/pipxproject/pipx) to install aec-cli into its own isolated virtualenv.
 
 ## Configure
 
