@@ -1,7 +1,7 @@
 MAKEFLAGS += --warn-undefined-variables
 SHELL = /bin/bash -o pipefail
 .DEFAULT_GOAL := help
-.PHONY: help install check flake8 pyright test hooks install-hooks
+.PHONY: help install check lint pyright test hooks install-hooks dist publish
 
 ## display help message
 help:
@@ -21,7 +21,7 @@ $(venv): setup.py $(pip)
 	$(pip) install -e '.[dev]'
 	touch $(venv)
 
-## create venv, install this package in dev mode, create stubs, and install hooks (if not in CI)
+## create venv and install this package and hooks
 install: $(venv) node_modules $(if $(value CI),,install-hooks)
 
 ## format all code
@@ -37,7 +37,7 @@ lint: $(venv)
 	$(venv)/bin/flake8
 
 node_modules: package.json
-	npm install
+	npm install --no-save
 	touch node_modules
 
 ## pyright
@@ -48,9 +48,29 @@ pyright: node_modules $(venv)
 test: $(venv)
 	$(venv)/bin/pytest
 
+## build distribution
+dist: $(venv)
+	# start with a clean slate (see setuptools/#2347)
+	rm -rf *.egg-info
+	# remove previous builds
+	rm -rf dist/*
+	$(venv)/bin/python setup.py sdist
+	$(venv)/bin/python setup.py bdist_wheel
+
+## test the wheel is correctly packaged
+test-dist: tmp_dir:=$(shell mktemp -d)
+test-dist: $(venv)
+	$(venv)/bin/python3 -m venv --clear $(tmp_dir)
+	$(tmp_dir)/bin/pip install dist/*.whl
+	$(tmp_dir)/bin/aec ec2 -h
+
+## publish to pypi
+publish: $(venv)
+	$(venv)/bin/twine upload dist/*
+
 ## run pre-commit git hooks on all files
-hooks: install-hooks $(venv)
-	$(venv)/bin/pre-commit run --all-files --hook-stage push
+hooks: $(venv)
+	$(venv)/bin/pre-commit run --show-diff-on-failure --color=always --all-files --hook-stage push
 
 install-hooks: .git/hooks/pre-commit .git/hooks/pre-push
 
@@ -59,23 +79,3 @@ install-hooks: .git/hooks/pre-commit .git/hooks/pre-push
 
 .git/hooks/pre-push: $(venv)
 	$(venv)/bin/pre-commit install -t pre-push
-
-## build source dist
-dist: $(src) setup.py MANIFEST.in
-	$(venv)/bin/python setup.py sdist
-
-	# clean up after ourselves (see setuptools/#2347)
-	rm -rf src/*.egg-info
-
-## test the distribution is correctly packaged
-test-dist: $(venv)
-	# recreate distribution package (sdist) and run aec help
-	$(venv)/bin/tox -v -r -e py
-
-	# clean up after ourselves (see setuptools/#2347)
-	rm -rf src/*.egg-info
-
-test-dist-no-tox: $(venv) dist
-	$(venv)/bin/python3 -m venv --clear /tmp/aec-test-dist
-	/tmp/aec-test-dist/bin/pip install dist/*.tar.gz
-	/tmp/aec-test-dist/bin/aec ec2 -h

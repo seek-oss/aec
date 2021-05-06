@@ -2,11 +2,13 @@ from pathlib import Path
 
 from setuptools import find_packages, setup
 
+import src.aec as aec
+
 long_description = Path("README.md").read_text()
 
 setup(
-    name="aec",
-    version="0.7.1",
+    name="aec-cli",
+    version=aec.__version__,
     description="AWS EC2 CLI",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -35,7 +37,6 @@ setup(
             "moto[ec2]==2.0.5",
             "pre-commit==2.12.1",
             "pytest==6.2.3",
-            "tox==3.23.0",
         ]
     },
 )
