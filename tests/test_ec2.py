@@ -165,6 +165,7 @@ def describe_instance0(region_name, instance_id):
     instances = ec2_client.describe_instances(InstanceIds=[instance_id])
     return instances["Reservations"][0]["Instances"][0]
 
+
 def test_tags(mock_aws_config):
     launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
 

@@ -6,8 +6,8 @@ import boto3
 from mypy_boto3_ec2.type_defs import FilterTypeDef
 
 import aec.command.ami as ami_cmd
-from aec.util.config import Config
 import aec.util.instance as instance
+from aec.util.config import Config
 
 
 def is_ebs_optimizable(instance_type: str) -> bool:
@@ -129,7 +129,7 @@ def describe(
     instances: List[Dict[str, Any]] = [
         {
             "State": i["State"]["Name"],
-            "Name": instance.name(i),
+            "Name": instance.tag(i, "Name"),
             "Type": i["InstanceType"],
             "DnsName": i["PublicDnsName"] if i.get("PublicDnsName", None) != "" else i["PrivateDnsName"],
             "LaunchTime": i["LaunchTime"],
@@ -155,28 +155,19 @@ def tags(config: Config, key: Optional[str] = None) -> List[Dict[str, Any]]:
     instances: List[Dict[str, Any]] = [
         {
             "InstanceId": i["InstanceId"],
-            "Name": instance.name(i),
-            f"Tag {key}": instance.first_or_else([tag["Value"] for tag in i["Tags"] if tag["Key"] == key], None),
+            "Name": instance.tag(i, "Name"),
+            f"Tag {key}": instance.tag(i, key),
         }
         if key
         else {
             "InstanceId": i["InstanceId"],
-            "Name": instance.name(i),
-            "Tags": ", ".join([f"{tag['Key']}={tag['Value']}" for tag in i["Tags"]]),
+            "Name": instance.tag(i, "Name"),
+            "Tags": ", ".join(f"{tag['Key']}={tag['Value']}" for tag in i["Tags"]),
         }
         for r in response["Reservations"]
         for i in r["Instances"]
         if i["State"]["Name"] != "terminated"
     ]
-
-    # instances: List[Dict[str, Any]] = []
-    # for r in response["Reservations"]:
-    #     for i in r["Instances"]:
-    #         if i["State"]["Name"] != "terminated":
-    #             if key:
-    #                 pass
-    #             else:
-    #                 instances.append
 
     return sorted(instances, key=lambda i: str(i["Name"]))
 
