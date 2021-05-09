@@ -6,7 +6,7 @@ from moto import mock_ec2
 from moto.ec2 import ec2_backends
 from moto.ec2.models import AMIS
 
-from aec.command.ec2 import describe, launch, logs, modify, start, stop, terminate
+from aec.command.ec2 import describe, launch, logs, modify, start, stop, tags, terminate
 
 
 @pytest.fixture
@@ -164,6 +164,20 @@ def describe_instance0(region_name, instance_id):
     ec2_client = boto3.client("ec2", region_name=region_name)
     instances = ec2_client.describe_instances(InstanceIds=[instance_id])
     return instances["Reservations"][0]["Instances"][0]
+
+def test_tags(mock_aws_config):
+    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+
+    instances = tags(config=mock_aws_config)
+
+    assert len(instances) == 1
+    assert instances[0]["Tags"] == "Name=alice, Owner=alice@testlab.io, Project=test project a"
+
+    instances = tags(config=mock_aws_config, key="Owner")
+    print(instances)
+
+    assert len(instances) == 1
+    assert instances[0]["Tag Owner"] == "alice@testlab.io"
 
 
 def test_stop_start(mock_aws_config):

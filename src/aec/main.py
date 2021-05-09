@@ -62,6 +62,10 @@ ec2_cli = [
         config_arg,
         Arg("name", type=str, help="Name tag of instance or instance id")
     ]),
+    Cmd(ec2.tags, [
+        config_arg,
+        Arg("--key", type=str, help="Tag to display")
+    ]),
     Cmd(ec2.terminate, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance or instance id")

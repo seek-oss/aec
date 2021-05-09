@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional
 import boto3
 
 from aec.util.config import Config
-from aec.util.list import first_or_else
+import aec.util.instance as instance
 
 
 def describe(config: Config) -> List[Dict[str, Any]]:
@@ -37,7 +37,7 @@ def describe_instances_names(config: Config) -> Dict[str, Optional[str]]:
     response = ec2_client.describe_instances()
 
     instances = {
-        i["InstanceId"]: first_or_else([t["Value"] for t in i.get("Tags", []) if t["Key"] == "Name"], None)
+        i["InstanceId"]: instance.name(i)
         for r in response["Reservations"]
         for i in r["Instances"]
     }
