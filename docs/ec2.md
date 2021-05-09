@@ -69,12 +69,20 @@ Show instances and all their tags:
 
 ```
 ec2 tags
+
+  InstanceId            Name        Tags  
+ ─────────────────────────────────────────────
+  i-099fe44f811245812   instance A  Name=instance A, Owner=alice
 ```
 
 Show instances and just the value of the tag `Owner`:
 
 ```
 ec2 tags --key Owner
+
+  InstanceId            Name        Tag Owner  
+ ─────────────────────────────────────────────
+  i-099fe44f811245812   instance A  alice
 ```
 
 Terminate an instance using its id:
