@@ -1,6 +1,6 @@
 import os
 import os.path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Generator, List, Optional, Sequence
 
 import boto3
 from mypy_boto3_ec2.type_defs import FilterTypeDef
@@ -109,6 +109,7 @@ def describe(
     name_match: Optional[str] = None,
     include_terminated: bool = False,
     show_running_only: bool = False,
+    show_tags: bool = False,
 ) -> List[Dict[str, Any]]:
     """List EC2 instances in the region."""
 
@@ -126,21 +127,34 @@ def describe(
 
     # print(response["Reservations"][0]["Instances"][0])
 
-    instances: List[Dict[str, Any]] = [
-        {
-            "State": i["State"]["Name"],
-            "Name": first_or_else([t["Value"] for t in i.get("Tags", []) if t["Key"] == "Name"], None),
-            "Type": i["InstanceType"],
-            "DnsName": i["PublicDnsName"] if i.get("PublicDnsName", None) != "" else i["PrivateDnsName"],
-            "LaunchTime": i["LaunchTime"],
-            "ImageId": i["ImageId"],
-            "InstanceId": i["InstanceId"],
-        }
-        for r in response["Reservations"]
-        for i in r["Instances"]
-        if (include_terminated or i["State"]["Name"] != "terminated")
-        and (not show_running_only or i["State"]["Name"] in ["pending", "running"])
-    ]
+    if not show_tags:
+        instances: List[Dict[str, Any]] = [
+            {
+                "State": i["State"]["Name"],
+                "Name": first_or_else([t["Value"] for t in i.get("Tags", []) if t["Key"] == "Name"], None),
+                "Type": i["InstanceType"],
+                "DnsName": i["PublicDnsName"] if i.get("PublicDnsName", None) != "" else i["PrivateDnsName"],
+                "LaunchTime": i["LaunchTime"],
+                "ImageId": i["ImageId"],
+                "InstanceId": i["InstanceId"],
+            }
+            for r in response["Reservations"]
+            for i in r["Instances"]
+            if (include_terminated or i["State"]["Name"] != "terminated")
+            and (not show_running_only or i["State"]["Name"] in ["pending", "running"])
+        ]
+    else:
+        instances: List[Dict[str, Any]] = [
+            {
+                "State": i["State"]["Name"],
+                "Name": first_or_else([t["Value"] for t in i.get("Tags", []) if t["Key"] == "Name"], None),
+                "Tags": ", ".join([f"{tag['Key']}={tag['Value']}" for tag in i["Tags"]]),
+            }
+            for r in response["Reservations"]
+            for i in r["Instances"]
+            if (include_terminated or i["State"]["Name"] != "terminated")
+            and (not show_running_only or i["State"]["Name"] in ["pending", "running"])
+        ]
 
     return sorted(instances, key=lambda i: i["State"] + str(i["Name"]))
 
@@ -233,7 +247,6 @@ def logs(config: Config, name: str) -> str:
     response = ec2_client.get_console_output(InstanceId=instance_id)
 
     return response["Output"]
-
 
 def read_file(filepath: str) -> str:
     with open(os.path.expanduser(filepath)) as file:
