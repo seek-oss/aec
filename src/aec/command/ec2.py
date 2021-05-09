@@ -146,7 +146,7 @@ def describe(
 
 
 def tags(config: Config, key: Optional[str] = None) -> List[Dict[str, Any]]:
-    """List EC2 tags."""
+    """List EC2 instances with their tags."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 

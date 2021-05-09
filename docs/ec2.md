@@ -3,19 +3,20 @@
 Run `aec ec2 -h` for help:
 
 ```
-usage: aec ec2 [-h] {describe,launch,logs,modify,start,stop,terminate} ...
+usage: aec ec2 [-h] {describe,launch,logs,modify,start,stop,tags,terminate} ...
 
 optional arguments:
   -h, --help            show this help message and exit
 
 subcommands:
-  {describe,launch,logs,modify,start,stop,terminate}
+  {describe,launch,logs,modify,start,stop,tags,terminate}
     describe            List EC2 instances in the region.
     launch              Launch a tagged EC2 instance with an EBS volume.
     logs                Show the system logs.
     modify              Change an instance's type.
     start               Start EC2 instance.
     stop                Stop EC2 instance.
+    tags                List EC2 instances with their tags.
     terminate           Terminate EC2 instance.
 ```
 
@@ -62,6 +63,18 @@ Show running or pending instances only:
 
 ```
 ec2 describe -r
+```
+
+Show instances and all their tags:
+
+```
+ec2 tags
+```
+
+Show instances and just the value of the tag `Owner`:
+
+```
+ec2 tags --key Owner
 ```
 
 Terminate an instance using its id:
