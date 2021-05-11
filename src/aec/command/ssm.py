@@ -2,8 +2,8 @@ from typing import Any, Dict, List, Optional
 
 import boto3
 
+import aec.util.instance as instance
 from aec.util.config import Config
-from aec.util.list import first_or_else
 
 
 def describe(config: Config) -> List[Dict[str, Any]]:
@@ -15,7 +15,7 @@ def describe(config: Config) -> List[Dict[str, Any]]:
 
     response = client.describe_instance_information()
 
-    instances = [
+    return [
         {
             "ID": i["InstanceId"],
             "Name": instances_names.get(i["InstanceId"], None),
@@ -26,8 +26,6 @@ def describe(config: Config) -> List[Dict[str, Any]]:
         for i in response["InstanceInformationList"]
     ]
 
-    return instances
-
 
 def describe_instances_names(config: Config) -> Dict[str, Optional[str]]:
     """List EC2 instance names in the region."""
@@ -36,10 +34,4 @@ def describe_instances_names(config: Config) -> Dict[str, Optional[str]]:
 
     response = ec2_client.describe_instances()
 
-    instances = {
-        i["InstanceId"]: first_or_else([t["Value"] for t in i.get("Tags", []) if t["Key"] == "Name"], None)
-        for r in response["Reservations"]
-        for i in r["Instances"]
-    }
-
-    return instances
+    return {i["InstanceId"]: instance.tag(i, "Name") for r in response["Reservations"] for i in r["Instances"]}
