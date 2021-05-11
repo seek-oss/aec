@@ -78,7 +78,7 @@ ec2 tags
 Show instances and just the value of the tags `Owner` and `Project`:
 
 ```
-ec2 tags --key Owner date
+ec2 tags --keys Owner Project
 
   InstanceId            Name        Tag: Owner    Tag: Project  
  ──────────────────────────────────────────────────────────────
