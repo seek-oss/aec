@@ -17,7 +17,7 @@ def mock_aws_config():
 
     return {
         "region": region,
-        "additional_tags": {"Owner": "alice@testlab.io", "Project": "test project a"},
+        "additional_tags": {"Owner": "alice@testlab.io", "Project": "top secret"},
         "key_name": "test_key",
         "vpc": {
             "name": "test vpc",
@@ -172,13 +172,14 @@ def test_tags(mock_aws_config):
     instances = tags(config=mock_aws_config)
 
     assert len(instances) == 1
-    assert instances[0]["Tags"] == "Name=alice, Owner=alice@testlab.io, Project=test project a"
+    assert instances[0]["Tags"] == "Name=alice, Owner=alice@testlab.io, Project=top secret"
 
-    instances = tags(config=mock_aws_config, key="Owner")
+    instances = tags(config=mock_aws_config, keys=["Owner", "Project"])
     print(instances)
 
     assert len(instances) == 1
-    assert instances[0]["Tag Owner"] == "alice@testlab.io"
+    assert instances[0]["Tag: Owner"] == "alice@testlab.io"
+    assert instances[0]["Tag: Project"] == "top secret"
 
 
 def test_stop_start(mock_aws_config):

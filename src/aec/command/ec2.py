@@ -145,29 +145,25 @@ def describe(
     return sorted(instances, key=lambda i: i["State"] + str(i["Name"]))
 
 
-def tags(config: Config, key: Optional[str] = None) -> List[Dict[str, Any]]:
+def tags(config: Config, keys: List[str] = []) -> List[Dict[str, Any]]:
     """List EC2 instances with their tags."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     response = ec2_client.describe_instances()
 
-    instances: List[Dict[str, Any]] = [
-        {
-            "InstanceId": i["InstanceId"],
-            "Name": instance.tag(i, "Name"),
-            f"Tag {key}": instance.tag(i, key),
-        }
-        if key
-        else {
-            "InstanceId": i["InstanceId"],
-            "Name": instance.tag(i, "Name"),
-            "Tags": ", ".join(f"{tag['Key']}={tag['Value']}" for tag in i["Tags"]),
-        }
-        for r in response["Reservations"]
-        for i in r["Instances"]
-        if i["State"]["Name"] != "terminated"
-    ]
+    instances: List[Dict[str, Any]] = []
+    for r in response["Reservations"]:
+        for i in r["Instances"]:
+            if i["State"]["Name"] != "terminated":
+                inst = {"InstanceId": i["InstanceId"], "Name": instance.tag(i, "Name")}
+                if not keys:
+                    inst["Tags"] = ", ".join(f"{tag['Key']}={tag['Value']}" for tag in i["Tags"])
+                else:
+                    for key in keys:
+                        inst[f"Tag: {key}"] = instance.tag(i, key)
+
+                instances.append(inst)
 
     return sorted(instances, key=lambda i: str(i["Name"]))
 

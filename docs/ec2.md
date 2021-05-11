@@ -75,14 +75,14 @@ ec2 tags
   i-099fe44f811245812   instance A  Name=instance A, Owner=alice
 ```
 
-Show instances and just the value of the tag `Owner`:
+Show instances and just the value of the tags `Owner` and `Project`:
 
 ```
-ec2 tags --key Owner
+ec2 tags --key Owner date
 
-  InstanceId            Name        Tag Owner  
- ─────────────────────────────────────────────
-  i-099fe44f811245812   instance A  alice
+  InstanceId            Name        Tag: Owner    Tag: Project  
+ ──────────────────────────────────────────────────────────────
+  i-099fe44f811245812   instance A  alice         top secret
 ```
 
 Terminate an instance using its id:

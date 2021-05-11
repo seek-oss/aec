@@ -64,7 +64,7 @@ ec2_cli = [
     ]),
     Cmd(ec2.tags, [
         config_arg,
-        Arg("--key", type=str, help="Tag to display")
+        Arg("--keys", "-k", type=str, nargs='+', help="Tag to display", default = [])
     ]),
     Cmd(ec2.terminate, [
         config_arg,
