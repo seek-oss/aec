@@ -1,10 +1,12 @@
 from datetime import datetime
-from typing import Any, Dict, List
+from typing import TYPE_CHECKING, Any, Dict, List
 
 import boto3
 import pytz
 from dateutil import relativedelta
-from mypy_boto3_compute_optimizer.type_defs import UtilizationMetricTypeDef
+
+if TYPE_CHECKING:
+    from mypy_boto3_compute_optimizer.type_defs import UtilizationMetricTypeDef
 
 from aec.util.config import Config
 

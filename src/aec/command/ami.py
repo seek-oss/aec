@@ -1,7 +1,10 @@
-from typing import List, NamedTuple, Optional
+from typing import TYPE_CHECKING, List, NamedTuple, Optional
 
 import boto3
-from mypy_boto3_ec2.type_defs import FilterTypeDef
+
+if TYPE_CHECKING:
+    from mypy_boto3_ec2.type_defs import FilterTypeDef
+
 from typing_extensions import TypedDict
 
 from aec.util.config import Config

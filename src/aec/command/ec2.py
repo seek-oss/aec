@@ -1,13 +1,15 @@
 import os
 import os.path
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import boto3
-from mypy_boto3_ec2.type_defs import FilterTypeDef
 
 import aec.command.ami as ami_cmd
 import aec.util.instance as instance
 from aec.util.config import Config
+
+if TYPE_CHECKING:
+    from mypy_boto3_ec2.type_defs import FilterTypeDef
 
 
 def is_ebs_optimizable(instance_type: str) -> bool:
