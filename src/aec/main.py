@@ -69,7 +69,11 @@ ec2_cli = [
     Cmd(ec2.terminate, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance or instance id")
-    ])
+    ]),
+    Cmd(ec2.volume_tags, [
+        config_arg,
+        Arg("--keys", "-k", type=str, nargs='+', metavar="KEY", help="Tags to display", default = [])
+    ]),
 ]
 
 ami_cli = [
