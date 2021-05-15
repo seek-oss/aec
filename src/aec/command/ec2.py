@@ -147,7 +147,15 @@ def describe(
     return sorted(instances, key=lambda i: i["State"] + str(i["Name"]))
 
 
-def tags(config: Config, keys: List[str] = []) -> List[Dict[str, Any]]:
+def tags(config: Config, keys: List[str] = [], volumes: bool = False) -> List[Dict[str, Any]]:
+    """List EC2 instances or volumes with their tags."""
+    if volumes:
+        return volume_tags(config, keys)
+
+    return instance_tags(config, keys)
+
+
+def instance_tags(config: Config, keys: List[str] = []) -> List[Dict[str, Any]]:
     """List EC2 instances with their tags."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -169,6 +177,7 @@ def tags(config: Config, keys: List[str] = []) -> List[Dict[str, Any]]:
 
     return sorted(instances, key=lambda i: str(i["Name"]))
 
+
 def volume_tags(config: Config, keys: List[str] = []) -> List[Dict[str, Any]]:
     """List EC2 volumes with their tags."""
 
@@ -188,6 +197,7 @@ def volume_tags(config: Config, keys: List[str] = []) -> List[Dict[str, Any]]:
         volumes.append(vol)
 
     return sorted(volumes, key=lambda i: str(i["Name"]))
+
 
 def start(config: Config, name: str) -> List[Dict[str, Any]]:
     """Start EC2 instance."""
