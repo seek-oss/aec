@@ -8,17 +8,7 @@ from moto.ec2 import ec2_backends
 from moto.ec2.models import AMIS
 from mypy_boto3_ec2.type_defs import TagTypeDef
 
-from aec.command.ec2 import (
-    describe,
-    instance_tags,
-    launch,
-    logs,
-    modify,
-    start,
-    stop,
-    terminate,
-    volume_tags,
-)
+from aec.command.ec2 import describe, instance_tags, launch, logs, modify, start, stop, terminate, volume_tags
 
 
 @pytest.fixture

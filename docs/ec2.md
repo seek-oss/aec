@@ -49,14 +49,14 @@ By default, commands will use the default profile as specified in the config fil
 ```
 aec ec2 describe --config us
 
-  State     Name         Type          DnsName            LaunchTime         ImageId            InstanceId  
+  State     Name         Type          DnsName            LaunchTime         ImageId            InstanceId
  ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  running   instance A   t2.micro      ec2-34-222-181-…   2020-08-31         ami-042e958219c…   i-0547be212903d…  
-                                                                22:33:29+00:00  
-  running   instance B   m5.large      ip-10-17-26-251…   2020-10-18         ami-0e40c8f9700…   i-0e0ea2dc778d7…  
-                                                                11:05:07+00:00  
-  stopped   instance C   t2.nano       ip-10-17-26-180…   2020-10-22         ami-0d5f76fa1b9…   i-0882dcea73a85…  
-                                                                19:29:14+00:00  
+  running   instance A   t2.micro      ec2-34-222-181-…   2020-08-31         ami-042e958219c…   i-0547be212903d…
+                                                                22:33:29+00:00
+  running   instance B   m5.large      ip-10-17-26-251…   2020-10-18         ami-0e40c8f9700…   i-0e0ea2dc778d7…
+                                                                11:05:07+00:00
+  stopped   instance C   t2.nano       ip-10-17-26-180…   2020-10-22         ami-0d5f76fa1b9…   i-0882dcea73a85…
+                                                                19:29:14+00:00
 ```
 
 Show running or pending instances only:
@@ -70,8 +70,8 @@ Show instances and all their tags:
 ```
 ec2 tags
 
-  InstanceId            Name        Tags  
- ─────────────────────────────────────────────
+  InstanceId            Name        Tags
+ ────────────────────────────────────────────────────────────────
   i-099fe44f811245812   instance A  Name=instance A, Owner=alice
 ```
 
@@ -80,9 +80,19 @@ Show instances and just the value of the tags `Owner` and `Project`:
 ```
 ec2 tags --keys Owner Project
 
-  InstanceId            Name        Tag: Owner    Tag: Project  
+  InstanceId            Name        Tag: Owner    Tag: Project
  ──────────────────────────────────────────────────────────────
   i-099fe44f811245812   instance A  alice         top secret
+```
+
+Show volume tags
+
+```
+ec2 tags -v
+
+  VolumeId              Name          Tags
+ ───────────────────────────────────────────────────────────────────
+  i-099fe44f811245812   awesome-vol   Name=awesome-vol, Owner=jane
 ```
 
 Terminate an instance using its id:

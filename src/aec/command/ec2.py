@@ -187,7 +187,7 @@ def volume_tags(config: Config, keys: List[str] = []) -> List[Dict[str, Any]]:
 
     volumes: List[Dict[str, Any]] = []
     for v in response["Volumes"]:
-        vol = {"InstanceId": v["VolumeId"], "Name": util_tags.get_value(v, "Name")}
+        vol = {"VolumeId": v["VolumeId"], "Name": util_tags.get_value(v, "Name")}
         if not keys:
             vol["Tags"] = ", ".join(f"{tag['Key']}={tag['Value']}" for tag in v.get("Tags", []))
         else:
