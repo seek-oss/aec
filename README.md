@@ -54,6 +54,17 @@ alias ami='COLUMNS=$COLUMNS aec ami'
 
 `COLUMNS=$COLUMNS` will ensure output is formatted to the width of your terminal when piped.
 
+## FAQ
+
+### How do I use aec with other AWS profiles?
+
+To use aec with the named profile 'production':
+
+```
+export AWS_DEFAULT_PROFILE=production
+aec ec2 describe
+```
+
 ## Development
 
 Pre-reqs:
