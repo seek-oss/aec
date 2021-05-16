@@ -34,7 +34,7 @@ setup(
             "flake8==3.9.1",
             "flake8-annotations==2.6.2",
             "flake8-colors==0.1.9",
-            "moto[ec2]==2.0.5",
+            "moto[ec2]==2.0.7",
             "pre-commit==2.12.1",
             "pytest==6.2.3",
             "twine==3.4.1",

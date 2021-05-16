@@ -32,6 +32,10 @@ def test_launch(mock_aws_config):
     instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
     assert "amazonaws.com" in instances[0]["DnsName"]
 
+    ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
+    volumes = ec2_client.describe_volumes()
+    assert volumes["Volumes"][0]["Size"] == 15
+
 
 def test_launch_multiple_security_groups(mock_aws_config):
     mock_aws_config["vpc"]["security_group"] = ["one", "two"]
@@ -69,6 +73,23 @@ def test_override_key_name(mock_aws_config):
     instance = describe_instance0(mock_aws_config["region"], instance_id)
 
     assert "magic-key" in instance["KeyName"]
+
+
+def test_override_volume_size(mock_aws_config):
+    launch(mock_aws_config, "alice", AMIS[0]["ami_id"], volume_size=66)
+
+    ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
+    volumes = ec2_client.describe_volumes()
+    assert volumes["Volumes"][0]["Size"] == 66
+
+
+def test_config_override_volume_size(mock_aws_config):
+    mock_aws_config["volume_size"] = 77
+    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+
+    ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
+    volumes = ec2_client.describe_volumes()
+    assert volumes["Volumes"][0]["Size"] == 77
 
 
 def test_launch_has_userdata(mock_aws_config):
@@ -220,9 +241,6 @@ def test_logs(mock_aws_config):
     logs(config=mock_aws_config, name="alice")
 
 
-@pytest.mark.skip(
-    reason="EBS is not working properly on moto yet. This will be fix in 3.1.15 https://github.com/spulec/moto/issues/3219"
-)
 def test_ebs_encrypted_by_default(mock_aws_config):
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
     launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
@@ -231,9 +249,7 @@ def test_ebs_encrypted_by_default(mock_aws_config):
     assert volumes["Volumes"][0]["KmsKeyId"]
 
 
-@pytest.mark.skip(
-    reason="EBS is not working properly on moto yet. This will be fix in 3.1.15 https://github.com/spulec/moto/issues/3219"
-)
+@pytest.mark.skip(reason="see https://github.com/spulec/moto/issues/3935")
 def test_ebs_encrypt_with_kms(mock_aws_config):
     mock_aws_config["kms_key_id"] = "arn:aws:kms:ap-southeast-2:123456789012:key/abcdef"
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])

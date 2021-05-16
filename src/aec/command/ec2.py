@@ -20,7 +20,7 @@ def launch(
     config: Config,
     name: str,
     ami: str,
-    volume_size: int = 100,
+    volume_size: Optional[int] = None,
     encrypted: bool = True,
     instance_type: str = "t2.medium",
     key_name: Optional[str] = None,
@@ -39,6 +39,9 @@ def launch(
         key_name = config["key_name"]
 
     image = ami_cmd.fetch(config, ami)
+
+    if not volume_size:
+        volume_size = config.get("volume_size", None) or image["Size"]
 
     # TODO: support multiple subnets
     kwargs: Dict[str, Any] = {
