@@ -65,7 +65,7 @@ def launch(
                 "Ebs": {
                     "VolumeSize": volume_size,
                     "DeleteOnTermination": True,
-                    "VolumeType": "gp2",
+                    "VolumeType": "gp3",
                     "Encrypted": encrypted,
                 },
             }
