@@ -16,7 +16,7 @@ subcommands:
     modify              Change an instance's type.
     start               Start EC2 instance.
     stop                Stop EC2 instance.
-    tags                List EC2 instances with their tags.
+    tags                List EC2 instances or volumes with their tags.
     terminate           Terminate EC2 instance.
 ```
 
