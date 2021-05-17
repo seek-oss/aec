@@ -39,7 +39,7 @@ ec2_cli = [
         config_arg,
         Arg("name", type=str, help="Name tag of instance"),
         Arg("ami", type=ami_arg_checker, help=f"AMI id or a keyword to lookup the latest ami: {[k for k in ami.ami_keywords.keys()]}"),
-        Arg("--volume-size", type=int, help="EBS volume size (GB)", default=100),
+        Arg("--volume-size", type=int, help="EBS volume size (GB). Defaults to AMI volume size."),
         Arg("--encrypted", type=bool, help="Whether the EBS volume is encrypted", default=True),
         Arg("--instance-type", type=str, help="Instance type", default="t2.medium"),
         Arg("--key-name", type=str, help="Key name"),
