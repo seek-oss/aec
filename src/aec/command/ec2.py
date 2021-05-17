@@ -40,8 +40,7 @@ def launch(
 
     image = ami_cmd.fetch(config, ami)
 
-    if not volume_size:
-        volume_size = config.get("volume_size", None) or image["Size"]
+    volume_size = volume_size or config.get("volume_size", None) or image["Size"]
 
     # TODO: support multiple subnets
     kwargs: Dict[str, Any] = {
