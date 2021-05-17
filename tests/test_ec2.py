@@ -1,12 +1,14 @@
 import os
+from typing import List
 
 import boto3
 import pytest
 from moto import mock_ec2
 from moto.ec2 import ec2_backends
 from moto.ec2.models import AMIS
+from mypy_boto3_ec2.type_defs import TagTypeDef
 
-from aec.command.ec2 import describe, launch, logs, modify, start, stop, tags, terminate
+from aec.command.ec2 import describe, instance_tags, launch, logs, modify, start, stop, terminate, volume_tags
 
 
 @pytest.fixture
@@ -169,17 +171,37 @@ def describe_instance0(region_name, instance_id):
 def test_tags(mock_aws_config):
     launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
 
-    instances = tags(config=mock_aws_config)
+    instances = instance_tags(config=mock_aws_config)
 
     assert len(instances) == 1
     assert instances[0]["Tags"] == "Name=alice, Owner=alice@testlab.io, Project=top secret"
 
-    instances = tags(config=mock_aws_config, keys=["Owner", "Project"])
+    instances = instance_tags(config=mock_aws_config, keys=["Owner", "Project"])
     print(instances)
 
     assert len(instances) == 1
     assert instances[0]["Tag: Owner"] == "alice@testlab.io"
     assert instances[0]["Tag: Project"] == "top secret"
+
+
+def test_volume_tags(mock_aws_config):
+    ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
+
+    tags: List[TagTypeDef] = [{"Key": "Name", "Value": "Mr Snuffleupagus"}, {"Key": "Best Friend", "Value": "Big Bird"}]
+    ec2_client.create_volume(
+        AvailabilityZone="us-east-1a", Size=10, TagSpecifications=[{"ResourceType": "volume", "Tags": tags}]
+    )
+
+    volumes = volume_tags(config=mock_aws_config)
+
+    assert len(volumes) == 1
+    assert volumes[0]["Tags"] == "Name=Mr Snuffleupagus, Best Friend=Big Bird"
+
+    volumes = volume_tags(config=mock_aws_config, keys=["Name", "Best Friend"])
+
+    assert len(volumes) == 1
+    assert volumes[0]["Tag: Name"] == "Mr Snuffleupagus"
+    assert volumes[0]["Tag: Best Friend"] == "Big Bird"
 
 
 def test_stop_start(mock_aws_config):

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 import boto3
 
 import aec.command.ami as ami_cmd
-import aec.util.instance as instance
+import aec.util.tags as util_tags
 from aec.util.config import Config
 
 if TYPE_CHECKING:
@@ -131,7 +131,7 @@ def describe(
     instances: List[Dict[str, Any]] = [
         {
             "State": i["State"]["Name"],
-            "Name": instance.tag(i, "Name"),
+            "Name": util_tags.get_value(i, "Name"),
             "Type": i["InstanceType"],
             "DnsName": i["PublicDnsName"] if i.get("PublicDnsName", None) != "" else i["PrivateDnsName"],
             "LaunchTime": i["LaunchTime"],
@@ -147,7 +147,15 @@ def describe(
     return sorted(instances, key=lambda i: i["State"] + str(i["Name"]))
 
 
-def tags(config: Config, keys: List[str] = []) -> List[Dict[str, Any]]:
+def tags(config: Config, keys: List[str] = [], volumes: bool = False) -> List[Dict[str, Any]]:
+    """List EC2 instances or volumes with their tags."""
+    if volumes:
+        return volume_tags(config, keys)
+
+    return instance_tags(config, keys)
+
+
+def instance_tags(config: Config, keys: List[str] = []) -> List[Dict[str, Any]]:
     """List EC2 instances with their tags."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -158,16 +166,37 @@ def tags(config: Config, keys: List[str] = []) -> List[Dict[str, Any]]:
     for r in response["Reservations"]:
         for i in r["Instances"]:
             if i["State"]["Name"] != "terminated":
-                inst = {"InstanceId": i["InstanceId"], "Name": instance.tag(i, "Name")}
+                inst = {"InstanceId": i["InstanceId"], "Name": util_tags.get_value(i, "Name")}
                 if not keys:
-                    inst["Tags"] = ", ".join(f"{tag['Key']}={tag['Value']}" for tag in i["Tags"])
+                    inst["Tags"] = ", ".join(f"{tag['Key']}={tag['Value']}" for tag in i.get("Tags", []))
                 else:
                     for key in keys:
-                        inst[f"Tag: {key}"] = instance.tag(i, key)
+                        inst[f"Tag: {key}"] = util_tags.get_value(i, key)
 
                 instances.append(inst)
 
     return sorted(instances, key=lambda i: str(i["Name"]))
+
+
+def volume_tags(config: Config, keys: List[str] = []) -> List[Dict[str, Any]]:
+    """List EC2 volumes with their tags."""
+
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
+
+    response = ec2_client.describe_volumes()
+
+    volumes: List[Dict[str, Any]] = []
+    for v in response["Volumes"]:
+        vol = {"VolumeId": v["VolumeId"], "Name": util_tags.get_value(v, "Name")}
+        if not keys:
+            vol["Tags"] = ", ".join(f"{tag['Key']}={tag['Value']}" for tag in v.get("Tags", []))
+        else:
+            for key in keys:
+                vol[f"Tag: {key}"] = util_tags.get_value(v, key)
+
+        volumes.append(vol)
+
+    return sorted(volumes, key=lambda i: str(i["Name"]))
 
 
 def start(config: Config, name: str) -> List[Dict[str, Any]]:

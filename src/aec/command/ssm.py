@@ -2,7 +2,7 @@ from typing import Any, Dict, List, Optional
 
 import boto3
 
-import aec.util.instance as instance
+import aec.util.tags as util_tags
 from aec.util.config import Config
 
 
@@ -34,4 +34,4 @@ def describe_instances_names(config: Config) -> Dict[str, Optional[str]]:
 
     response = ec2_client.describe_instances()
 
-    return {i["InstanceId"]: instance.tag(i, "Name") for r in response["Reservations"] for i in r["Instances"]}
+    return {i["InstanceId"]: util_tags.get_value(i, "Name") for r in response["Reservations"] for i in r["Instances"]}
