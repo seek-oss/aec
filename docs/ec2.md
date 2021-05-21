@@ -96,7 +96,7 @@ ec2 tags -v
   vol-0439c5ed37f6d455e   awesome-vol   Name=awesome-vol, Owner=jane
 ```
 
-Show output as csv instead of a table
+Show output as csv instead of a table (works with any command)
 
 ```
 ec2 tags -v
