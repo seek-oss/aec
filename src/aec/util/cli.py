@@ -3,7 +3,9 @@
 import inspect
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace, _SubParsersAction
 from typing import Any, Callable, List, Optional, Tuple
-from enum import Enum
+
+from aec.util.display import OutputFormat
+
 
 class Arg:
     def __init__(self, *args: Any, **kwargs: Any):
@@ -37,9 +39,6 @@ class Cmd:
         elif not self.args and call_me_num_args > 0:
             raise Exception(f"{self.call_me.__name__} has {call_me_num_args} args but none defined for the cli")
 
-class OutputFormat(Enum):
-    table = 'table'
-    csv = 'csv'
 
 def usage_exit(parser: ArgumentParser) -> Callable[[], None]:
     def inner() -> None:
@@ -73,6 +72,7 @@ def add_command_group(
                 parser.add_argument(*arg.args, **arg.kwargs)
         parser.add_argument("-o", "--output", choices=OutputFormat.__members__, help="Output format", default="table")
 
+
 def dispatch(parser: ArgumentParser, args: List[str]) -> Tuple[Any, OutputFormat]:
     pargs = parser.parse_args(args)
 
@@ -93,4 +93,3 @@ def dispatch(parser: ArgumentParser, args: List[str]) -> Tuple[Any, OutputFormat
     delattr(pargs, "output")
 
     return (call_me(**vars(pargs)), output_format)
-
