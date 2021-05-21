@@ -131,7 +131,9 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(args: List[str] = sys.argv[1:]) -> None:
-    result = cli.dispatch(build_parser(), args)
+    result, output_format = cli.dispatch(build_parser(), args)
+    print(output_format)
+    print(type(output_format))
     display.pretty_print(result)
 
 

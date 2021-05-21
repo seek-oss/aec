@@ -68,7 +68,7 @@ def add_command_group(
         if cmd.args:
             for arg in cmd.args:
                 parser.add_argument(*arg.args, **arg.kwargs)
-
+        parser.add_argument("-o", "--output", choices=["table", "csv"], help="Output format", default="table")
 
 def dispatch(parser: ArgumentParser, args: List[str]) -> Any:
     pargs = parser.parse_args(args)
@@ -84,4 +84,10 @@ def dispatch(parser: ArgumentParser, args: List[str]) -> Any:
     call_me = pargs.call_me
     # remove call_me arg because the call_me function doesn't expect it
     delattr(pargs, "call_me")
-    return call_me(**vars(pargs))
+
+    # remove output because that's injected above and the call_me function doesn't expect it
+    output_format = pargs.output
+    delattr(pargs, "output")
+
+    return (call_me(**vars(pargs)), output_format)
+

@@ -22,32 +22,6 @@ def as_table(dicts: Optional[Sequence[Dict[str, Any]]], keys: Optional[List[str]
     return [keys] + [[str(d.get(f, "")) if d.get(f, "") else None for f in keys] for d in dicts]  # type: ignore
 
 
-def pretty_table(table: Optional[Sequence[Sequence[Optional[str]]]]) -> str:
-    """Formats a table as a pretty string for printing."""
-    if not table:
-        return ""
-
-    padding = 2
-    col_width = [0] * len(table[0])
-    for row in table:
-        for idx, col in enumerate(row):
-            if col is not None and len(col) > col_width[idx]:
-                col_width[idx] = len(col)
-
-    return "\n".join(
-        [
-            "".join(
-                [
-                    "".join(
-                        (col if col is not None else "").ljust(col_width[idx] + padding) for idx, col in enumerate(row)
-                    )
-                ]
-            )
-            for row in table
-        ]
-    )
-
-
 def pretty_print(result: Any) -> None:
     """print table/json, instead of showing a dict, or list of dicts."""
 
