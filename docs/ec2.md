@@ -3,13 +3,14 @@
 Run `aec ec2 -h` for help:
 
 ```
-usage: aec ec2 [-h] {describe,launch,logs,modify,start,stop,tags,terminate} ...
+usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,tags,terminate} ...
 
 optional arguments:
   -h, --help            show this help message and exit
 
 subcommands:
-  {describe,launch,logs,modify,start,stop,tags,terminate}
+  {create-key-pair,describe,launch,logs,modify,start,stop,tags,terminate}
+    create-key-pair     Create a key pair.
     describe            List EC2 instances in the region.
     launch              Launch a tagged EC2 instance with an EBS volume.
     logs                Show the system logs.

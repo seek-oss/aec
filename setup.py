@@ -37,6 +37,7 @@ setup(
             "moto[ec2]==2.0.7",
             "pre-commit==2.12.1",
             "pytest==6.2.3",
+            "pytest-mock==3.6.1",
             "twine==3.4.1",
         ]
     },

@@ -275,6 +275,20 @@ def modify(config: Config, name: str, type: str) -> List[Dict[str, Any]]:
     return describe(config, name)
 
 
+def create_key_pair(config: Config, key_name: str, file_path: str) -> str:
+    """Create a key pair."""
+
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
+
+    path = os.path.expanduser(file_path)
+    with open(path, "x") as file:
+        key = ec2_client.create_key_pair(KeyName=key_name)
+        file.write(key["KeyMaterial"])
+        os.chmod(path, 0o600)
+
+    return f"Created key pair {key_name} and saved private key to {path}"
+
+
 def logs(config: Config, name: str) -> str:
     """Show the system logs."""
 

@@ -7,8 +7,20 @@ from moto import mock_ec2
 from moto.ec2 import ec2_backends
 from moto.ec2.models import AMIS
 from mypy_boto3_ec2.type_defs import TagTypeDef
+from pytest_mock import MockFixture
 
-from aec.command.ec2 import describe, instance_tags, launch, logs, modify, start, stop, terminate, volume_tags
+from aec.command.ec2 import (
+    create_key_pair,
+    describe,
+    instance_tags,
+    launch,
+    logs,
+    modify,
+    start,
+    stop,
+    terminate,
+    volume_tags,
+)
 
 
 @pytest.fixture
@@ -279,3 +291,16 @@ def test_ebs_encrypt_with_kms(mock_aws_config):
     volumes = ec2_client.describe_volumes()
     assert volumes["Volumes"][0]["Encrypted"] is True
     assert volumes["Volumes"][0]["KmsKeyId"] == "arn:aws:kms:ap-southeast-2:123456789012:key/abcdef"
+
+
+def test_create_key_pair(mock_aws_config, mocker: MockFixture):
+    mocked_file = mocker.patch("aec.command.ec2.open", mocker.mock_open())
+    mocked_chmod = mocker.patch("os.chmod")
+
+    create_key_pair(mock_aws_config, "test-key", "/tmp/test-file")
+
+    mocked_file.assert_called_once_with("/tmp/test-file", "x")
+
+    (private_key,) = mocked_file().write.call_args[0]
+    assert private_key.startswith("-----BEGIN RSA PRIVATE KEY-----")
+    mocked_chmod.assert_called_once()

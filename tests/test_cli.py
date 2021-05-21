@@ -7,13 +7,13 @@ from aec.util.cli import Arg, Cmd
 
 
 def test_cli_injects_config():
-    def eat(config: Dict[str, Any], thing, temp: Optional[str] = None):
+    def eat(config: Dict[str, Any], thing_one, temp: Optional[str] = None):
         print(config)
         assert config and isinstance(config, dict) and config["region"]
-        assert thing == "cheese"
+        assert thing_one == "cheese"
         assert temp == "warm"
 
-    cmds = [Cmd(eat, [Arg("--config"), Arg("thing"), Arg("--temp")])]
+    cmds = [Cmd(eat, [Arg("--config"), Arg("thing_one"), Arg("--temp")])]
 
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()

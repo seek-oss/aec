@@ -28,6 +28,11 @@ configure_cli = [
 ]
 
 ec2_cli = [
+    Cmd(ec2.create_key_pair, [
+        config_arg,
+        Arg("key_name", type=str, help="Key pair name"),
+        Arg("file_path", type=str,help="Path of private key to create, eg: ~/.ssh/topsecret.pem"),
+    ]),
     Cmd(ec2.describe, [
         config_arg,
         Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
