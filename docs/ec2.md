@@ -99,7 +99,7 @@ ec2 tags -v
 Show output as csv instead of a table (works with any command)
 
 ```
-ec2 tags -v
+ec2 tags -v -o csv
 VolumeId,Name,Tags
 vol-0439c5ed37f6d455e,awesome-vol,"Name=awesome-vol, Owner=jane"
 ```
