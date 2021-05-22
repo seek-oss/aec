@@ -302,7 +302,7 @@ def logs(config: Config, name: str) -> str:
     instance_id = instances[0]["InstanceId"]
     response = ec2_client.get_console_output(InstanceId=instance_id)
 
-    return response["Output"]
+    return response.get("Output", "No logs yet 😔")
 
 
 def read_file(filepath: str) -> str:
