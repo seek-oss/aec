@@ -70,7 +70,11 @@ def add_command_group(
         if cmd.args:
             for arg in cmd.args:
                 parser.add_argument(*arg.args, **arg.kwargs)
-        parser.add_argument("-o", "--output", choices=OutputFormat.__members__, help="Output format", default="table")
+
+        # add output arg to every command
+        parser.add_argument(
+            "-o", "--output", choices=OutputFormat.__members__, help="Output format", default=OutputFormat.table.value
+        )
 
 
 def dispatch(parser: ArgumentParser, args: List[str]) -> Tuple[Any, OutputFormat]:
