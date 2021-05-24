@@ -2,7 +2,7 @@ import datetime
 
 from dateutil.tz import tzutc
 
-from aec.util.display import as_table, pretty_table
+from aec.util.display import as_table
 
 
 def test_as_table():
@@ -34,24 +34,3 @@ def test_as_table_with_none():
 
 def test_as_table_empty_list():
     assert as_table([]) == []
-
-
-def test_pretty():
-    table = [["a", "b", "c"], ["aaaaaaaaaa", "b", "c"], ["a", "bbbbbbbbbb", "c"]]
-    expected = "a           b           c  \naaaaaaaaaa  b           c  \na           bbbbbbbbbb  c  "
-    actual = pretty_table(table)
-    assert actual == expected
-
-
-def test_pretty_with_none():
-    table = [["a", "b", "c"], [None, "e", "f"]]
-    expected = "a  b  c  \n   e  f  "
-    actual = pretty_table(table)
-    assert actual == expected
-
-
-def test_pretty_with_empty_table():
-    table = []
-    expected = ""
-    actual = pretty_table(table)
-    assert actual == expected

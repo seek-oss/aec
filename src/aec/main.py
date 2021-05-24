@@ -131,8 +131,8 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(args: List[str] = sys.argv[1:]) -> None:
-    result = cli.dispatch(build_parser(), args)
-    display.pretty_print(result)
+    result, output_format = cli.dispatch(build_parser(), args)
+    display.pretty_print(result, output_format)
 
 
 if __name__ == "__main__":

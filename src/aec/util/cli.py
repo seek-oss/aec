@@ -2,7 +2,9 @@
 
 import inspect
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace, _SubParsersAction
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, List, Optional, Tuple
+
+from aec.util.display import OutputFormat
 
 
 class Arg:
@@ -69,8 +71,13 @@ def add_command_group(
             for arg in cmd.args:
                 parser.add_argument(*arg.args, **arg.kwargs)
 
+        # add output arg to every command
+        parser.add_argument(
+            "-o", "--output", choices=OutputFormat.__members__, help="Output format", default=OutputFormat.table.value
+        )
 
-def dispatch(parser: ArgumentParser, args: List[str]) -> Any:
+
+def dispatch(parser: ArgumentParser, args: List[str]) -> Tuple[Any, OutputFormat]:
     pargs = parser.parse_args(args)
 
     if "args_pre_processor" in pargs:
@@ -84,4 +91,9 @@ def dispatch(parser: ArgumentParser, args: List[str]) -> Any:
     call_me = pargs.call_me
     # remove call_me arg because the call_me function doesn't expect it
     delattr(pargs, "call_me")
-    return call_me(**vars(pargs))
+
+    # remove output because that's injected above and the call_me function doesn't expect it
+    output_format = OutputFormat[pargs.output]
+    delattr(pargs, "output")
+
+    return (call_me(**vars(pargs)), output_format)
