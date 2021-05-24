@@ -93,7 +93,15 @@ ec2 tags -v
 
   VolumeId              Name          Tags
  ───────────────────────────────────────────────────────────────────
-  i-099fe44f811245812   awesome-vol   Name=awesome-vol, Owner=jane
+  vol-0439c5ed37f6d455e   awesome-vol   Name=awesome-vol, Owner=jane
+```
+
+Show output as csv instead of a table (works with any command)
+
+```
+ec2 tags -v -o csv
+VolumeId,Name,Tags
+vol-0439c5ed37f6d455e,awesome-vol,"Name=awesome-vol, Owner=jane"
 ```
 
 Terminate an instance using its id:
