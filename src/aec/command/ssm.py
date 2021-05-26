@@ -34,25 +34,32 @@ def patch_summary(config: Config) -> List[Dict[str, Any]]:
 
     response = ec2_client.describe_instances()
 
-    instance_ids = [i["InstanceId"] for r in response["Reservations"] for i in r["Instances"]]
+    instances_names = describe_instances_names(config)
+    instance_ids = list(instances_names.keys())
 
     client = boto3.client("ssm", region_name=config.get("region", None))
 
     print(len(instance_ids))
 
-    response = client.describe_instance_patch_states(InstanceIds=instance_ids[:50])
+    max_at_a_time = 50
+    result = []
+    for i in range(0, len(instance_ids), max_at_a_time):
+        chunk = instance_ids[i : i + max_at_a_time]
+        response = client.describe_instance_patch_states(InstanceIds=chunk)
+        result.extend([
+            {
+                "InstanceId": i["InstanceId"],
+                "Name": instances_names.get(i["InstanceId"], None),
+                "Updates installed": i["InstalledCount"],
+                "Updates needed": i["MissingCount"],
+                "Updates with errors": i["FailedCount"],
+                "Last operation time": i["OperationEndTime"],
+                "Last operation": i["Operation"],
+            }
+            for i in response["InstancePatchStates"]
+        ])
 
-    return [
-        {
-            "InstanceId": i["InstanceId"],
-            "Updates installed": i["InstalledCount"],
-            "Updates needed": i["MissingCount"],
-            "Updates with errors": i["FailedCount"],
-            "Last operation time": i["OperationEndTime"],
-            "Last operation": i["Operation"]
-        }
-        for i in response["InstancePatchStates"]
-    ]
+    return result
 
 
 def describe_instances_names(config: Config) -> Dict[str, Optional[str]]:
