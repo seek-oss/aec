@@ -5,9 +5,18 @@ from typing import Any, Callable, Dict, Optional
 import pytoml as toml
 from typing_extensions import TypedDict
 
+class SsmConfig(TypedDict, total=False):
+    s3bucket: str
+    s3prefix: str
+
+class VpcConfig(TypedDict, total=False):
+    name: str
+    subnet: str
+    security_group: str
 
 class Config(TypedDict, total=False):
-    vpc: Dict[str, str]
+    ssm: SsmConfig
+    vpc: VpcConfig
     key_name: str
     # the following fields are optional
     region: str

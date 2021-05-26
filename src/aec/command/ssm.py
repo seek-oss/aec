@@ -82,7 +82,7 @@ def compliance_summary(config: Config) -> List[Dict[str, Any]]:
     ]
 
 
-def patch(config: Config, name: str, operation: str) -> List[Dict[str, str]]:
+def patch(config: Config, name: str, operation: str) -> List[Dict[str, Optional[str]]]:
     """Patch baseline"""
 
     # TODO add s3 bucket
@@ -90,15 +90,31 @@ def patch(config: Config, name: str, operation: str) -> List[Dict[str, str]]:
 
     client = boto3.client("ssm", region_name=config.get("region", None))
 
-    response = client.send_command(
-        DocumentName="AWS-RunPatchBaseline", Parameters={"Operation": [operation]}, InstanceIds=[instance_id]
-    )
+    kwargs: Dict[str, Any] = {
+        "DocumentName": "AWS-RunPatchBaseline",
+        "Parameters": {"Operation": [operation]},
+        "InstanceIds": [instance_id],
+    }
 
-    return [{
-        "CommandId": response["Command"]["CommandId"],
-        "InstanceIds": ",".join(response["Command"]["InstanceIds"]),
-        "Status": response["Command"]["Status"],
-    }]
+    try:
+        kwargs["OutputS3BucketName"] = config["ssm"]["s3bucket"]
+        kwargs["OutputS3KeyPrefix"] = config["ssm"]["s3prefix"]
+    except KeyError:
+        pass
+
+    response = client.send_command(**kwargs)
+
+    return [
+        {
+            "CommandId": response["Command"]["CommandId"],
+            "InstanceIds": ",".join(response["Command"]["InstanceIds"]),
+            "Status": response["Command"]["Status"],
+            "Output": f"s3://{response['Command']['OutputS3BucketName']}/{response['Command']['OutputS3KeyPrefix']}"
+            if response["Command"].get("OutputS3BucketName", None)
+            else None,
+        }
+    ]
+
 
 def list_commands(config: Config, name: str) -> List[Dict[str, Optional[str]]]:
     """Command invocations for an instance"""
@@ -108,14 +124,19 @@ def list_commands(config: Config, name: str) -> List[Dict[str, Optional[str]]]:
 
     response = client.list_commands(InstanceId=instance_id)
 
-    return [{
-        "RequestedDateTime": c["RequestedDateTime"].strftime("%Y-%m-%d %H:%M"),
-        "CommandId": c["CommandId"],
-        "Status": c["Status"],
-        "DocumentName": c["DocumentName"],
-        "Parameters": json.dumps(c["Parameters"]),
-        "Output": f"s3://{c['OutputS3BucketName']}/{c['OutputS3KeyPrefix']}" if c.get("OutputS3BucketName", None) else None,
-    } for c in response["Commands"]]
+    return [
+        {
+            "RequestedDateTime": c["RequestedDateTime"].strftime("%Y-%m-%d %H:%M"),
+            "CommandId": c["CommandId"],
+            "Status": c["Status"],
+            "DocumentName": c["DocumentName"],
+            "Parameters": json.dumps(c["Parameters"]),
+            "Output": f"s3://{c['OutputS3BucketName']}/{c['OutputS3KeyPrefix']}"
+            if c.get("OutputS3BucketName", None)
+            else None,
+        }
+        for c in response["Commands"]
+    ]
 
 
 def fetch_instance_id(config: Config, name: str) -> str:
@@ -129,6 +150,7 @@ def fetch_instance_id(config: Config, name: str) -> str:
     response = ec2_client.describe_instances(Filters=filters)
 
     return response["Reservations"][0]["Instances"][0]["InstanceId"]
+
 
 def describe_instances_names(config: Config) -> Dict[str, Optional[str]]:
     """List EC2 instance names in the region."""
