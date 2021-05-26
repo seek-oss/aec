@@ -109,7 +109,10 @@ ssm_cli = [
     ]),
     Cmd(ssm.patch_summary, [
         config_arg
-    ])
+    ]),
+    Cmd(ssm.compliance_summary, [
+        config_arg
+    ]),
 ]
 # fmt: on
 
