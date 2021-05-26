@@ -106,6 +106,9 @@ compute_optimizer_cli = [
 ssm_cli = [
     Cmd(ssm.describe, [
         config_arg
+    ]),
+    Cmd(ssm.patch_summary, [
+        config_arg
     ])
 ]
 # fmt: on
