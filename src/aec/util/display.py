@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 import csv
 import enum
 import json
 import sys
-from typing import Any, Dict, List, Optional, Sequence, Union, cast
+from typing import Any, Dict, List, Optional, Sequence, cast
 
 from rich import box
 from rich.console import Console
@@ -30,7 +32,7 @@ def as_table(dicts: Sequence[Dict[str, Any]], keys: Optional[List[str]] = None) 
     return [keys] + [[str(d.get(f, "")) if d.get(f, "") else None for f in keys] for d in dicts]  # type: ignore
 
 
-def pretty_print(result: Union[List[Dict[str, Any]], Dict, str, None], output_format: OutputFormat) -> None:
+def pretty_print(result: List[Dict[str, Any]] | Dict | str | None, output_format: OutputFormat) -> None:
     """print table/json, instead of showing a dict, or list of dicts."""
 
     console = Console()
