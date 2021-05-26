@@ -113,6 +113,12 @@ ssm_cli = [
     Cmd(ssm.compliance_summary, [
         config_arg
     ]),
+    Cmd(ssm.patch, [
+        config_arg,
+        Arg("name", type=str, help="Name tag of instance or instance id"),
+        Arg("-op","--operation", type=str, choices=["Scan", "Install"], default="Scan", help="Scan or install")
+    ]),
+
 ]
 # fmt: on
 

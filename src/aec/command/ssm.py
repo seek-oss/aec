@@ -1,9 +1,12 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 import boto3
 
 import aec.util.tags as util_tags
 from aec.util.config import Config
+
+if TYPE_CHECKING:
+    from mypy_boto3_ec2.type_defs import FilterTypeDef
 
 
 def describe(config: Config) -> List[Dict[str, Any]]:
@@ -63,7 +66,9 @@ def compliance_summary(config: Config) -> List[Dict[str, Any]]:
 
     client = boto3.client("ssm", region_name=config.get("region", None))
 
-    response = client.list_resource_compliance_summaries(Filters=[{"Key":"ComplianceType","Values":["Patch"],"Type":"EQUAL"}])
+    response = client.list_resource_compliance_summaries(
+        Filters=[{"Key": "ComplianceType", "Values": ["Patch"], "Type": "EQUAL"}]
+    )
 
     return [
         {
@@ -77,7 +82,33 @@ def compliance_summary(config: Config) -> List[Dict[str, Any]]:
     ]
 
 
+def patch(config: Config, name: str, operation: str) -> List[Dict[str, str]]:
+    """Patch baseline"""
 
+    # TODO add s3 bucket
+
+    filters: List[FilterTypeDef] = []
+    if name.startswith("i-"):
+        filters = [{"Name": "instance-id", "Values": [name]}]
+    else:
+        filters = [{"Name": "tag:Name", "Values": [name]}]
+
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
+    response = ec2_client.describe_instances(Filters=filters)
+
+    instance_id = response["Reservations"][0]["Instances"][0]["InstanceId"]
+
+    client = boto3.client("ssm", region_name=config.get("region", None))
+
+    response = client.send_command(
+        DocumentName="AWS-RunPatchBaseline", Parameters={"Operation": [operation]}, InstanceIds=[instance_id]
+    )
+
+    return [{
+        "CommandId": response["Command"]["CommandId"],
+        "InstanceIds": ",".join(response["Command"]["InstanceIds"]),
+        "Status": response["Command"]["Status"],
+    }]
 
 
 def describe_instances_names(config: Config) -> Dict[str, Optional[str]]:
