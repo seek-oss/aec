@@ -118,7 +118,10 @@ ssm_cli = [
         Arg("name", type=str, help="Name tag of instance or instance id"),
         Arg("-op","--operation", type=str, choices=["Scan", "Install"], default="Scan", help="Scan or install")
     ]),
-
+    Cmd(ssm.list_commands, [
+        config_arg,
+        Arg("name", type=str, help="Name tag of instance or instance id"),
+    ]),
 ]
 # fmt: on
 

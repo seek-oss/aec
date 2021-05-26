@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 import boto3
-
+import json
 import aec.util.tags as util_tags
 from aec.util.config import Config
 
@@ -86,17 +86,7 @@ def patch(config: Config, name: str, operation: str) -> List[Dict[str, str]]:
     """Patch baseline"""
 
     # TODO add s3 bucket
-
-    filters: List[FilterTypeDef] = []
-    if name.startswith("i-"):
-        filters = [{"Name": "instance-id", "Values": [name]}]
-    else:
-        filters = [{"Name": "tag:Name", "Values": [name]}]
-
-    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
-    response = ec2_client.describe_instances(Filters=filters)
-
-    instance_id = response["Reservations"][0]["Instances"][0]["InstanceId"]
+    instance_id = fetch_instance_id(config, name)
 
     client = boto3.client("ssm", region_name=config.get("region", None))
 
@@ -110,6 +100,35 @@ def patch(config: Config, name: str, operation: str) -> List[Dict[str, str]]:
         "Status": response["Command"]["Status"],
     }]
 
+def list_commands(config: Config, name: str) -> List[Dict[str, Optional[str]]]:
+    """Command invocations for an instance"""
+    instance_id = fetch_instance_id(config, name)
+
+    client = boto3.client("ssm", region_name=config.get("region", None))
+
+    response = client.list_commands(InstanceId=instance_id)
+
+    return [{
+        "RequestedDateTime": c["RequestedDateTime"].strftime("%Y-%m-%d %H:%M"),
+        "CommandId": c["CommandId"],
+        "Status": c["Status"],
+        "DocumentName": c["DocumentName"],
+        "Parameters": json.dumps(c["Parameters"]),
+        "Output": f"s3://{c['OutputS3BucketName']}/{c['OutputS3KeyPrefix']}" if c.get("OutputS3BucketName", None) else None,
+    } for c in response["Commands"]]
+
+
+def fetch_instance_id(config: Config, name: str) -> str:
+    filters: List[FilterTypeDef] = []
+    if name.startswith("i-"):
+        filters = [{"Name": "instance-id", "Values": [name]}]
+    else:
+        filters = [{"Name": "tag:Name", "Values": [name]}]
+
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
+    response = ec2_client.describe_instances(Filters=filters)
+
+    return response["Reservations"][0]["Instances"][0]["InstanceId"]
 
 def describe_instances_names(config: Config) -> Dict[str, Optional[str]]:
     """List EC2 instance names in the region."""
