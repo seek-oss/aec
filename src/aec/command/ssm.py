@@ -118,53 +118,51 @@ def patch(config: Config, name: str, operation: str) -> List[Dict[str, Optional[
         for i in response["Command"]["InstanceIds"]
     ]
 
-
-def is_guid(s: str) -> bool:
-    return len(s) == 36 and s[8] == "-" and s[13] == "-" and s[18] == "-" and s[23] == "-"
-
-
 def list_commands(config: Config, name: str) -> List[Dict[str, Optional[str]]]:
-    """Command invocations for an instance or command"""
+    """Commands run on an instance"""
 
     client = boto3.client("ssm", region_name=config.get("region", None))
 
-    if is_guid(name):
-        command = client.list_commands(CommandId=name)["Commands"][0]
-        invocations = client.list_command_invocations(CommandId=name)
+    instance_id = fetch_instance_id(config, name)
 
-        return [
-            {
-                "RequestedDateTime": i["RequestedDateTime"].strftime("%Y-%m-%d %H:%M"),
-                "InstanceId": i["InstanceId"],
-                "Status": i["Status"],
-                "DocumentName": i["DocumentName"],
-                "Parameters": json.dumps(command["Parameters"]),
-                "Output": f"s3://{command['OutputS3BucketName']}/{command['OutputS3KeyPrefix']}"
-                if command.get("OutputS3BucketName", None)
-                else None,
-            }
-            for i in invocations["CommandInvocations"]
-        ]
+    response = client.list_commands(InstanceId=instance_id)
 
-    else:
-        instance_id = fetch_instance_id(config, name)
+    return [
+        {
+            "RequestedDateTime": c["RequestedDateTime"].strftime("%Y-%m-%d %H:%M"),
+            "CommandId": c["CommandId"],
+            "Status": c["Status"],
+            "DocumentName": c["DocumentName"],
+            "Parameters": json.dumps(c["Parameters"]),
+            "Output": f"s3://{c['OutputS3BucketName']}/{c['OutputS3KeyPrefix']}"
+            if c.get("OutputS3BucketName", None)
+            else None,
+        }
+        for c in response["Commands"]
+    ]
 
-        commands = client.list_commands(InstanceId=instance_id)
+def list_command_invocations(config: Config, command_id: str) -> List[Dict[str, Optional[str]]]:
+    """Invocations across instances for a command"""
 
-        return [
-            {
-                "RequestedDateTime": c["RequestedDateTime"].strftime("%Y-%m-%d %H:%M"),
-                "CommandId": c["CommandId"],
-                "Status": c["Status"],
-                "DocumentName": c["DocumentName"],
-                "Parameters": json.dumps(c["Parameters"]),
-                "Output": f"s3://{c['OutputS3BucketName']}/{c['OutputS3KeyPrefix']}"
-                if c.get("OutputS3BucketName", None)
-                else None,
-            }
-            for c in commands["Commands"]
-        ]
+    client = boto3.client("ssm", region_name=config.get("region", None))
 
+
+    command = client.list_commands(CommandId=command_id)["Commands"][0]
+    invocations = client.list_command_invocations(CommandId=command_id)
+
+    return [
+        {
+            "RequestedDateTime": i["RequestedDateTime"].strftime("%Y-%m-%d %H:%M"),
+            "InstanceId": i["InstanceId"],
+            "Status": i["Status"],
+            "DocumentName": i["DocumentName"],
+            "Parameters": json.dumps(command["Parameters"]),
+            "Output": f"s3://{command['OutputS3BucketName']}/{command['OutputS3KeyPrefix']}"
+            if command.get("OutputS3BucketName", None)
+            else None,
+        }
+        for i in invocations["CommandInvocations"]
+    ]
 
 def fetch_instance_id(config: Config, name: str) -> str:
     filters: List[FilterTypeDef] = []

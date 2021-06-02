@@ -122,6 +122,10 @@ ssm_cli = [
         config_arg,
         Arg("name", type=str, help="Name tag of instance or instance id"),
     ]),
+    Cmd(ssm.list_command_invocations, [
+        config_arg,
+        Arg("command_id", type=str, help="Command id"),
+    ]),
 ]
 # fmt: on
 
