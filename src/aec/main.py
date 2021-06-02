@@ -126,9 +126,16 @@ ssm_cli = [
         config_arg,
         Arg("command_id", type=str, help="Command id"),
     ]),
+    Cmd(ssm.output, [
+        config_arg,
+        Arg("command_id", type=str, help="Command id"),
+        Arg("instance_id", type=str, help="Instance id"),
+        Arg("type", type = ssm.OutputType.output_type, choices=list(ssm.OutputType), help="Output type"),
+    ]),
 ]
 # fmt: on
 
+#default=ssm.OutputType.stdout.value,
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="aws ec2 cli")

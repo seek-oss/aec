@@ -1,7 +1,12 @@
+import enum
 from typing import Any, Dict, List, Optional, TYPE_CHECKING
 
 import boto3
 import json
+
+import codecs
+
+from botocore.exceptions import ClientError
 import aec.util.tags as util_tags
 from aec.util.config import Config
 
@@ -118,6 +123,7 @@ def patch(config: Config, name: str, operation: str) -> List[Dict[str, Optional[
         for i in response["Command"]["InstanceIds"]
     ]
 
+
 def list_commands(config: Config, name: str) -> List[Dict[str, Optional[str]]]:
     """Commands run on an instance"""
 
@@ -141,11 +147,11 @@ def list_commands(config: Config, name: str) -> List[Dict[str, Optional[str]]]:
         for c in response["Commands"]
     ]
 
+
 def list_command_invocations(config: Config, command_id: str) -> List[Dict[str, Optional[str]]]:
     """Invocations across instances for a command"""
 
     client = boto3.client("ssm", region_name=config.get("region", None))
-
 
     command = client.list_commands(CommandId=command_id)["Commands"][0]
     invocations = client.list_command_invocations(CommandId=command_id)
@@ -163,6 +169,52 @@ def list_command_invocations(config: Config, command_id: str) -> List[Dict[str, 
         }
         for i in invocations["CommandInvocations"]
     ]
+
+
+class OutputType(enum.Enum):
+    stdout = "stdout"
+    stderr = "stderr"
+
+    def __str__(self):
+        # for pretty cli help
+        return self.name
+
+    @staticmethod
+    def output_type(s):
+        # for a pretty cli invalid argument error
+        try:
+            return OutputType[s]
+        except KeyError:
+            raise ValueError()
+
+
+def output(config: Config, command_id: str, instance_id: str, type: OutputType) -> None:
+    ssm_client = boto3.client("ssm", region_name=config.get("region", None))
+
+    command = ssm_client.list_commands(CommandId=command_id)["Commands"][0]
+
+    if not command.get("OutputS3BucketName", None):
+        raise ValueError("No OutputS3BucketName")
+
+    bucket = command["OutputS3BucketName"]
+    key = f"{command['OutputS3KeyPrefix']}/{command_id}/{instance_id}/awsrunShellScript/PatchLinux/{type.value}"
+
+    s3_client = boto3.client("s3", region_name=config.get("region", None))
+
+    try:
+        response = s3_client.get_object(Bucket=bucket, Key=key)
+    except ClientError as e:
+        if e.response["Error"]["Code"] == "NoSuchKey":
+            raise KeyError(f"s3://{bucket}/{key} does not exist")
+        else:
+            raise e
+            
+    # converts body bytes to string lines
+    for line in codecs.getreader('utf-8')(response["Body"]):
+        print(line, end='')
+
+    return None
+
 
 def fetch_instance_id(config: Config, name: str) -> str:
     filters: List[FilterTypeDef] = []
