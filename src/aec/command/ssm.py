@@ -47,9 +47,9 @@ def patch_summary(config: Config) -> List[Dict[str, Any]]:
                 {
                     "InstanceId": i["InstanceId"],
                     "Name": instances_names.get(i["InstanceId"], None),
-                    "Updates installed": i["InstalledCount"],
-                    "Updates needed": i["MissingCount"],
-                    "Updates with errors": i["FailedCount"],
+                    "Installed": i["InstalledCount"],
+                    "Needed": i["MissingCount"],
+                    "Errored": i["FailedCount"],
                     "Last operation time": i["OperationEndTime"],
                     "Last operation": i["Operation"],
                 }
@@ -85,15 +85,17 @@ def compliance_summary(config: Config) -> List[Dict[str, Any]]:
 def patch(config: Config, name: str, operation: str) -> List[Dict[str, Optional[str]]]:
     """Patch baseline"""
 
-    # TODO add s3 bucket
-    instance_id = fetch_instance_id(config, name)
+    if name == "all":
+        instance_ids = [i["ID"] for i in describe(config)]
+    else:
+        instance_ids = [fetch_instance_id(config, name)]
 
     client = boto3.client("ssm", region_name=config.get("region", None))
 
     kwargs: Dict[str, Any] = {
         "DocumentName": "AWS-RunPatchBaseline",
         "Parameters": {"Operation": [operation]},
-        "InstanceIds": [instance_id],
+        "InstanceIds": instance_ids,
     }
 
     try:
@@ -107,12 +109,13 @@ def patch(config: Config, name: str, operation: str) -> List[Dict[str, Optional[
     return [
         {
             "CommandId": response["Command"]["CommandId"],
-            "InstanceIds": ",".join(response["Command"]["InstanceIds"]),
+            "InstanceId": i,
             "Status": response["Command"]["Status"],
             "Output": f"s3://{response['Command']['OutputS3BucketName']}/{response['Command']['OutputS3KeyPrefix']}"
             if response["Command"].get("OutputS3BucketName", None)
             else None,
         }
+        for i in response["Command"]["InstanceIds"]
     ]
 
 
