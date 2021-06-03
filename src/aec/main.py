@@ -116,7 +116,8 @@ ssm_cli = [
     Cmd(ssm.patch, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance or instance id"),
-        Arg("-op","--operation", type=str, choices=["Scan", "Install"], default="Scan", help="Scan or install")
+        Arg("-i","--install", action='store_true', help="Install missing patches instead of just scanning"),
+        Arg("-nr","--no-reboot", action='store_true', help="Do not reboot after install"),
     ]),
     Cmd(ssm.commands, [
         config_arg,
@@ -135,7 +136,6 @@ ssm_cli = [
 ]
 # fmt: on
 
-#default=ssm.OutputType.stdout.value,
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="aws ec2 cli")

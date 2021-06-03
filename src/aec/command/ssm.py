@@ -87,7 +87,7 @@ def compliance_summary(config: Config) -> List[Dict[str, Any]]:
     ]
 
 
-def patch(config: Config, name: str, operation: str) -> List[Dict[str, Optional[str]]]:
+def patch(config: Config, name: str, install: bool, no_reboot: bool) -> List[Dict[str, Optional[str]]]:
     """Patch baseline"""
 
     if name == "all":
@@ -99,9 +99,13 @@ def patch(config: Config, name: str, operation: str) -> List[Dict[str, Optional[
 
     kwargs: Dict[str, Any] = {
         "DocumentName": "AWS-RunPatchBaseline",
-        "Parameters": {"Operation": [operation]},
         "InstanceIds": instance_ids,
     }
+
+    if install:
+        kwargs["Parameters"] = {"Operation": ["Install"], "RebootOption": ["NoReboot" if no_reboot else "RebootIfNeeded"]}
+    else:
+        kwargs["Parameters"] = {"Operation": ["Scan"]}
 
     try:
         kwargs["OutputS3BucketName"] = config["ssm"]["s3bucket"]
