@@ -124,7 +124,7 @@ def patch(config: Config, name: str, operation: str) -> List[Dict[str, Optional[
     ]
 
 
-def list_commands(config: Config, name: str) -> List[Dict[str, Optional[str]]]:
+def commands(config: Config, name: str) -> List[Dict[str, Optional[str]]]:
     """Commands run on an instance"""
 
     client = boto3.client("ssm", region_name=config.get("region", None))
@@ -148,7 +148,7 @@ def list_commands(config: Config, name: str) -> List[Dict[str, Optional[str]]]:
     ]
 
 
-def list_command_invocations(config: Config, command_id: str) -> List[Dict[str, Optional[str]]]:
+def invocations(config: Config, command_id: str) -> List[Dict[str, Optional[str]]]:
     """Invocations across instances for a command"""
 
     client = boto3.client("ssm", region_name=config.get("region", None))
@@ -208,7 +208,7 @@ def output(config: Config, command_id: str, instance_id: str, type: OutputType) 
             raise KeyError(f"s3://{bucket}/{key} does not exist")
         else:
             raise e
-            
+
     # converts body bytes to string lines
     for line in codecs.getreader('utf-8')(response["Body"]):
         print(line, end='')
