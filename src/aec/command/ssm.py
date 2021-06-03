@@ -1,5 +1,6 @@
 import enum
 from typing import Any, Dict, List, Optional, TYPE_CHECKING
+from typing_extensions import Literal
 
 import boto3
 import json
@@ -87,8 +88,10 @@ def compliance_summary(config: Config) -> List[Dict[str, Any]]:
     ]
 
 
-def patch(config: Config, name: str, install: bool, no_reboot: bool) -> List[Dict[str, Optional[str]]]:
-    """Patch baseline"""
+def patch(
+    config: Config, operation: Literal["scan", "install"], name: str, no_reboot: bool
+) -> List[Dict[str, Optional[str]]]:
+    """Scan or install AWS patch baseline"""
 
     if name == "all":
         instance_ids = [i["ID"] for i in describe(config)]
@@ -102,10 +105,13 @@ def patch(config: Config, name: str, install: bool, no_reboot: bool) -> List[Dic
         "InstanceIds": instance_ids,
     }
 
-    if install:
-        kwargs["Parameters"] = {"Operation": ["Install"], "RebootOption": ["NoReboot" if no_reboot else "RebootIfNeeded"]}
-    else:
+    if operation == "scan":
         kwargs["Parameters"] = {"Operation": ["Scan"]}
+    else:
+        kwargs["Parameters"] = {
+            "Operation": ["Install"],
+            "RebootOption": ["NoReboot" if no_reboot else "RebootIfNeeded"],
+        }
 
     try:
         kwargs["OutputS3BucketName"] = config["ssm"]["s3bucket"]
@@ -175,24 +181,8 @@ def invocations(config: Config, command_id: str) -> List[Dict[str, Optional[str]
     ]
 
 
-class OutputType(enum.Enum):
-    stdout = "stdout"
-    stderr = "stderr"
-
-    def __str__(self):
-        # for pretty cli help
-        return self.name
-
-    @staticmethod
-    def output_type(s):
-        # for a pretty cli invalid argument error
-        try:
-            return OutputType[s]
-        except KeyError:
-            raise ValueError()
-
-
-def output(config: Config, command_id: str, instance_id: str, type: OutputType) -> None:
+def output(config: Config, command_id: str, instance_id: str, stderr: bool) -> None:
+    """Fetch output of command from S3"""
     ssm_client = boto3.client("ssm", region_name=config.get("region", None))
 
     command = ssm_client.list_commands(CommandId=command_id)["Commands"][0]
@@ -201,7 +191,8 @@ def output(config: Config, command_id: str, instance_id: str, type: OutputType) 
         raise ValueError("No OutputS3BucketName")
 
     bucket = command["OutputS3BucketName"]
-    key = f"{command['OutputS3KeyPrefix']}/{command_id}/{instance_id}/awsrunShellScript/PatchLinux/{type.value}"
+    type = "stderr" if stderr else "stdout"
+    key = f"{command['OutputS3KeyPrefix']}/{command_id}/{instance_id}/awsrunShellScript/PatchLinux/{type}"
 
     s3_client = boto3.client("s3", region_name=config.get("region", None))
 
@@ -214,8 +205,8 @@ def output(config: Config, command_id: str, instance_id: str, type: OutputType) 
             raise e
 
     # converts body bytes to string lines
-    for line in codecs.getreader('utf-8')(response["Body"]):
-        print(line, end='')
+    for line in codecs.getreader("utf-8")(response["Body"]):
+        print(line, end="")
 
     return None
 
