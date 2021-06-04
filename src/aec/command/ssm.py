@@ -168,13 +168,6 @@ def run(config: Config, names: List[str]) -> List[Dict[str, Optional[str]]]:
         for i in response["Command"]["InstanceIds"]
     ]
 
-E = TypeVar('E')
-def first(xs: Optional[Sequence[E]]) -> Optional[E]:
-    if xs:
-        return xs[0]
-    else:
-        return None
-
 
 def commands(config: Config, name: Optional[str]) -> List[Dict[str, Any]]:
     """Commands run on an instance"""
@@ -196,10 +189,10 @@ def commands(config: Config, name: Optional[str]) -> List[Dict[str, Any]]:
             "Names": ",".join([instances_names.get(i, None) or "" for i in c["InstanceIds"]]),
             "Status": c["Status"],
             "DocumentName": c["DocumentName"],
-            "Operation": first(c["Parameters"].get("Operation", None))
         }
         for c in response["Commands"]
     ]
+
 
 def invocations(config: Config, command_id: str) -> List[Dict[str, Any]]:
     """Invocations across instances for a command"""
