@@ -1,9 +1,9 @@
-import enum
 from typing import Any, Dict, List, Optional, TYPE_CHECKING
 from typing_extensions import Literal
 
 import boto3
 import json
+import uuid
 
 import codecs
 
@@ -56,6 +56,7 @@ def patch_summary(config: Config) -> List[Dict[str, Any]]:
                     "Installed": i["InstalledCount"],
                     "Needed": i["MissingCount"],
                     "Errored": i["FailedCount"],
+                    "Pending Reboot": i["InstalledPendingRebootCount"],
                     "Last operation time": i["OperationEndTime"],
                     "Last operation": i["Operation"],
                 }
@@ -106,11 +107,12 @@ def patch(
     }
 
     if operation == "scan":
-        kwargs["Parameters"] = {"Operation": ["Scan"]}
+        kwargs["Parameters"] = {"Operation": ["Scan"], "SnapshotId": [str(uuid.uuid4())]}
     else:
         kwargs["Parameters"] = {
             "Operation": ["Install"],
             "RebootOption": ["NoReboot" if no_reboot else "RebootIfNeeded"],
+            "SnapshotId": [str(uuid.uuid4())],
         }
 
     try:
@@ -126,6 +128,7 @@ def patch(
             "CommandId": response["Command"]["CommandId"],
             "InstanceId": i,
             "Status": response["Command"]["Status"],
+            "Document": response["Command"]["DocumentName"],
             "Output": f"s3://{response['Command']['OutputS3BucketName']}/{response['Command']['OutputS3KeyPrefix']}"
             if response["Command"].get("OutputS3BucketName", None)
             else None,
