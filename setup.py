@@ -35,7 +35,7 @@ setup(
             "flake8-annotations==2.6.2",
             "flake8-colors==0.1.9",
             "moto[ec2]==2.0.8",
-            "pre-commit==2.12.1",
+            "pre-commit==2.13.0",
             "pytest==6.2.3",
             "pytest-mock==3.6.1",
             "twine==3.4.1",
