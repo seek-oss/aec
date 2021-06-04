@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Sequence, TypeVar
 from typing_extensions import Literal
 
 import boto3
@@ -168,26 +168,35 @@ def run(config: Config, names: List[str]) -> List[Dict[str, Optional[str]]]:
         for i in response["Command"]["InstanceIds"]
     ]
 
+E = TypeVar('E')
+def first(xs: Optional[Sequence[E]]) -> Optional[E]:
+    if xs:
+        return xs[0]
+    else:
+        return None
 
-def commands(config: Config, name: str) -> List[Dict[str, Optional[str]]]:
+
+def commands(config: Config, name: Optional[str]) -> List[Dict[str, Any]]:
     """Commands run on an instance"""
 
     client = boto3.client("ssm", region_name=config.get("region", None))
+    instances_names = describe_instances_names(config)
 
-    instance_id = fetch_instance_id(config, name)
-
-    response = client.list_commands(InstanceId=instance_id)
+    if name:
+        instance_id = fetch_instance_id(config, name)
+        response = client.list_commands(InstanceId=instance_id)
+    else:
+        response = client.list_commands()
 
     return [
         {
             "RequestedDateTime": c["RequestedDateTime"].strftime("%Y-%m-%d %H:%M"),
             "CommandId": c["CommandId"],
+            "InstanceIds": ",".join(c["InstanceIds"]),
+            "Names": ",".join([instances_names.get(i, None) or "" for i in c["InstanceIds"]]),
             "Status": c["Status"],
             "DocumentName": c["DocumentName"],
-            "Parameters": json.dumps(c["Parameters"]),
-            "Output": f"s3://{c['OutputS3BucketName']}/{c['OutputS3KeyPrefix']}"
-            if c.get("OutputS3BucketName", None)
-            else None,
+            "Operation": first(c["Parameters"].get("Operation", None))
         }
         for c in response["Commands"]
     ]

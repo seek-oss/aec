@@ -121,7 +121,7 @@ ssm_cli = [
     ]),
     Cmd(ssm.commands, [
         config_arg,
-        Arg("name", type=str, help="Name tag of instance or instance id"),
+        Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
     ]),
     Cmd(ssm.invocations, [
         config_arg,
