@@ -4,6 +4,7 @@ from typing_extensions import Literal
 import boto3
 import json
 import uuid
+import sys
 
 import codecs
 
@@ -90,14 +91,11 @@ def compliance_summary(config: Config) -> List[Dict[str, Any]]:
 
 
 def patch(
-    config: Config, operation: Literal["scan", "install"], name: str, no_reboot: bool
+    config: Config, operation: Literal["scan", "install"], names: List[str], no_reboot: bool
 ) -> List[Dict[str, Optional[str]]]:
     """Scan or install AWS patch baseline"""
 
-    if name == "all":
-        instance_ids = [i["ID"] for i in describe(config)]
-    else:
-        instance_ids = [fetch_instance_id(config, name)]
+    instance_ids = fetch_instance_ids(config, names)
 
     client = boto3.client("ssm", region_name=config.get("region", None))
 
@@ -114,6 +112,43 @@ def patch(
             "RebootOption": ["NoReboot" if no_reboot else "RebootIfNeeded"],
             "SnapshotId": [str(uuid.uuid4())],
         }
+
+    try:
+        kwargs["OutputS3BucketName"] = config["ssm"]["s3bucket"]
+        kwargs["OutputS3KeyPrefix"] = config["ssm"]["s3prefix"]
+    except KeyError:
+        pass
+
+    response = client.send_command(**kwargs)
+
+    return [
+        {
+            "CommandId": response["Command"]["CommandId"],
+            "InstanceId": i,
+            "Status": response["Command"]["Status"],
+            "Document": response["Command"]["DocumentName"],
+            "Output": f"s3://{response['Command']['OutputS3BucketName']}/{response['Command']['OutputS3KeyPrefix']}"
+            if response["Command"].get("OutputS3BucketName", None)
+            else None,
+        }
+        for i in response["Command"]["InstanceIds"]
+    ]
+
+
+def run(config: Config, names: List[str]) -> List[Dict[str, Optional[str]]]:
+    """Run shell script on instance(s). Script is read from stdin."""
+
+    instance_ids = fetch_instance_ids(config, names)
+
+    client = boto3.client("ssm", region_name=config.get("region", None))
+
+    script = sys.stdin.readlines()
+
+    kwargs: Dict[str, Any] = {
+        "DocumentName": "AWS-RunShellScript",
+        "InstanceIds": instance_ids,
+        "Parameters": {"commands": script},
+    }
 
     try:
         kwargs["OutputS3BucketName"] = config["ssm"]["s3bucket"]
@@ -184,6 +219,9 @@ def invocations(config: Config, command_id: str) -> List[Dict[str, Optional[str]
     ]
 
 
+DOC_PATHS = {"AWS-RunPatchBaseline": "PatchLinux", "AWS-RunShellScript": "0.awsrunShellScript"}
+
+
 def output(config: Config, command_id: str, instance_id: str, stderr: bool) -> None:
     """Fetch output of command from S3"""
     ssm_client = boto3.client("ssm", region_name=config.get("region", None))
@@ -194,8 +232,10 @@ def output(config: Config, command_id: str, instance_id: str, stderr: bool) -> N
         raise ValueError("No OutputS3BucketName")
 
     bucket = command["OutputS3BucketName"]
-    type = "stderr" if stderr else "stdout"
-    key = f"{command['OutputS3KeyPrefix']}/{command_id}/{instance_id}/awsrunShellScript/PatchLinux/{type}"
+
+    doc_path = DOC_PATHS[command["DocumentName"]]
+    std = "stderr" if stderr else "stdout"
+    key = f"{command['OutputS3KeyPrefix']}/{command_id}/{instance_id}/awsrunShellScript/{doc_path}/{std}"
 
     s3_client = boto3.client("s3", region_name=config.get("region", None))
 
@@ -215,16 +255,39 @@ def output(config: Config, command_id: str, instance_id: str, stderr: bool) -> N
 
 
 def fetch_instance_id(config: Config, name: str) -> str:
-    filters: List[FilterTypeDef] = []
     if name.startswith("i-"):
-        filters = [{"Name": "instance-id", "Values": [name]}]
-    else:
-        filters = [{"Name": "tag:Name", "Values": [name]}]
+        return name
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
-    response = ec2_client.describe_instances(Filters=filters)
+    response = ec2_client.describe_instances(Filters=[{"Name": "tag:Name", "Values": [name]}])
 
-    return response["Reservations"][0]["Instances"][0]["InstanceId"]
+    try:
+        return response["Reservations"][0]["Instances"][0]["InstanceId"]
+    except IndexError as e:
+        raise ValueError(f"No instance named {name}")
+
+
+def fetch_instance_ids(config: Config, ids_or_names: List[str]) -> List[str]:
+    if ids_or_names == ["all"]:
+        return [i["ID"] for i in describe(config)]
+
+    ids: List[str] = []
+    names: List[str] = []
+
+    for i in ids_or_names:
+        if i.startswith("i-"):
+            ids.append(i)
+        else:
+            names.append(i)
+
+    if names:
+        ec2_client = boto3.client("ec2", region_name=config.get("region", None))
+        response = ec2_client.describe_instances(Filters=[{"Name": "tag:Name", "Values": names}])
+
+        for i in response["Reservations"][0]["Instances"]:
+            ids.append(i["InstanceId"])
+
+    return ids
 
 
 def describe_instances_names(config: Config) -> Dict[str, Optional[str]]:

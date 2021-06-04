@@ -116,7 +116,7 @@ ssm_cli = [
     Cmd(ssm.patch, [
         config_arg,
         Arg("operation", type=str, choices=["scan", "install"], help="Scan or install"),
-        Arg("name", type=str, help="Name tag of instance or instance id"),
+        Arg("names", type=str, nargs='+', help="Name tag of instance or instance id. Use 'all' for all running instances"),
         Arg("-nr","--no-reboot", action='store_true', help="Do not reboot after install"),
     ]),
     Cmd(ssm.commands, [
@@ -132,6 +132,10 @@ ssm_cli = [
         Arg("command_id", type=str, help="Command id"),
         Arg("instance_id", type=str, help="Instance id"),
         Arg("-e", "--stderr", action='store_true', help="Show stderr instead of stdout"),
+    ]),
+    Cmd(ssm.run, [
+        config_arg,
+        Arg("names", type=str, nargs='+', help="Name tags of instance or instance ids. Use 'all' for all running instances.")
     ]),
 ]
 # fmt: on
