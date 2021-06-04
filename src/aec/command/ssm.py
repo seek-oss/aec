@@ -12,7 +12,6 @@ from botocore.exceptions import ClientError
 import aec.util.tags as util_tags
 from aec.util.config import Config
 
-
 def describe(config: Config) -> List[Dict[str, Any]]:
     """Describe instances running the SSM agent."""
 
@@ -273,7 +272,9 @@ def fetch_instance_id(config: Config, name: str) -> str:
         raise ValueError(f"No instance named {name}")
 
 
+
 def fetch_instance_ids(config: Config, ids_or_names: List[str]) -> List[str]:
+
     if ids_or_names == ["all"]:
         return [i["ID"] for i in describe(config)]
 
@@ -290,9 +291,12 @@ def fetch_instance_ids(config: Config, ids_or_names: List[str]) -> List[str]:
         ec2_client = boto3.client("ec2", region_name=config.get("region", None))
         response = ec2_client.describe_instances(Filters=[{"Name": "tag:Name", "Values": names}])
 
-        for i in response["Reservations"][0]["Instances"]:
-            ids.append(i["InstanceId"])
-
+        try:
+            for r in response["Reservations"]:
+                for i in r["Instances"]:
+                    ids.append(i["InstanceId"])
+        except IndexError:
+            raise ValueError(f"No instances with names {','.join(names)}")
     return ids
 
 
