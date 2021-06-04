@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Optional, TYPE_CHECKING
+from typing import Any, Dict, List, Optional
 from typing_extensions import Literal
 
 import boto3
@@ -11,9 +11,6 @@ import codecs
 from botocore.exceptions import ClientError
 import aec.util.tags as util_tags
 from aec.util.config import Config
-
-if TYPE_CHECKING:
-    from mypy_boto3_ec2.type_defs import FilterTypeDef
 
 
 def describe(config: Config) -> List[Dict[str, Any]]:
@@ -195,19 +192,20 @@ def commands(config: Config, name: str) -> List[Dict[str, Optional[str]]]:
         for c in response["Commands"]
     ]
 
-
-def invocations(config: Config, command_id: str) -> List[Dict[str, Optional[str]]]:
+def invocations(config: Config, command_id: str) -> List[Dict[str, Any]]:
     """Invocations across instances for a command"""
 
     client = boto3.client("ssm", region_name=config.get("region", None))
 
     command = client.list_commands(CommandId=command_id)["Commands"][0]
     invocations = client.list_command_invocations(CommandId=command_id)
+    instances_names = describe_instances_names(config)
 
     return [
         {
             "RequestedDateTime": i["RequestedDateTime"].strftime("%Y-%m-%d %H:%M"),
             "InstanceId": i["InstanceId"],
+            "Name": instances_names.get(i["InstanceId"], None),
             "Status": i["Status"],
             "DocumentName": i["DocumentName"],
             "Parameters": json.dumps(command["Parameters"]),
@@ -233,7 +231,13 @@ def output(config: Config, command_id: str, instance_id: str, stderr: bool) -> N
 
     bucket = command["OutputS3BucketName"]
 
-    doc_path = DOC_PATHS[command["DocumentName"]]
+    try:
+        doc_path = DOC_PATHS[command["DocumentName"]]
+    except KeyError:
+        raise NotImplementedError(
+            f"for {command['DocumentName']}. Run aws s3 ls {command['OutputS3KeyPrefix']}/{command_id}/{instance_id}/awsrunShellScript/"
+        )
+
     std = "stderr" if stderr else "stdout"
     key = f"{command['OutputS3KeyPrefix']}/{command_id}/{instance_id}/awsrunShellScript/{doc_path}/{std}"
 
