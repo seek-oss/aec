@@ -58,7 +58,7 @@ def pretty_print(result: List[Dict[str, Any]] | Dict | str | None, output_format
             console.print(table)
 
         elif output_format == OutputFormat.csv:
-            writer = csv.DictWriter(sys.stdout, fieldnames=result[0].keys())
+            writer = csv.DictWriter(sys.stdout, fieldnames=list(result[0].keys()))
 
             writer.writeheader()
             for r in result:
