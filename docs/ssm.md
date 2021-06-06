@@ -25,7 +25,7 @@ subcommands:
 
 ## Examples
 
-Describe:
+List running instances with the SSM agent.
 
 ```
 aec ssm describe
@@ -57,24 +57,29 @@ Patch summary for all instances (that have run the patch baseline):
   i-0f194c8d697f35240   even-better-instance            22                                             2021-01-22 06:02:44+11:00   Install
 ```
 
+List the compliance status of running instances (that have run the patch baseline):
+
+```
+ssm compliance-summary
+
+  InstanceId            Name                    Status          NonCompliantCount   Last operation time  
+ ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  i-01579de1b005846cb   awesome-instance        COMPLIANT                           2021-06-05 22:08:26+10:00  
+  i-0f194c8d697f35240   even-better-instance    NON_COMPLIANT   22                  2021-06-05 22:11:53+10:00  
+```
+
 Patch an instance but don't reboot:
 
 ```
 aec ssm patch install awesome-instance --no-reboot
 ```
 
-NB: if an instance is patched with the NoReboot option, and there are patches pending a reboot, then the instance will have a non-compliant status. Once the instance has been rebooted run the patch baseline scan has been run to update its patch summary to compliant.
+NB: if an instance is patched with the NoReboot option, and there are patches pending a reboot, then the instance will have a non-compliant status. Reboot the instance and run the patch baseline scan to update its patch status to compliant.
 
 Run the scan and update patch/compliance status:
 
 ```
 aec ssm patch scan awesome-instance
-```
-
-To see compliance status of running instances (that have run the patch baseline):
-
-```
-ssm compliance-summary
 ```
 
 ## Config
