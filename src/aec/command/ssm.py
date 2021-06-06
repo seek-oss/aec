@@ -132,7 +132,11 @@ def patch(
 
 
 def run(config: Config, names: List[str]) -> List[Dict[str, Optional[str]]]:
-    """Run a shell script on instance(s). Script is read from stdin."""
+    """
+    Run a shell script on instance(s).
+
+    Script is read from stdin.
+    """
 
     instance_ids = fetch_instance_ids(config, names)
 
@@ -279,7 +283,7 @@ def fetch_instance_id(config: Config, name: str) -> str:
 
     try:
         return response["Reservations"][0]["Instances"][0]["InstanceId"]
-    except IndexError as e:
+    except IndexError:
         raise ValueError(f"No instance named {name}")
 
 
