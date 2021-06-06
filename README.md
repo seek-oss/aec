@@ -50,6 +50,7 @@ For even faster access to aec subcommands, you may like to add the following ali
 ```
 alias ec2='COLUMNS=$COLUMNS aec ec2'
 alias ami='COLUMNS=$COLUMNS aec ami'
+alias ssm='COLUMNS=$COLUMNS aec ssm'
 ```
 
 `COLUMNS=$COLUMNS` will ensure output is formatted to the width of your terminal when piped.

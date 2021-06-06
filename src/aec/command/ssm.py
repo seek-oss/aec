@@ -12,8 +12,9 @@ from botocore.exceptions import ClientError
 import aec.util.tags as util_tags
 from aec.util.config import Config
 
+
 def describe(config: Config) -> List[Dict[str, Any]]:
-    """Describe instances running the SSM agent."""
+    """List running instances with the SSM agent."""
 
     instances_names = describe_instances_names(config)
 
@@ -33,8 +34,8 @@ def describe(config: Config) -> List[Dict[str, Any]]:
     ]
 
 
-def patch_summary(config: Config) -> List[Dict[str, Any]]:
-    """Describe patch summary for all instances"""
+def patch_summary(config: Config) -> List[Dict[str, Optional[str]]]:
+    """Patch summary for all instances that have run the patch baseline."""
     instances_names = describe_instances_names(config)
     instance_ids = list(instances_names.keys())
 
@@ -50,10 +51,10 @@ def patch_summary(config: Config) -> List[Dict[str, Any]]:
                 {
                     "InstanceId": i["InstanceId"],
                     "Name": instances_names.get(i["InstanceId"], None),
-                    "Installed": i["InstalledCount"],
                     "Needed": i["MissingCount"],
-                    "Errored": i["FailedCount"],
                     "Pending Reboot": i["InstalledPendingRebootCount"],
+                    "Errored": i["FailedCount"],
+                    "Rejected": i["InstalledRejectedCount"],
                     "Last operation time": i["OperationEndTime"],
                     "Last operation": i["Operation"],
                 }
@@ -65,7 +66,7 @@ def patch_summary(config: Config) -> List[Dict[str, Any]]:
 
 
 def compliance_summary(config: Config) -> List[Dict[str, Any]]:
-    """Describe compliance summary for running instances"""
+    """Compliance summary for running instances that have run the patch baseline."""
     instances_names = describe_instances_names(config)
 
     client = boto3.client("ssm", region_name=config.get("region", None))
@@ -89,7 +90,7 @@ def compliance_summary(config: Config) -> List[Dict[str, Any]]:
 def patch(
     config: Config, operation: Literal["scan", "install"], names: List[str], no_reboot: bool
 ) -> List[Dict[str, Optional[str]]]:
-    """Scan or install AWS patch baseline"""
+    """Scan or install AWS patch baseline."""
 
     instance_ids = fetch_instance_ids(config, names)
 
@@ -132,7 +133,7 @@ def patch(
 
 
 def run(config: Config, names: List[str]) -> List[Dict[str, Optional[str]]]:
-    """Run shell script on instance(s). Script is read from stdin."""
+    """Run a shell script on instance(s). Script is read from stdin."""
 
     instance_ids = fetch_instance_ids(config, names)
 
@@ -168,8 +169,18 @@ def run(config: Config, names: List[str]) -> List[Dict[str, Optional[str]]]:
     ]
 
 
-def commands(config: Config, name: Optional[str]) -> List[Dict[str, Any]]:
-    """Commands run on an instance"""
+E = TypeVar("E")
+
+
+def first(xs: Optional[Sequence[E]]) -> Optional[E]:
+    if xs:
+        return xs[0]
+    else:
+        return None
+
+
+def commands(config: Config, name: Optional[str]) -> List[Dict[str, Optional[str]]]:
+    """List commands by instance."""
 
     client = boto3.client("ssm", region_name=config.get("region", None))
     instances_names = describe_instances_names(config)
@@ -188,13 +199,14 @@ def commands(config: Config, name: Optional[str]) -> List[Dict[str, Any]]:
             "Names": ",".join([instances_names.get(i, None) or "" for i in c["InstanceIds"]]),
             "Status": c["Status"],
             "DocumentName": c["DocumentName"],
+            "Operation": first(c["Parameters"].get("Operation", None)),
         }
         for c in response["Commands"]
     ]
 
 
 def invocations(config: Config, command_id: str) -> List[Dict[str, Any]]:
-    """Invocations across instances for a command"""
+    """List invocations of a command across instances."""
 
     client = boto3.client("ssm", region_name=config.get("region", None))
 
@@ -222,7 +234,7 @@ DOC_PATHS = {"AWS-RunPatchBaseline": "PatchLinux", "AWS-RunShellScript": "0.awsr
 
 
 def output(config: Config, command_id: str, instance_id: str, stderr: bool) -> None:
-    """Fetch output of command from S3"""
+    """Fetch output of a command from S3."""
     ssm_client = boto3.client("ssm", region_name=config.get("region", None))
 
     command = ssm_client.list_commands(CommandId=command_id)["Commands"][0]
@@ -270,7 +282,6 @@ def fetch_instance_id(config: Config, name: str) -> str:
         return response["Reservations"][0]["Instances"][0]["InstanceId"]
     except IndexError as e:
         raise ValueError(f"No instance named {name}")
-
 
 
 def fetch_instance_ids(config: Config, ids_or_names: List[str]) -> List[str]:

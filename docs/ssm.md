@@ -1,17 +1,29 @@
-# SSM Usage
+# AWS Systems Manager (SSM) Usage
 
 Run `aec ssm -h` for help:
 
 ```
-usage: aec ssm [-h] {describe} ...
+usage: aec ssm [-h]
+               {commands,compliance-summary,describe,invocations,output,patch,patch-summary,run}
+               ...
 
 optional arguments:
-  -h, --help  show this help message and exit
+  -h, --help            show this help message and exit
 
 subcommands:
-  {describe}
-    describe  Describe instances running the SSM agent.
+  {commands,compliance-summary,describe,invocations,output,patch,patch-summary,run}
+    commands            List commands by instance.
+    compliance-summary  Compliance summary for running instances.
+    describe            List running instances with the SSM agent.
+    invocations         List invocations of a command across instances.
+    output              Fetch output of a command from S3.
+    patch               Scan or install AWS patch baseline.
+    patch-summary       Patch summary for all instances.
+    run                 Run a shell script on instance(s). Script is read from
+                        stdin.
 ```
+
+## Examples
 
 Describe:
 
@@ -27,5 +39,52 @@ aec ssm describe
 Run hello world on instances:
 
 ```
-echo 'echo Hello World' | ssm run awesome-instance i-0f194c8d697f35240 
+echo 'echo Hello World' | aec ssm run awesome-instance i-0f194c8d697f35240
 ```
+
+Patch summary for all instances that have run the patch baseline:
+
+```
+  InstanceId            Name                            Needed   Pending Reboot   Errored   Rejected   Last operation time         Last operation
+ ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  i-01579de1b005846cb   awesome-instance                                                               2021-06-04 23:13:56+10:00   Scan
+  i-0f194c8d697f35240   even-better-instance            22                                             2021-01-22 06:02:44+11:00   Install
+```
+
+Patch an instance but don't reboot:
+
+```
+aec ssm patch install awesome-instance --no-reboot
+```
+
+NB: if an instance is patched with the NoReboot option, and there are patches pending a reboot, then the instance will have a non-compliant status. Once the instance has been rebooted run the patch baseline scan has been run to update its patch summary to compliant.
+
+Run the scan and update patch/compliance status:
+
+```
+aec ssm patch scan awesome-instance --no-reboot
+```
+
+To see compliance status of running instances that have run the patch baseline
+
+```
+ssm compliance-summary
+```
+
+Fetch stdout for a specific command invocation:
+
+```
+ssm output 3dd3482e-20f2-4a4a-a9f6-0989a0d38ced i-01579de1b005846cb
+```
+
+## Config
+
+ec2.toml:
+
+```
+[profile.ssm]
+s3bucket = "logs"
+s3prefix = "ssm-command"
+```
+
+_s3bucket_ and _s3prefix_ are optional. They will be used as the location to store the output of `run` and `patch` commands.

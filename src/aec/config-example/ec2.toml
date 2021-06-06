@@ -16,6 +16,7 @@ describe_images_owners = "self"
 volume_size = 100
 
 [syd.ssm]
+# log output of ssm commands to this location
 s3bucket = "logs"
 s3prefix = "ssm-command"
 
