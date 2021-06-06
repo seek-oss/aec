@@ -1,14 +1,13 @@
+import codecs
+import json
+import sys
+import uuid
 from typing import Any, Dict, List, Optional, Sequence, TypeVar
-from typing_extensions import Literal
 
 import boto3
-import json
-import uuid
-import sys
-
-import codecs
-
 from botocore.exceptions import ClientError
+from typing_extensions import Literal
+
 import aec.util.tags as util_tags
 from aec.util.config import Config
 
