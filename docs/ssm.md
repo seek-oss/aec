@@ -36,13 +36,19 @@ aec ssm describe
   i-0f194c8d697f35240   even-better-instance   Online       Ubuntu 20.04     2.3.978.0
 ```
 
-Run hello world on instances:
+Run a hello world command on multiple instances:
 
 ```
 echo 'echo Hello World' | aec ssm run awesome-instance i-0f194c8d697f35240
 ```
 
-Patch summary for all instances that have run the patch baseline:
+Fetch stdout of the hello world command for the invocation on i-0f194c8d697f35240 (requires S3 bucket [configuration](##Config)):
+
+```
+ssm output 3dd3482e-20f2-4a4a-a9f6-0989a0d38ced i-0f194c8d697f35240
+```
+
+Patch summary for all instances (that have run the patch baseline):
 
 ```
   InstanceId            Name                            Needed   Pending Reboot   Errored   Rejected   Last operation time         Last operation
@@ -62,19 +68,13 @@ NB: if an instance is patched with the NoReboot option, and there are patches pe
 Run the scan and update patch/compliance status:
 
 ```
-aec ssm patch scan awesome-instance --no-reboot
+aec ssm patch scan awesome-instance
 ```
 
-To see compliance status of running instances that have run the patch baseline
+To see compliance status of running instances (that have run the patch baseline):
 
 ```
 ssm compliance-summary
-```
-
-Fetch stdout for a specific command invocation:
-
-```
-ssm output 3dd3482e-20f2-4a4a-a9f6-0989a0d38ced i-01579de1b005846cb
 ```
 
 ## Config
