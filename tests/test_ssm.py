@@ -8,6 +8,7 @@ from moto.ec2.models import AMIS
 from aec.command.ssm import fetch_instance_ids
 
 # NB: moto provides limited coverage of the SSM API so there's not many tests here
+# see https://github.com/spulec/moto/blob/master/IMPLEMENTATION_COVERAGE.md
 
 
 @pytest.fixture

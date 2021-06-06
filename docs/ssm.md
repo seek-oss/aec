@@ -57,7 +57,7 @@ Patch summary for all instances (that have run the patch baseline):
   i-0f194c8d697f35240   even-better-instance            22                                             2021-01-22 06:02:44+11:00   Install
 ```
 
-List the compliance status of running instances (that have run the patch baseline):
+Compliance status of running instances (that have run the patch baseline):
 
 ```
 ssm compliance-summary
@@ -84,7 +84,7 @@ aec ssm patch scan awesome-instance
 
 ## Config
 
-ec2.toml:
+[_ec2.toml_](../src/aec/config-example/ec2.toml):
 
 ```
 [profile.ssm]
