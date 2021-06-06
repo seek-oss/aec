@@ -24,6 +24,7 @@ setup(
         "pytoml==0.1.21",
         "pytz==2021.1",
         "rich==10.2.2",
+        "typing_extensions==3.10.0.0"
     ],
     extras_require={
         "dev": [
