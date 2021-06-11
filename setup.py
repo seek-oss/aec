@@ -28,7 +28,7 @@ setup(
     ],
     extras_require={
         "dev": [
-            "black==21.4b2",
+            "black==21.5b2",
             "boto3-stubs[ec2,compute-optimizer,ssm,s3]==1.17.88.0",
             "darglint==1.8.0",
             "isort==5.8.0",
