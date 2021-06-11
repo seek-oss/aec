@@ -23,12 +23,12 @@ setup(
         "boto3==1.17.88",
         "pytoml==0.1.21",
         "pytz==2021.1",
-        "rich==10.2.2",
+        "rich==10.3.0",
         "typing_extensions==3.10.0.0",
     ],
     extras_require={
         "dev": [
-            "black==21.4b2",
+            "black==21.5b2",
             "boto3-stubs[ec2,compute-optimizer,ssm,s3]==1.17.88.0",
             "darglint==1.8.0",
             "isort==5.8.0",
