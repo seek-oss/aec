@@ -1,7 +1,7 @@
 import os
 import shutil
 
-# use backported importlib_resources for compatibility with python < 3.9
+# use importlib_resources backport for compatibility with python < 3.9
 import importlib_resources as resources
 from importlib_resources.abc import Traversable
 
