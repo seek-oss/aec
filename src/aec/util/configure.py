@@ -1,15 +1,34 @@
+from importlib.abc import Traversable
 import os
 import shutil
 from importlib import resources
-
-namespace_kwargs = {"title": "configure commands", "description": "create config files in ~/.aec/"}
 
 
 def example() -> None:
     """create example config files in ~/.aec/."""
 
-    with resources.path("aec", "config-example") as example_path:
-        config_dir = os.path.expanduser("~/.aec/")
-        shutil.copytree(example_path, config_dir)
+    config_dir = os.path.expanduser("~/.aec/")
+    if not os.path.exists(config_dir):
+        os.mkdir(config_dir)
 
-    print("Created example config in", config_dir)
+    for r in resources.files("aec.config-example").iterdir():
+        copy(r, config_dir)
+
+
+def copy(res: Traversable, dest_dir: str) -> None:
+    if res.name.startswith("__"):
+        return
+    elif res.is_file():
+        with resources.as_file(res) as file:
+            dest_file = f"{dest_dir}{res.name}"
+            if os.path.exists(dest_file):
+                print(f"Skipping {dest_file} (already exists)")
+            else:
+                print(f"Writing {dest_file}")
+                shutil.copy(file, dest_dir)
+    elif res.is_dir():
+        subdir = f"{dest_dir}{res.name}/"
+        if not os.path.exists(subdir):
+            os.mkdir(subdir)
+        for r in res.iterdir():
+            copy(r, subdir)
