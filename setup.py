@@ -25,6 +25,7 @@ setup(
         "pytz==2021.1",
         "rich==10.3.0",
         "typing_extensions==3.10.0.0",
+        "importlib_resources==5.1.4"
     ],
     extras_require={
         "dev": [
@@ -37,6 +38,7 @@ setup(
             "flake8-colors==0.1.9",
             "moto[ec2]==2.0.8",
             "pre-commit==2.13.0",
+            "pyfakefs==4.5.0",
             "pytest==6.2.4",
             "pytest-mock==3.6.1",
             "twine==3.4.1",

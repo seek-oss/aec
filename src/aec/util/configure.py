@@ -1,7 +1,9 @@
-from importlib.abc import Traversable
+# use backported importlib_resources for compatability with python < 3.9
+from importlib_resources.abc import Traversable
+import importlib_resources as resources
+
 import os
 import shutil
-from importlib import resources
 
 
 def example() -> None:
