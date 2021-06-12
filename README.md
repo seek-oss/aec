@@ -1,5 +1,8 @@
 # AWS EC2 CLI
 
+[![Build](https://github.com/seek-oss/aec/actions/workflows/pythonapp.yml/badge.svg)](https://github.com/seek-oss/aec/actions/workflows/pythonapp.yml)
+[![PyPI version](https://badge.fury.io/py/aec-cli.svg)](https://pypi.org/project/aec-cli/)
+
 _"Instead of using the console, use the cli!"_.
 
 Command-line tools for managing pet EC2 instances by name.
