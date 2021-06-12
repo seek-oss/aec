@@ -1,8 +1,11 @@
-from aec.util.configure import example
-from pyfakefs.fake_filesystem import FakeFilesystem
 import os
 
+from pyfakefs.fake_filesystem import FakeFilesystem
+
+from aec.util.configure import example
+
 cwd = os.getcwd()
+
 
 def test_example(fs: FakeFilesystem):
     fs.add_real_directory(cwd)
