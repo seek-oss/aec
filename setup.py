@@ -20,7 +20,7 @@ setup(
     package_dir={"": "src"},
     include_package_data=True,
     install_requires=[
-        "boto3==1.17.88",
+        "boto3==1.17.92",
         "pytoml==0.1.21",
         "pytz==2021.1",
         "rich==10.3.0",
