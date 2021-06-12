@@ -2,7 +2,7 @@ import codecs
 import json
 import sys
 import uuid
-from typing import Any, Dict, List, Optional, Sequence, TypeVar
+from typing import IO, Any, Dict, List, Optional, Sequence, TypeVar, cast
 
 import boto3
 from botocore.exceptions import ClientError
@@ -268,7 +268,8 @@ def output(config: Config, command_id: str, instance_id: str, stderr: bool) -> N
             raise e
 
     # converts body bytes to string lines
-    for line in codecs.getreader("utf-8")(response["Body"]):
+    streaming_body = cast(IO[bytes], response["Body"])
+    for line in codecs.getreader("utf-8")(streaming_body):
         print(line, end="")
 
     return None

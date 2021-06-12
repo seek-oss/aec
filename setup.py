@@ -20,7 +20,7 @@ setup(
     package_dir={"": "src"},
     include_package_data=True,
     install_requires=[
-        "boto3==1.17.92",
+        "boto3==1.17.93",
         "pytoml==0.1.21",
         "pytz==2021.1",
         "rich==10.3.0",
@@ -29,7 +29,7 @@ setup(
     extras_require={
         "dev": [
             "black==21.5b2",
-            "boto3-stubs[ec2,compute-optimizer,ssm,s3]==1.17.88.0",
+            "boto3-stubs[ec2,compute-optimizer,ssm,s3]==1.17.93.0",
             "darglint==1.8.0",
             "isort==5.8.0",
             "flake8==3.9.2",

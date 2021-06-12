@@ -51,7 +51,7 @@ test: $(venv)
 ## build distribution
 dist: $(venv)
 	# start with a clean slate (see setuptools/#2347)
-	rm -rf *.egg-info
+	rm -rf src/*.egg-info
 	# remove previous builds
 	rm -rf dist/*
 	$(venv)/bin/python setup.py sdist
