@@ -53,7 +53,7 @@ dist: $(venv)
 	# start with a clean slate (see setuptools/#2347)
 	rm -rf src/*.egg-info
 	# remove previous builds
-	rm -rf dist/*
+	rm -rf dist/* build/*
 	$(venv)/bin/python setup.py sdist
 	$(venv)/bin/python setup.py bdist_wheel
 
