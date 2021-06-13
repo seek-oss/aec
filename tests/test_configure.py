@@ -4,6 +4,7 @@ from pyfakefs.fake_filesystem import FakeFilesystem
 
 from aec.util.configure import example
 
+# get cwd of the real file system before the fake fs starts
 cwd = os.getcwd()
 
 

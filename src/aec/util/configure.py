@@ -10,8 +10,7 @@ def example() -> None:
     """create example config files in ~/.aec/."""
 
     config_dir = os.path.expanduser("~/.aec/")
-    if not os.path.exists(config_dir):
-        os.mkdir(config_dir)
+    os.makedirs(config_dir, exist_ok=True)
 
     for r in resources.files("aec.config-example").iterdir():
         copy(r, config_dir)
@@ -30,7 +29,6 @@ def copy(res: Traversable, dest_dir: str) -> None:
                 shutil.copy(file, dest_dir)
     elif res.is_dir():
         subdir = f"{dest_dir}{res.name}/"
-        if not os.path.exists(subdir):
-            os.mkdir(subdir)
+        os.makedirs(subdir, exist_ok=True)
         for r in res.iterdir():
             copy(r, subdir)
