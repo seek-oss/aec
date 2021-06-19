@@ -93,7 +93,11 @@ def dispatch(parser: ArgumentParser, args: List[str]) -> Tuple[Any, OutputFormat
     delattr(pargs, "call_me")
 
     # remove output because that's injected above and the call_me function doesn't expect it
-    output_format = OutputFormat[pargs.output]
-    delattr(pargs, "output")
+    if "output" not in pargs:
+        # no subcommand specified
+        output_format = OutputFormat.table
+    else:
+        output_format = OutputFormat[pargs.output]
+        delattr(pargs, "output")
 
     return (call_me(**vars(pargs)), output_format)
