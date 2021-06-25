@@ -21,6 +21,12 @@ subcommands:
     terminate           Terminate EC2 instance.
 ```
 
+Launch an instance named `food baby` from the [ec2 launch template](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html) named `yummy`:
+
+```
+aec ec2 launch "food baby" --template yummy
+```
+
 Launch a t2.medium instance named `lady gaga` with a 50gb EBS volume, with other settings read from the config file:
 
 ```
