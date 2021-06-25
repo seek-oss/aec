@@ -36,7 +36,8 @@ def launch(
         raise ValueError("Please specify either an ami or a launch template")
 
     if not template and ami and not instance_type:
-        raise ValueError("Please specify an instance type")
+        # if no instance type is provided set one
+        instance_type = "t3.small"
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 

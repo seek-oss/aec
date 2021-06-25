@@ -24,7 +24,7 @@ subcommands:
 Launch a t2.medium instance named `lady gaga` with a 50gb EBS volume, with other settings read from the config file:
 
 ```
-aec ec2 launch "lady gaga" ubuntu1804 --instance-type t2.medium --volume-size 50
+aec ec2 launch "lady gaga" --ami ubuntu1804 --instance-type t2.medium --volume-size 50
 ```
 
 Stop the instance:

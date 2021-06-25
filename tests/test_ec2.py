@@ -43,7 +43,7 @@ def mock_aws_config():
 
 
 def test_launch(mock_aws_config):
-    instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    instances = launch(mock_aws_config, "alice", ami=AMIS[0]["ami_id"])
     assert "amazonaws.com" in instances[0]["DnsName"]
 
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
@@ -76,7 +76,7 @@ def test_launch_without_public_ip_address(mock_aws_config):
 
 
 def test_launch_with_ami_match_string(mock_aws_config):
-    instances = launch(mock_aws_config, "alice", "ubuntu1604")
+    instances = launch(mock_aws_config, "alice", ami="ubuntu1604")
     assert "amazonaws.com" in instances[0]["DnsName"]
 
 
@@ -90,7 +90,7 @@ def test_override_key_name(mock_aws_config):
 
 
 def test_override_volume_size(mock_aws_config):
-    launch(mock_aws_config, "alice", AMIS[0]["ami_id"], volume_size=66)
+    launch(mock_aws_config, "alice", ami=AMIS[0]["ami_id"], volume_size=66)
 
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
     volumes = ec2_client.describe_volumes()
@@ -99,7 +99,7 @@ def test_override_volume_size(mock_aws_config):
 
 def test_config_override_volume_size(mock_aws_config):
     mock_aws_config["volume_size"] = 77
-    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    launch(mock_aws_config, "alice", ami=AMIS[0]["ami_id"])
 
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
     volumes = ec2_client.describe_volumes()
@@ -277,7 +277,7 @@ def test_logs(mock_aws_config):
 
 def test_ebs_encrypted_by_default(mock_aws_config):
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
-    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    launch(mock_aws_config, "alice", ami=AMIS[0]["ami_id"])
     volumes = ec2_client.describe_volumes()
     assert volumes["Volumes"][0]["Encrypted"] is True
     assert volumes["Volumes"][0]["KmsKeyId"]

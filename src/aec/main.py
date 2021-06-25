@@ -47,7 +47,7 @@ ec2_cli = [
         Arg("-t", "--template", type=str, help="Launch template name"),
         Arg("--volume-size", type=int, help="EBS volume size (GB). Defaults to AMI volume size."),
         Arg("--encrypted", type=bool, help="Whether the EBS volume is encrypted", default=True),
-        Arg("--instance-type", type=str, help="Instance type"),
+        Arg("--instance-type", type=str, help="Instance type."),
         Arg("--key-name", type=str, help="Key name"),
         Arg("--userdata", type=str, help="Path to user data file")
     ]),
