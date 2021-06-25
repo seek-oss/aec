@@ -43,10 +43,11 @@ ec2_cli = [
     Cmd(ec2.launch, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance"),
-        Arg("ami", type=ami_arg_checker, help=f"AMI id or a keyword to lookup the latest ami: {[k for k in ami.ami_keywords.keys()]}"),
+        Arg("-a", "--ami", type=ami_arg_checker, help=f"AMI id or a keyword to lookup the latest ami: {[k for k in ami.ami_keywords.keys()]}"),
+        Arg("-t", "--template", type=str, help="Launch template name"),
         Arg("--volume-size", type=int, help="EBS volume size (GB). Defaults to AMI volume size."),
         Arg("--encrypted", type=bool, help="Whether the EBS volume is encrypted", default=True),
-        Arg("--instance-type", type=str, help="Instance type", default="t2.medium"),
+        Arg("--instance-type", type=str, help="Instance type"),
         Arg("--key-name", type=str, help="Key name"),
         Arg("--userdata", type=str, help="Path to user data file")
     ]),

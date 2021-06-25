@@ -2,11 +2,18 @@ from __future__ import annotations
 
 import os
 import os.path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
-
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
+from mypy_boto3_ec2.type_defs import (
+    BlockDeviceMappingTypeDef,
+    FilterTypeDef,
+    InstanceTypeDef,
+    RequestSpotLaunchSpecificationTypeDef,
+    TagSpecificationTypeDef,
+)
 import boto3
 
 import aec.command.ami as ami_cmd
+from aec.util.ec2 import RunArgs
 import aec.util.tags as util_tags
 from aec.util.config import Config
 
@@ -21,39 +28,83 @@ def is_ebs_optimizable(instance_type: str) -> bool:
 def launch(
     config: Config,
     name: str,
-    ami: str,
+    template: Optional[str] = None,
+    ami: Optional[str] = None,
     volume_size: Optional[int] = None,
     encrypted: bool = True,
-    instance_type: str = "t2.medium",
+    instance_type: Optional[str] = None,
     key_name: Optional[str] = None,
     userdata: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """Launch a tagged EC2 instance with an EBS volume."""
 
+    if not (template or ami):
+        raise ValueError("Please specify either an ami or a launch template")
+
+    if not template and ami and not instance_type:
+        raise ValueError("Please specify an instance type")
+
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    additional_tags = config.get("additional_tags", {})
-    tags = [{"Key": "Name", "Value": name}] + [{"Key": k, "Value": v} for k, v in additional_tags.items()]
-    kms_key_id = config.get("kms_key_id", None)
-    security_group = config["vpc"]["security_group"]
-
-    if not key_name:
-        key_name = config["key_name"]
-
-    image = ami_cmd.fetch(config, ami)
-
-    volume_size = volume_size or config.get("volume_size", None) or image["Size"]
-
-    # TODO: support multiple subnets
-    kwargs: Dict[str, Any] = {
-        "ImageId": image["ImageId"],
+    runargs: RunArgs = {
         "MaxCount": 1,
         "MinCount": 1,
-        "KeyName": key_name,
-        "InstanceType": instance_type,
-        "TagSpecifications": [{"ResourceType": "instance", "Tags": tags}, {"ResourceType": "volume", "Tags": tags}],
-        "EbsOptimized": is_ebs_optimizable(instance_type),
-        "NetworkInterfaces": [
+    }
+
+    desc = ""
+    if template:
+        runargs["LaunchTemplate"] = {"LaunchTemplateName": template}
+        desc = f"template {template} "
+
+    if ami:
+        image = ami_cmd.fetch(config, ami)
+        if not image["RootDeviceName"]:
+            raise ValueError(f"{image['ImageId']} is missing RootDeviceName")
+
+        volume_size = volume_size or config.get("volume_size", None) or image["Size"]
+        if not volume_size:
+            raise ValueError("No volume size")
+
+        device: BlockDeviceMappingTypeDef = {
+            "DeviceName": image["RootDeviceName"],
+            "Ebs": {
+                "VolumeSize": volume_size,
+                "DeleteOnTermination": True,
+                "VolumeType": "gp3",
+                "Encrypted": encrypted,
+            },
+        }
+
+        kms_key_id = config.get("kms_key_id", None)
+        if kms_key_id:
+            device["Ebs"]["KmsKeyId"] = kms_key_id
+
+        runargs["ImageId"] = image["ImageId"]
+        runargs["BlockDeviceMappings"] = [device]
+
+        desc = desc + image["Name"] if image["Name"] else desc + image["ImageId"]
+
+
+    key = key_name or config.get("key_name", None)
+    if key:
+        runargs["KeyName"] = key
+
+    if instance_type:
+        runargs["InstanceType"] = instance_type
+        runargs["EbsOptimized"] = is_ebs_optimizable(instance_type)
+
+    additional_tags = config.get("additional_tags", {})
+    if additional_tags:
+        tags = [{"Key": "Name", "Value": name}] + [{"Key": k, "Value": v} for k, v in additional_tags.items()]
+        runargs["TagSpecifications"] = [
+            {"ResourceType": "instance", "Tags": tags},
+            {"ResourceType": "volume", "Tags": tags},
+        ]
+
+    if config.get("vpc", None):
+        # TODO: support multiple subnets
+        security_group = config["vpc"]["security_group"]
+        runargs["NetworkInterfaces"] = [
             {
                 "DeviceIndex": 0,
                 "Description": "Primary network interface",
@@ -62,40 +113,23 @@ def launch(
                 "Ipv6AddressCount": 0,
                 "Groups": security_group if isinstance(security_group, list) else [security_group],
             }
-        ],
-        "BlockDeviceMappings": [
-            {
-                "DeviceName": image["RootDeviceName"],
-                "Ebs": {
-                    "VolumeSize": volume_size,
-                    "DeleteOnTermination": True,
-                    "VolumeType": "gp3",
-                    "Encrypted": encrypted,
-                },
-            }
-        ],
-    }
+        ]
 
     associate_public_ip_address = config["vpc"].get("associate_public_ip_address", None)
     if associate_public_ip_address is not None:
-        kwargs["NetworkInterfaces"][0]["AssociatePublicIpAddress"] = associate_public_ip_address
+        runargs["NetworkInterfaces"][0]["AssociatePublicIpAddress"] = associate_public_ip_address
 
     iam_instance_profile_arn = config.get("iam_instance_profile_arn", None)
     if iam_instance_profile_arn:
-        kwargs["IamInstanceProfile"] = {"Arn": iam_instance_profile_arn}
-
-    if kms_key_id is not None:
-        kwargs["BlockDeviceMappings"][0]["Ebs"]["KmsKeyId"] = kms_key_id
+        runargs["IamInstanceProfile"] = {"Arn": iam_instance_profile_arn}
 
     if userdata:
-        kwargs["UserData"] = read_file(userdata)
+        runargs["UserData"] = read_file(userdata)
 
     region_name = ec2_client.meta.region_name
 
-    print(
-        f"Launching a {instance_type} in {region_name} vpc {config['vpc']['name']} named {name} using {image['Name']} ... "
-    )
-    response = ec2_client.run_instances(**kwargs)
+    print(f"Launching a {instance_type} in {region_name} vpc {config['vpc']['name']} named {name} using {desc} ... ")
+    response = ec2_client.run_instances(**runargs)
 
     instance = response["Instances"][0]
 
