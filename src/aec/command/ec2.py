@@ -2,23 +2,17 @@ from __future__ import annotations
 
 import os
 import os.path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
-from mypy_boto3_ec2.type_defs import (
-    BlockDeviceMappingTypeDef,
-    FilterTypeDef,
-    InstanceTypeDef,
-    RequestSpotLaunchSpecificationTypeDef,
-    TagSpecificationTypeDef,
-)
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
+
 import boto3
 
+if TYPE_CHECKING:
+    from mypy_boto3_ec2.type_defs import BlockDeviceMappingTypeDef, FilterTypeDef
+
 import aec.command.ami as ami_cmd
-from aec.util.ec2 import RunArgs
 import aec.util.tags as util_tags
 from aec.util.config import Config
-
-if TYPE_CHECKING:
-    from mypy_boto3_ec2.type_defs import FilterTypeDef
+from aec.util.ec2 import RunArgs
 
 
 def is_ebs_optimizable(instance_type: str) -> bool:
@@ -83,7 +77,6 @@ def launch(
         runargs["BlockDeviceMappings"] = [device]
 
         desc = desc + image["Name"] if image["Name"] else desc + image["ImageId"]
-
 
     key = key_name or config.get("key_name", None)
     if key:
