@@ -59,7 +59,7 @@ def test_launch_template(mock_aws_config):
             "ImageId": AMIS[0]["ami_id"],
             "BlockDeviceMappings": [
                 {
-                    "DeviceName": "'/dev/sda1",
+                    "DeviceName": "/dev/sda1",
                     "Ebs": {
                         "VolumeSize": 20,
                         "DeleteOnTermination": True,
