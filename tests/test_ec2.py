@@ -51,6 +51,37 @@ def test_launch(mock_aws_config):
     assert volumes["Volumes"][0]["Size"] == 15
 
 
+def test_launch_template(mock_aws_config):
+    ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
+    ec2_client.create_launch_template(
+        LaunchTemplateName="launchie",
+        LaunchTemplateData={
+            "ImageId": AMIS[0]["ami_id"],
+            "BlockDeviceMappings": [
+                {
+                    "DeviceName": "'/dev/sda1",
+                    "Ebs": {
+                        "VolumeSize": 20,
+                        "DeleteOnTermination": True,
+                        "VolumeType": "gp3",
+                        "Encrypted": True,
+                    },
+                }
+            ],
+        },
+    )
+
+    instances = launch(mock_aws_config, "alice", template="launchie")
+    assert "amazonaws.com" in instances[0]["DnsName"]
+
+    # moto doesn't yet support launching from a template so
+    # this check is disabled until https://github.com/spulec/moto/issues/2003 is implemented
+
+    # ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
+    # volumes = ec2_client.describe_volumes()
+    # assert volumes["Volumes"][0]["Size"] == 20
+
+
 def test_launch_multiple_security_groups(mock_aws_config):
     mock_aws_config["vpc"]["security_group"] = ["one", "two"]
     print(launch(mock_aws_config, "alice", AMIS[0]["ami_id"]))
