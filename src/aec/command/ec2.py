@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 import aec.command.ami as ami_cmd
 import aec.util.tags as util_tags
 from aec.util.config import Config
-from aec.util.ec2 import RunArgs
+from aec.util.ec2_types import RunArgs
 
 
 def is_ebs_optimizable(instance_type: str) -> bool:
