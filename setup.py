@@ -25,7 +25,7 @@ setup(
         "pytz==2021.1",
         "rich==10.3.0",
         "typing_extensions==3.10.0.0",
-        "importlib_resources==5.1.4",
+        "importlib_resources==5.2.0",
     ],
     extras_require={
         "dev": [
