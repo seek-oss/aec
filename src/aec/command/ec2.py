@@ -335,6 +335,19 @@ def logs(config: Config, name: str) -> str:
     return response.get("Output", "No logs yet 😔")
 
 
+def templates(config: Config) -> List[Dict[str, Any]]:
+    """Describe launch templates."""
+
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
+
+    response = ec2_client.describe_launch_templates()
+
+    return [
+        {"Name": t["LaunchTemplateName"], "Default Version": t["DefaultVersionNumber"]}
+        for t in response["LaunchTemplates"]
+    ]
+
+
 def read_file(filepath: str) -> str:
     with open(os.path.expanduser(filepath)) as file:
         return file.read()

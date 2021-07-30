@@ -3,13 +3,13 @@
 Run `aec ec2 -h` for help:
 
 ```
-usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,tags,terminate} ...
+usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,tags,templates,terminate} ...
 
 optional arguments:
   -h, --help            show this help message and exit
 
 subcommands:
-  {create-key-pair,describe,launch,logs,modify,start,stop,tags,terminate}
+  {create-key-pair,describe,launch,logs,modify,start,stop,tags,templates,terminate}
     create-key-pair     Create a key pair.
     describe            List EC2 instances in the region.
     launch              Launch a tagged EC2 instance with an EBS volume.
@@ -18,6 +18,7 @@ subcommands:
     start               Start EC2 instance.
     stop                Stop EC2 instance.
     tags                List EC2 instances or volumes with their tags.
+    templates           Describe launch templates.
     terminate           Terminate EC2 instance.
 ```
 
