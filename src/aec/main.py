@@ -73,6 +73,9 @@ ec2_cli = [
         Arg("-v", "--volumes", action='store_true', help="Show volumes"),
         Arg("-k", "--keys", type=str, nargs='+', metavar="KEY", help="Tags to display", default = [])
     ]),
+    Cmd(ec2.templates, [
+        config_arg
+    ]),
     Cmd(ec2.terminate, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance or instance id")
