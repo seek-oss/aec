@@ -22,8 +22,8 @@ def is_ebs_optimizable(instance_type: str) -> bool:
 def launch(
     config: Config,
     name: str,
-    template: Optional[str] = None,
     ami: Optional[str] = None,
+    template: Optional[str] = None,
     volume_size: Optional[int] = None,
     encrypted: bool = True,
     instance_type: Optional[str] = None,
@@ -87,13 +87,14 @@ def launch(
         runargs["InstanceType"] = instance_type
         runargs["EbsOptimized"] = is_ebs_optimizable(instance_type)
 
+    tags = [{"Key": "Name", "Value": name}]
     additional_tags = config.get("additional_tags", {})
     if additional_tags:
-        tags = [{"Key": "Name", "Value": name}] + [{"Key": k, "Value": v} for k, v in additional_tags.items()]
-        runargs["TagSpecifications"] = [
-            {"ResourceType": "instance", "Tags": tags},
-            {"ResourceType": "volume", "Tags": tags},
-        ]
+        tags.extend([{"Key": k, "Value": v} for k, v in additional_tags.items()])
+    runargs["TagSpecifications"] = [
+        {"ResourceType": "instance", "Tags": tags},
+        {"ResourceType": "volume", "Tags": tags},
+    ]
 
     if config.get("vpc", None):
         # TODO: support multiple subnets
@@ -148,15 +149,7 @@ def describe(
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    filters: List[FilterTypeDef] = []
-    if name and name.startswith("i-"):
-        filters = [{"Name": "instance-id", "Values": [name]}]
-    elif name:
-        filters = [{"Name": "tag:Name", "Values": [name]}]
-    elif name_match:
-        filters = [{"Name": "tag:Name", "Values": [f"*{name_match}*"]}]
-
-    response = ec2_client.describe_instances(Filters=filters)
+    response = ec2_client.describe_instances(Filters=filters(name, name_match))
 
     # print(response["Reservations"][0]["Instances"][0])
 
@@ -179,20 +172,28 @@ def describe(
     return sorted(instances, key=lambda i: i["State"] + str(i["Name"]))
 
 
-def tags(config: Config, keys: List[str] = [], volumes: bool = False) -> List[Dict[str, Any]]:
+def tags(
+    config: Config,
+    name: Optional[str] = None,
+    name_match: Optional[str] = None,
+    keys: List[str] = [],
+    volumes: bool = False,
+) -> List[Dict[str, Any]]:
     """List EC2 instances or volumes with their tags."""
     if volumes:
-        return volume_tags(config, keys)
+        return volume_tags(config, name, name_match, keys)
 
-    return instance_tags(config, keys)
+    return instance_tags(config, name, name_match, keys)
 
 
-def instance_tags(config: Config, keys: List[str] = []) -> List[Dict[str, Any]]:
+def instance_tags(
+    config: Config, name: Optional[str] = None, name_match: Optional[str] = None, keys: List[str] = []
+) -> List[Dict[str, Any]]:
     """List EC2 instances with their tags."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    response = ec2_client.describe_instances()
+    response = ec2_client.describe_instances(Filters=filters(name, name_match))
 
     instances: List[Dict[str, Any]] = []
     for r in response["Reservations"]:
@@ -210,12 +211,14 @@ def instance_tags(config: Config, keys: List[str] = []) -> List[Dict[str, Any]]:
     return sorted(instances, key=lambda i: str(i["Name"]))
 
 
-def volume_tags(config: Config, keys: List[str] = []) -> List[Dict[str, Any]]:
+def volume_tags(
+    config: Config, name: Optional[str] = None, name_match: Optional[str] = None, keys: List[str] = []
+) -> List[Dict[str, Any]]:
     """List EC2 volumes with their tags."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    response = ec2_client.describe_volumes()
+    response = ec2_client.describe_volumes(Filters=filters(name, name_match))
 
     volumes: List[Dict[str, Any]] = []
     for v in response["Volumes"]:
@@ -346,6 +349,17 @@ def templates(config: Config) -> List[Dict[str, Any]]:
         {"Name": t["LaunchTemplateName"], "Default Version": t["DefaultVersionNumber"]}
         for t in response["LaunchTemplates"]
     ]
+
+
+def filters(name: Optional[str] = None, name_match: Optional[str] = None) -> List[FilterTypeDef]:
+    if name and name.startswith("i-"):
+        return [{"Name": "instance-id", "Values": [name]}]
+    elif name:
+        return [{"Name": "tag:Name", "Values": [name]}]
+    elif name_match:
+        return [{"Name": "tag:Name", "Values": [f"*{name_match}*"]}]
+    else:
+        return []
 
 
 def read_file(filepath: str) -> str:

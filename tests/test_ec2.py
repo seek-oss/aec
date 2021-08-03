@@ -31,7 +31,6 @@ def mock_aws_config():
 
     return {
         "region": region,
-        "additional_tags": {"Owner": "alice@testlab.io", "Project": "top secret"},
         "key_name": "test_key",
         "vpc": {
             "name": "test vpc",
@@ -42,8 +41,11 @@ def mock_aws_config():
     }
 
 
+ami_id = AMIS[0]["ami_id"]
+
+
 def test_launch(mock_aws_config):
-    instances = launch(mock_aws_config, "alice", ami=AMIS[0]["ami_id"])
+    instances = launch(mock_aws_config, "alice", ami=ami_id)
     assert "amazonaws.com" in instances[0]["DnsName"]
 
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
@@ -56,7 +58,7 @@ def test_launch_template(mock_aws_config):
     ec2_client.create_launch_template(
         LaunchTemplateName="launchie",
         LaunchTemplateData={
-            "ImageId": AMIS[0]["ami_id"],
+            "ImageId": ami_id,
             "BlockDeviceMappings": [
                 {
                     "DeviceName": "/dev/sda1",
@@ -84,25 +86,25 @@ def test_launch_template(mock_aws_config):
 
 def test_launch_multiple_security_groups(mock_aws_config):
     mock_aws_config["vpc"]["security_group"] = ["one", "two"]
-    print(launch(mock_aws_config, "alice", AMIS[0]["ami_id"]))
+    print(launch(mock_aws_config, "alice", ami_id))
 
 
 def test_launch_without_instance_profile(mock_aws_config):
     del mock_aws_config["iam_instance_profile_arn"]
-    print(launch(mock_aws_config, "alice", AMIS[0]["ami_id"]))
+    print(launch(mock_aws_config, "alice", ami_id))
 
 
 def test_launch_no_region_specified(mock_aws_config):
     del mock_aws_config["region"]
     os.environ["AWS_DEFAULT_REGION"] = "ap-southeast-2"
-    instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    instances = launch(mock_aws_config, "alice", ami_id)
     assert "amazonaws.com" in instances[0]["DnsName"]
 
 
 @pytest.mark.skip(reason="failing because of https://github.com/spulec/moto/issues/2762")
 def test_launch_without_public_ip_address(mock_aws_config):
     mock_aws_config["vpc"]["associate_public_ip_address"] = False
-    instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    instances = launch(mock_aws_config, "alice", ami_id)
     assert "ec2.internal" in instances[0]["DnsName"]
 
 
@@ -112,7 +114,7 @@ def test_launch_with_ami_match_string(mock_aws_config):
 
 
 def test_override_key_name(mock_aws_config):
-    instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"], key_name="magic-key")
+    instances = launch(mock_aws_config, "alice", ami_id, key_name="magic-key")
     instance_id = instances[0]["InstanceId"]
 
     instance = describe_instance0(mock_aws_config["region"], instance_id)
@@ -121,7 +123,7 @@ def test_override_key_name(mock_aws_config):
 
 
 def test_override_volume_size(mock_aws_config):
-    launch(mock_aws_config, "alice", ami=AMIS[0]["ami_id"], volume_size=66)
+    launch(mock_aws_config, "alice", ami=ami_id, volume_size=66)
 
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
     volumes = ec2_client.describe_volumes()
@@ -130,7 +132,7 @@ def test_override_volume_size(mock_aws_config):
 
 def test_config_override_volume_size(mock_aws_config):
     mock_aws_config["volume_size"] = 77
-    launch(mock_aws_config, "alice", ami=AMIS[0]["ami_id"])
+    launch(mock_aws_config, "alice", ami=ami_id)
 
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
     volumes = ec2_client.describe_volumes()
@@ -142,15 +144,15 @@ def test_launch_has_userdata(mock_aws_config):
         launch(
             mock_aws_config,
             "test_userdata",
-            AMIS[0]["ami_id"],
+            ami_id,
             userdata="src/aec/config-example/userdata/amzn-install-docker.yaml",
         )
     )
 
 
 def test_describe(mock_aws_config):
-    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
-    launch(mock_aws_config, "sam", AMIS[0]["ami_id"])
+    launch(mock_aws_config, "alice", ami_id)
+    launch(mock_aws_config, "sam", ami_id)
 
     instances = describe(config=mock_aws_config)
     print(instances)
@@ -172,28 +174,28 @@ def test_describe_instance_without_tags(mock_aws_config):
 
 
 def test_describe_by_name(mock_aws_config):
-    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    launch(mock_aws_config, "alice", ami_id)
+    launch(mock_aws_config, "alex", ami_id)
 
     instances = describe(config=mock_aws_config, name="alice")
-    print(instances)
 
     assert len(instances) == 1
     assert instances[0]["Name"] == "alice"
 
 
 def test_describe_by_name_match(mock_aws_config):
-    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    launch(mock_aws_config, "alice", ami_id)
+    launch(mock_aws_config, "alex", ami_id)
 
     instances = describe(config=mock_aws_config, name_match="lic")
-    print(instances)
 
     assert len(instances) == 1
     assert instances[0]["Name"] == "alice"
 
 
 def test_describe_terminated(mock_aws_config):
-    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
-    launch(mock_aws_config, "sam", AMIS[0]["ami_id"])
+    launch(mock_aws_config, "alice", ami_id)
+    launch(mock_aws_config, "sam", ami_id)
     terminate(mock_aws_config, "sam")
 
     # by default don't show terminated instances
@@ -207,8 +209,8 @@ def test_describe_terminated(mock_aws_config):
 
 
 def test_describe_running_only(mock_aws_config):
-    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
-    launch(mock_aws_config, "sam", AMIS[0]["ami_id"])
+    launch(mock_aws_config, "alice", ami_id)
+    launch(mock_aws_config, "sam", ami_id)
     stop(mock_aws_config, "sam")
 
     # show only running instances
@@ -218,7 +220,7 @@ def test_describe_running_only(mock_aws_config):
 
 
 def test_describe_instance_id(mock_aws_config):
-    instances = launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    instances = launch(mock_aws_config, "alice", ami_id)
     instance_id = instances[0]["InstanceId"]
 
     instances = describe(config=mock_aws_config, name=instance_id)
@@ -233,7 +235,8 @@ def describe_instance0(region_name, instance_id):
 
 
 def test_tags(mock_aws_config):
-    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    mock_aws_config["additional_tags"] = {"Owner": "alice@testlab.io", "Project": "top secret"}
+    launch(mock_aws_config, "alice", ami_id)
 
     instances = instance_tags(config=mock_aws_config)
 
@@ -241,14 +244,13 @@ def test_tags(mock_aws_config):
     assert instances[0]["Tags"] == "Name=alice, Owner=alice@testlab.io, Project=top secret"
 
     instances = instance_tags(config=mock_aws_config, keys=["Owner", "Project"])
-    print(instances)
 
     assert len(instances) == 1
     assert instances[0]["Tag: Owner"] == "alice@testlab.io"
     assert instances[0]["Tag: Project"] == "top secret"
 
 
-def test_volume_tags(mock_aws_config):
+def test_tags_volume(mock_aws_config):
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
 
     tags: List[TagTypeDef] = [{"Key": "Name", "Value": "Mr Snuffleupagus"}, {"Key": "Best Friend", "Value": "Big Bird"}]
@@ -268,8 +270,18 @@ def test_volume_tags(mock_aws_config):
     assert volumes[0]["Tag: Best Friend"] == "Big Bird"
 
 
+def test_tags_filter(mock_aws_config):
+    launch(mock_aws_config, "alice", ami_id)
+    launch(mock_aws_config, "alex", ami_id)
+
+    instances = instance_tags(config=mock_aws_config, name_match="lic")
+
+    assert len(instances) == 1
+    assert instances[0]["Tags"] == "Name=alice"
+
+
 def test_stop_start(mock_aws_config):
-    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    launch(mock_aws_config, "alice", ami_id)
 
     stop(mock_aws_config, name="alice")
 
@@ -277,7 +289,7 @@ def test_stop_start(mock_aws_config):
 
 
 def test_modify(mock_aws_config):
-    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    launch(mock_aws_config, "alice", ami_id)
 
     instances = modify(name="alice", type="c5.2xlarge", config=mock_aws_config)
 
@@ -295,20 +307,20 @@ def test_modify(mock_aws_config):
 
 
 def test_terminate(mock_aws_config):
-    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    launch(mock_aws_config, "alice", ami_id)
 
     terminate(config=mock_aws_config, name="alice")
 
 
 def test_logs(mock_aws_config):
-    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    launch(mock_aws_config, "alice", ami_id)
 
     logs(config=mock_aws_config, name="alice")
 
 
 def test_ebs_encrypted_by_default(mock_aws_config):
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
-    launch(mock_aws_config, "alice", ami=AMIS[0]["ami_id"])
+    launch(mock_aws_config, "alice", ami=ami_id)
     volumes = ec2_client.describe_volumes()
     assert volumes["Volumes"][0]["Encrypted"] is True
     assert volumes["Volumes"][0]["KmsKeyId"]
@@ -318,7 +330,7 @@ def test_ebs_encrypted_by_default(mock_aws_config):
 def test_ebs_encrypt_with_kms(mock_aws_config):
     mock_aws_config["kms_key_id"] = "arn:aws:kms:ap-southeast-2:123456789012:key/abcdef"
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
-    launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
+    launch(mock_aws_config, "alice", ami_id)
     volumes = ec2_client.describe_volumes()
     assert volumes["Volumes"][0]["Encrypted"] is True
     assert volumes["Volumes"][0]["KmsKeyId"] == "arn:aws:kms:ap-southeast-2:123456789012:key/abcdef"
