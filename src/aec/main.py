@@ -70,6 +70,8 @@ ec2_cli = [
     ]),
     Cmd(ec2.tags, [
         config_arg,
+        Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
+        Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
         Arg("-v", "--volumes", action='store_true', help="Show volumes"),
         Arg("-k", "--keys", type=str, nargs='+', metavar="KEY", help="Tags to display", default = [])
     ]),
