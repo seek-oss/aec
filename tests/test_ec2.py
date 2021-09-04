@@ -338,7 +338,6 @@ def test_ebs_encrypted_by_default(mock_aws_config):
     assert volumes["Volumes"][0]["KmsKeyId"]
 
 
-@pytest.mark.skip(reason="see https://github.com/spulec/moto/issues/3935")
 def test_ebs_encrypt_with_kms(mock_aws_config):
     mock_aws_config["kms_key_id"] = "arn:aws:kms:ap-southeast-2:123456789012:key/abcdef"
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
