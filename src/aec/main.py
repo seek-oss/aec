@@ -39,6 +39,7 @@ ec2_cli = [
         Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
         Arg("-r", "--show-running-only", action='store_true', help="Show running or pending instances only"),
         Arg("-it", "--include-terminated", action='store_true', help="Include terminated instances"),
+        Arg("-s", "--sort-by", type=str, help="Sort by one or more fields", default="State,Name"),
     ]),
     Cmd(ec2.launch, [
         config_arg,
@@ -73,7 +74,7 @@ ec2_cli = [
         Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
         Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
         Arg("-v", "--volumes", action='store_true', help="Show volumes"),
-        Arg("-k", "--keys", type=str, nargs='+', metavar="KEY", help="Tags to display", default = [])
+        Arg("-k", "--keys", type=str, nargs='*', metavar="KEY", help="Tags to display", default = [])
     ]),
     Cmd(ec2.templates, [
         config_arg

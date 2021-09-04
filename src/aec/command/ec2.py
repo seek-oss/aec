@@ -144,6 +144,7 @@ def describe(
     name_match: Optional[str] = None,
     include_terminated: bool = False,
     show_running_only: bool = False,
+    sort_by: str = "State,Name",
 ) -> List[Dict[str, Any]]:
     """List EC2 instances in the region."""
 
@@ -169,7 +170,10 @@ def describe(
         and (not show_running_only or i["State"]["Name"] in ["pending", "running"])
     ]
 
-    return sorted(instances, key=lambda i: i["State"] + str(i["Name"]))
+    return sorted(
+        instances,
+        key=lambda i: "".join(str(i[field]) for field in sort_by.split(",")),
+    )
 
 
 def tags(
