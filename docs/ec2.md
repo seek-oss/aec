@@ -73,6 +73,12 @@ Show running or pending instances only:
 ec2 describe -r
 ```
 
+Show running instances sorted by date started (ie: LaunchTime), oldest first:
+
+```
+ec2 describe -r -s LaunchTime
+```
+
 Show instances and all their tags:
 
 ```

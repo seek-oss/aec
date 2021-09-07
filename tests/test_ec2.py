@@ -228,6 +228,18 @@ def test_describe_instance_id(mock_aws_config):
     assert instances[0]["Name"] == "alice"
 
 
+def test_describe_sort_by(mock_aws_config):
+    launch(mock_aws_config, "sam", ami_id)
+    launch(mock_aws_config, "alice", ami_id)
+
+    instances = describe(config=mock_aws_config, sort_by="LaunchTime")
+    print(instances)
+
+    assert len(instances) == 2
+    assert instances[0]["Name"] == "sam"
+    assert instances[1]["Name"] == "alice"
+
+
 def describe_instance0(region_name, instance_id):
     ec2_client = boto3.client("ec2", region_name=region_name)
     instances = ec2_client.describe_instances(InstanceIds=[instance_id])
@@ -326,7 +338,6 @@ def test_ebs_encrypted_by_default(mock_aws_config):
     assert volumes["Volumes"][0]["KmsKeyId"]
 
 
-@pytest.mark.skip(reason="see https://github.com/spulec/moto/issues/3935")
 def test_ebs_encrypt_with_kms(mock_aws_config):
     mock_aws_config["kms_key_id"] = "arn:aws:kms:ap-southeast-2:123456789012:key/abcdef"
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
