@@ -109,10 +109,13 @@ def launch(
                 "Groups": security_group if isinstance(security_group, list) else [security_group],
             }
         ]
+        associate_public_ip_address = config["vpc"].get("associate_public_ip_address", None)
+        if associate_public_ip_address is not None:
+            runargs["NetworkInterfaces"][0]["AssociatePublicIpAddress"] = associate_public_ip_address
 
-    associate_public_ip_address = config["vpc"].get("associate_public_ip_address", None)
-    if associate_public_ip_address is not None:
-        runargs["NetworkInterfaces"][0]["AssociatePublicIpAddress"] = associate_public_ip_address
+        vpc_name = f" vpc {config['vpc']['name']}"
+    else:
+        vpc_name = ""
 
     iam_instance_profile_arn = config.get("iam_instance_profile_arn", None)
     if iam_instance_profile_arn:
@@ -121,9 +124,12 @@ def launch(
     if userdata:
         runargs["UserData"] = read_file(userdata)
 
+    # prevent SSRF
+    runargs["MetadataOptions"] = {"HttpTokens": "required"}
+
     region_name = ec2_client.meta.region_name
 
-    print(f"Launching a {instance_type} in {region_name} vpc {config['vpc']['name']} named {name} using {desc} ... ")
+    print(f"Launching a {instance_type} in {region_name}{vpc_name} named {name} using {desc} ... ")
     response = ec2_client.run_instances(**runargs)
 
     instance = response["Instances"][0]
