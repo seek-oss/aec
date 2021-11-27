@@ -35,7 +35,7 @@ def as_table(dicts: Sequence[Dict[str, Any]], keys: Optional[List[str]] = None) 
 
 
 def pretty_print(
-    result: Generator[Sequence[Optional[str]], None, None] | List[Dict[str, Any]] | Dict | str | None,
+    result: Generator[Dict[str, Any], None, None] | List[Dict[str, Any]] | Dict | str | None,
     output_format: OutputFormat,
 ) -> None:
     """print table/json, instead of showing a dict, or list of dicts."""
@@ -69,19 +69,24 @@ def pretty_print(
             for r in result:
                 writer.writerow(r)
     elif isinstance(result, Generator) and output_format == OutputFormat.table:
-        header = next(result)
-        column_names = cast(List[str], header)
+        first = next(result)
         table = Table(box=box.SIMPLE)
-        for c in column_names:
+        for c in first.keys():
             table.add_column(c)
 
+        table.add_row(*first.values())
+
         with Live(table, refresh_per_second=1):
-            for row in cast(GeneratorType, result):
-                table.add_row(*row)
+            for row in result:
+                table.add_row(*row.values())
+
     elif isinstance(result, Generator) and output_format == OutputFormat.csv:
         writer = csv.writer(sys.stdout)
-        for row in cast(GeneratorType, result):
-            writer.writerow(row)
+        first = next(result)
+        writer.writerow(first.keys())
+        writer.writerow(first.values())
+        for row in result:
+            writer.writerow(row.values())
 
     elif isinstance(result, dict):
         print(json.dumps(result, default=str))
