@@ -2,7 +2,7 @@ import codecs
 import json
 import sys
 import uuid
-from typing import IO, Any, Dict, Generator, List, Optional, Sequence, TypeVar, cast
+from typing import IO, Any, Dict, Generator, Iterator, List, Optional, Sequence, TypedDict, TypeVar, cast
 
 import boto3
 from botocore.exceptions import ClientError
@@ -12,7 +12,15 @@ import aec.util.tags as util_tags
 from aec.util.config import Config
 
 
-def describe(config: Config) -> Generator[Dict[str, Any], None, None]:
+class Agent(TypedDict):
+    ID: str
+    Name: Optional[str]
+    PingStatus: str
+    Platform: str
+    AgentVersion: Optional[str]
+
+
+def describe(config: Config) -> Iterator[Agent]:
     """List running instances with the SSM agent."""
 
     instances_names = describe_instances_names(config)
@@ -23,13 +31,14 @@ def describe(config: Config) -> Generator[Dict[str, Any], None, None]:
         response = client.describe_instance_information(**kwargs)
 
         for i in response["InstanceInformationList"]:
-            yield {
+            a: Agent = {
                 "ID": i["InstanceId"],
                 "Name": instances_names.get(i["InstanceId"], None),
                 "PingStatus": i["PingStatus"],
                 "Platform": f'{i["PlatformName"]} {i["PlatformVersion"]}',
                 "AgentVersion": i["AgentVersion"],
             }
+            yield a
 
         next_token = response.get("NextToken", None)
         if next_token:
@@ -38,7 +47,7 @@ def describe(config: Config) -> Generator[Dict[str, Any], None, None]:
             break
 
 
-def patch_summary(config: Config) -> List[Dict[str, Optional[str]]]:
+def patch_summary(config: Config) -> Iterator[Dict[str, Any]]:
     """Patch summary for all instances that have run the patch baseline."""
     instances_names = describe_instances_names(config)
     instance_ids = list(instances_names.keys())
@@ -46,27 +55,21 @@ def patch_summary(config: Config) -> List[Dict[str, Optional[str]]]:
     client = boto3.client("ssm", region_name=config.get("region", None))
 
     max_at_a_time = 50
-    result = []
+
     for i in range(0, len(instance_ids), max_at_a_time):
         chunk = instance_ids[i : i + max_at_a_time]
         response = client.describe_instance_patch_states(InstanceIds=chunk)
-        result.extend(
-            [
-                {
-                    "InstanceId": i["InstanceId"],
-                    "Name": instances_names.get(i["InstanceId"], None),
-                    "Needed": i["MissingCount"],
-                    "Pending Reboot": i["InstalledPendingRebootCount"],
-                    "Errored": i["FailedCount"],
-                    "Rejected": i["InstalledRejectedCount"],
-                    "Last operation time": i["OperationEndTime"],
-                    "Last operation": i["Operation"],
-                }
-                for i in response["InstancePatchStates"]
-            ]
-        )
-
-    return result
+        for i in response["InstancePatchStates"]:
+            yield {
+                "InstanceId": i["InstanceId"],
+                "Name": instances_names.get(i["InstanceId"], None),
+                "Needed": i["MissingCount"],
+                "Pending Reboot": i["InstalledPendingRebootCount"],
+                "Errored": i["FailedCount"],
+                "Rejected": i["InstalledRejectedCount"],
+                "Last operation time": i["OperationEndTime"],
+                "Last operation": i["Operation"],
+            }
 
 
 def compliance_summary(config: Config) -> List[Dict[str, Any]]:
