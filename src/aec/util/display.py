@@ -4,8 +4,7 @@ import csv
 import enum
 import json
 import sys
-from types import GeneratorType
-from typing import Any, Dict, Generator, Iterable, Iterator, List, Optional, Sequence, cast
+from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence, cast
 
 from rich import box
 from rich.console import Console

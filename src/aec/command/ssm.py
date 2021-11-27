@@ -2,7 +2,7 @@ import codecs
 import json
 import sys
 import uuid
-from typing import IO, Any, Dict, Generator, Iterator, List, Optional, Sequence, TypedDict, TypeVar, cast
+from typing import IO, Any, Dict, Iterator, List, Optional, Sequence, TypedDict, TypeVar, cast
 
 import boto3
 from botocore.exceptions import ClientError
