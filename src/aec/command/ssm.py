@@ -2,11 +2,11 @@ import codecs
 import json
 import sys
 import uuid
-from typing import IO, Any, Dict, Iterator, List, Optional, Sequence, TypedDict, TypeVar, cast
+from typing import IO, Any, Dict, Iterator, List, Optional, Sequence, TypeVar, cast
 
 import boto3
 from botocore.exceptions import ClientError
-from typing_extensions import Literal
+from typing_extensions import Literal, TypedDict
 
 import aec.util.tags as util_tags
 from aec.util.config import Config
