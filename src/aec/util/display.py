@@ -4,10 +4,12 @@ import csv
 import enum
 import json
 import sys
-from typing import Any, Dict, List, Optional, Sequence, cast
+from types import GeneratorType
+from typing import Any, Dict, Generator, List, Optional, Sequence, cast
 
 from rich import box
 from rich.console import Console
+from rich.live import Live
 from rich.table import Table
 
 
@@ -32,7 +34,10 @@ def as_table(dicts: Sequence[Dict[str, Any]], keys: Optional[List[str]] = None) 
     return [keys] + [[str(d.get(f, "")) if d.get(f, "") else None for f in keys] for d in dicts]  # type: ignore
 
 
-def pretty_print(result: List[Dict[str, Any]] | Dict | str | None, output_format: OutputFormat) -> None:
+def pretty_print(
+    result: Generator[Sequence[Optional[str]], None, None] | List[Dict[str, Any]] | Dict | str | None,
+    output_format: OutputFormat,
+) -> None:
     """print table/json, instead of showing a dict, or list of dicts."""
 
     console = Console()
@@ -63,6 +68,20 @@ def pretty_print(result: List[Dict[str, Any]] | Dict | str | None, output_format
             writer.writeheader()
             for r in result:
                 writer.writerow(r)
+    elif isinstance(result, Generator) and output_format == OutputFormat.table:
+        header = next(result)
+        column_names = cast(List[str], header)
+        table = Table(box=box.SIMPLE)
+        for c in column_names:
+            table.add_column(c)
+
+        with Live(table, refresh_per_second=1):
+            for row in cast(GeneratorType, result):
+                table.add_row(*row)
+    elif isinstance(result, Generator) and output_format == OutputFormat.csv:
+        writer = csv.writer(sys.stdout)
+        for row in cast(GeneratorType, result):
+            writer.writerow(row)
 
     elif isinstance(result, dict):
         print(json.dumps(result, default=str))

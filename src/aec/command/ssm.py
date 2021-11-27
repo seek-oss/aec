@@ -2,7 +2,7 @@ import codecs
 import json
 import sys
 import uuid
-from typing import IO, Any, Dict, List, Optional, Sequence, TypeVar, cast
+from typing import IO, Any, Dict, Generator, List, Optional, Sequence, TypeVar, cast
 
 import boto3
 from botocore.exceptions import ClientError
@@ -12,25 +12,32 @@ import aec.util.tags as util_tags
 from aec.util.config import Config
 
 
-def describe(config: Config) -> List[Dict[str, Any]]:
+def describe(config: Config) -> Generator[Sequence[Optional[str]], None, None]:
     """List running instances with the SSM agent."""
 
     instances_names = describe_instances_names(config)
 
+    yield ["ID", "Name", "PingStatus", "Platform", "AgentVersion"]
+
+    kwargs = {"MaxResults": 50}
     client = boto3.client("ssm", region_name=config.get("region", None))
+    while True:
+        response = client.describe_instance_information(**kwargs)
 
-    response = client.describe_instance_information()
+        for i in response["InstanceInformationList"]:
+            yield [
+                i["InstanceId"],
+                instances_names.get(i["InstanceId"], None),
+                i["PingStatus"],
+                f'{i["PlatformName"]} {i["PlatformVersion"]}',
+                i["AgentVersion"],
+            ]
 
-    return [
-        {
-            "ID": i["InstanceId"],
-            "Name": instances_names.get(i["InstanceId"], None),
-            "PingStatus": i["PingStatus"],
-            "Platform": f'{i["PlatformName"]} {i["PlatformVersion"]}',
-            "AgentVersion": i["AgentVersion"],
-        }
-        for i in response["InstanceInformationList"]
-    ]
+        next_token = response.get("NextToken", None)
+        if next_token:
+            kwargs = {"NextToken": next_token}
+        else:
+            break
 
 
 def patch_summary(config: Config) -> List[Dict[str, Optional[str]]]:
