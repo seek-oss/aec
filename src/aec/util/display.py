@@ -4,10 +4,11 @@ import csv
 import enum
 import json
 import sys
-from typing import Any, Dict, List, Optional, Sequence, cast
+from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence, cast
 
 from rich import box
 from rich.console import Console
+from rich.live import Live
 from rich.table import Table
 
 
@@ -32,41 +33,69 @@ def as_table(dicts: Sequence[Dict[str, Any]], keys: Optional[List[str]] = None) 
     return [keys] + [[str(d.get(f, "")) if d.get(f, "") else None for f in keys] for d in dicts]  # type: ignore
 
 
-def pretty_print(result: List[Dict[str, Any]] | Dict | str | None, output_format: OutputFormat) -> None:
-    """print table/json, instead of showing a dict, or list of dicts."""
+def as_strings(values: Iterable[Any]) -> List[str]:
+    return [str(v) if v else "" for v in values]
+
+
+def pretty_print(
+    result: List[Dict[str, Any]] | Iterator[Dict[str, Any]] | Dict | str | None,
+    output_format: OutputFormat,
+) -> None:
+    """print results as table/csv/json."""
 
     console = Console()
 
-    if isinstance(result, list):
-        if not result:
-            console.print("No results")
-            return
+    if isinstance(result, list) and not result:
+        console.print("No results")
+        return
 
-        if output_format == OutputFormat.table:
-            rows = as_table(result)
-            column_names = cast(List[str], rows[0])
-            table = Table(box=box.SIMPLE)
-            for c in column_names:
-                if c in ["CommandId"]:
-                    table.add_column(c, no_wrap=True)
-                else:
-                    table.add_column(c)
+    elif isinstance(result, list) and output_format == OutputFormat.table:
+        rows = as_table(result)
+        column_names = cast(List[str], rows[0])
+        table = Table(box=box.SIMPLE)
+        for c in column_names:
+            if c in ["CommandId"]:
+                table.add_column(c, no_wrap=True)
+            else:
+                table.add_column(c)
 
-            for r in rows[1:]:
-                table.add_row(*r)
+        for r in rows[1:]:
+            table.add_row(*r)
 
-            console.print(table)
+        console.print(table)
 
-        elif output_format == OutputFormat.csv:
-            writer = csv.DictWriter(sys.stdout, fieldnames=list(result[0].keys()))
+    elif isinstance(result, list) and output_format == OutputFormat.csv:
+        writer = csv.DictWriter(sys.stdout, fieldnames=list(result[0].keys()))
 
-            writer.writeheader()
-            for r in result:
-                writer.writerow(r)
+        writer.writeheader()
+        for r in result:
+            writer.writerow(r)
+
+    elif isinstance(result, Iterator) and output_format == OutputFormat.table:
+        first = next(result)
+        table = Table(box=box.SIMPLE)
+        for c in first.keys():
+            table.add_column(c)
+
+        table.add_row(*as_strings(first.values()))
+
+        with Live(table, refresh_per_second=1):
+            for row in result:
+                table.add_row(*as_strings(row.values()))
+
+    elif isinstance(result, Iterator) and output_format == OutputFormat.csv:
+        writer = csv.writer(sys.stdout)
+        first = next(result)
+        writer.writerow(first.keys())
+        writer.writerow(first.values())
+        for row in result:
+            writer.writerow(row.values())
 
     elif isinstance(result, dict):
         print(json.dumps(result, default=str))
+
     elif not result:
         print("Done ✨")
+
     else:
         print(result)
