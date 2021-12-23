@@ -12,10 +12,10 @@ pip := $(venv)/bin/pip
 src := src tests
 
 $(pip):
-	# create empty virtualenv containing pip
-	$(if $(value VIRTUAL_ENV),$(error Cannot create a virtualenv when running in a virtualenv. Please deactivate the current virtual env $(VIRTUAL_ENV)),)
-	python3 -m venv --clear $(venv)
-	$(pip) install pip==21.3.1 setuptools==58.5.3 wheel==0.37.0
+# create venv using system python even when another venv is active
+	PATH=$${PATH#$${VIRTUAL_ENV}/bin:} python3 -m venv --clear $(venv)
+	$(venv)/bin/python --version
+	$(pip) install pip~=21.3 setuptools~=58.5 wheel~=0.37
 
 $(venv): setup.py $(pip)
 	$(pip) install -e '.[dev]'
