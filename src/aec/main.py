@@ -174,14 +174,16 @@ def main(args: List[str] = sys.argv[1:]) -> None:
         result, output_format = cli.dispatch(build_parser(), args)
         display.pretty_print(result, output_format)
     except ClientError as e:
-        if "UnauthorizedOperation" in str(e):
+        if e.response["Error"]["Code"] == "UnauthorizedOperation":
             print(
-                f"ERROR: AWS authorisation error:\n {e}\nTry authenticating with the appropriate AWS role before retrying.",
+                f"ERROR: AWS authorisation error: {e.response['Error']['Code']}.",
+                "Try authenticating with the appropriate AWS role before retrying.",
                 file=sys.stderr,
             )
-        if "RequestExpired" in str(e):
+        if e.response["Error"]["Code"] == "RequestExpired":
             print(
-                "ERROR: AWS session token expired. You need to re-authenticate with the appropriate AWS role.",
+                f"ERROR: AWS session token expired ({e.response['Error']['Code']}).",
+                "You need to re-authenticate with the appropriate AWS role.",
                 file=sys.stderr,
             )
 
