@@ -2,7 +2,7 @@ import argparse
 import sys
 from typing import List
 
-from botocore.exceptions import ClientError
+from botocore.exceptions import ClientError, NoCredentialsError
 
 import aec.command.ami as ami
 import aec.command.compute_optimizer as compute_optimizer
@@ -186,6 +186,12 @@ def main(args: List[str] = sys.argv[1:]) -> None:
                 "You need to re-authenticate with the appropriate AWS role.",
                 file=sys.stderr,
             )
+    except NoCredentialsError:
+        print(
+            "ERROR: AWS authorisation error: NoCredentialsError.",
+            "Try authenticating with the appropriate AWS role before retrying.",
+            file=sys.stderr,
+        )
 
 
 if __name__ == "__main__":
