@@ -2,6 +2,8 @@ import argparse
 import sys
 from typing import List
 
+from botocore.exceptions import ClientError
+
 import aec.command.ami as ami
 import aec.command.compute_optimizer as compute_optimizer
 import aec.command.ec2 as ec2
@@ -168,8 +170,16 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(args: List[str] = sys.argv[1:]) -> None:
-    result, output_format = cli.dispatch(build_parser(), args)
-    display.pretty_print(result, output_format)
+    try:
+        result, output_format = cli.dispatch(build_parser(), args)
+        display.pretty_print(result, output_format)
+    except ClientError as e:
+        if "UnauthorizedOperation" in str(e):
+            print(
+                f"ERROR: AWS authorisation error:\n {e}\nTry authenticating with the appropriate AWS role before retrying."
+            )
+        if "RequestExpired" in str(e):
+            print("ERROR: AWS session token expired. You need to re-authenticate with the appropriate AWS role.")
 
 
 if __name__ == "__main__":
