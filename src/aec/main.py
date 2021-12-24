@@ -176,10 +176,14 @@ def main(args: List[str] = sys.argv[1:]) -> None:
     except ClientError as e:
         if "UnauthorizedOperation" in str(e):
             print(
-                f"ERROR: AWS authorisation error:\n {e}\nTry authenticating with the appropriate AWS role before retrying."
+                f"ERROR: AWS authorisation error:\n {e}\nTry authenticating with the appropriate AWS role before retrying.",
+                file=sys.stderr,
             )
         if "RequestExpired" in str(e):
-            print("ERROR: AWS session token expired. You need to re-authenticate with the appropriate AWS role.")
+            print(
+                "ERROR: AWS session token expired. You need to re-authenticate with the appropriate AWS role.",
+                file=sys.stderr,
+            )
 
 
 if __name__ == "__main__":
