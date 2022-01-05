@@ -76,8 +76,7 @@ def test_launch_template(mock_aws_config):
     instances = launch(mock_aws_config, "alice", template="launchie")
     assert "amazonaws.com" in instances[0]["DnsName"]
 
-    # moto doesn't yet support launching from a template so
-    # this check is disabled until https://github.com/spulec/moto/issues/2003 is implemented
+    # this check is disabled until https://github.com/spulec/moto/issues/4718 is fixed
 
     # ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
     # volumes = ec2_client.describe_volumes()

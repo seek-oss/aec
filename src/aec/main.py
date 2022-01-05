@@ -174,22 +174,20 @@ def main(args: List[str] = sys.argv[1:]) -> None:
         result, output_format = cli.dispatch(build_parser(), args)
         display.pretty_print(result, output_format)
     except ClientError as e:
-        if e.response["Error"]["Code"] == "UnauthorizedOperation":
+        code = e.response["Error"]["Code"]
+        message = e.response["Error"]["Message"]
+
+        if code == "UnauthorizedOperation":
+            print(f"{code}: {message}\n\nAuthenticate with the appropriate AWS role before retrying.", file=sys.stderr)
+        elif code == "RequestExpired":
             print(
-                f"ERROR: AWS authorisation error: {e.response['Error']['Code']}.",
-                "Try authenticating with the appropriate AWS role before retrying.",
-                file=sys.stderr,
+                f"{code}: AWS session token expired.\n\nRe-authenticate with the appropriate AWS role.", file=sys.stderr
             )
-        if e.response["Error"]["Code"] == "RequestExpired":
-            print(
-                f"ERROR: AWS session token expired ({e.response['Error']['Code']}).",
-                "You need to re-authenticate with the appropriate AWS role.",
-                file=sys.stderr,
-            )
-    except NoCredentialsError:
+        else:
+            print(f"{code}: {message}", file=sys.stderr)
+    except NoCredentialsError as e:
         print(
-            "ERROR: AWS authorisation error: NoCredentialsError.",
-            "Try authenticating with the appropriate AWS role before retrying.",
+            f"NoCredentialsError: {e}.\n\nAuthenticate with the appropriate AWS role before retrying.",
             file=sys.stderr,
         )
 
