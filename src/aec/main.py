@@ -14,14 +14,17 @@ import aec.util.config as config
 import aec.util.configure as configure
 import aec.util.display as display
 from aec.util.cli import Arg, Cmd
-from aec.util.error import HandledError
+from aec.util.errors import HandledError
 
 config_arg = Arg("--config", help="Section of the config file to use")
 
 
 def ami_arg_checker(s: str) -> str:
     if not (s.startswith("ami-") or s in ami.ami_keywords.keys()):
-        raise argparse.ArgumentTypeError(f"must begin with 'ami-' or be one of {[k for k in ami.ami_keywords.keys()]}")
+        raise argparse.ArgumentTypeError(
+            f"must begin with 'ami-' or be one of {list(ami.ami_keywords.keys())}"
+        )
+
     return s
 
 
@@ -73,13 +76,19 @@ ec2_cli = [
         config_arg,
         Arg("name", type=str, help="Name tag of instance or instance id")
     ]),
-    Cmd(ec2.tags, [
+    Cmd(ec2.tag, [
+        config_arg,
+        Arg("-t", "--tags", type=str, nargs='+', metavar="TAG", help="Tags to create in key=value form", required = True),
+        Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
+        Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH.")
+    ]),
+    Cmd(ec2.describe_tags, [
         config_arg,
         Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
         Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
         Arg("-v", "--volumes", action='store_true', help="Show volumes"),
-        Arg("-k", "--keys", type=str, nargs='*', metavar="KEY", help="Tags to display", default = [])
-    ]),
+        Arg("-k", "--keys", type=str, nargs='*', metavar="KEY", help="Tags to display", default = []),
+    ], name = "tags"),
     Cmd(ec2.templates, [
         config_arg
     ]),

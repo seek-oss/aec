@@ -6,8 +6,9 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, TypedDict
 
 import boto3
+from mypy_boto3_ec2.type_defs import TagTypeDef
 
-from aec.util.error import HandledError
+from aec.util.errors import HandledError, NoInstanceError
 
 if TYPE_CHECKING:
     from mypy_boto3_ec2.type_defs import BlockDeviceMappingTypeDef, FilterTypeDef
@@ -195,7 +196,7 @@ def describe(
     )
 
 
-def tags(
+def describe_tags(
     config: Config,
     name: Optional[str] = None,
     name_match: Optional[str] = None,
@@ -207,6 +208,34 @@ def tags(
         return volume_tags(config, name, name_match, keys)
 
     return instance_tags(config, name, name_match, keys)
+
+
+def tag(
+    config: Config,
+    tags: List[str],
+    name: Optional[str] = None,
+    name_match: Optional[str] = None,
+) -> List[Dict[str, Any]]:
+    """Tag EC2 instance(s)."""
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
+
+    tagdefs: List[TagTypeDef] = []
+    for t in tags:
+        parts = t.split("=")
+        if len(parts) != 2:
+            raise HandledError(f"Invalid tag argument '{t}'. Must be in key=value form.")
+        tagdefs.append({"Key": parts[0], "Value": parts[1]})
+
+    instances = describe(config, name, name_match)
+
+    ids = [i["InstanceId"] for i in instances]
+
+    if not ids:
+        raise NoInstanceError(name=name, name_match=name_match)
+
+    ec2_client.create_tags(Resources=ids, Tags=tagdefs)
+
+    return describe_tags(config, name, name_match, keys=[d["Key"] for d in tagdefs])
 
 
 def instance_tags(
@@ -267,7 +296,7 @@ def start(config: Config, name: str) -> List[Instance]:
     instances = describe(config, name)
 
     if not instances:
-        raise HandledError(f"No instances with {pretty_name_or_id(name)}")
+        raise NoInstanceError(name=name)
 
     instance_ids = [instance["InstanceId"] for instance in instances]
     ec2_client.start_instances(InstanceIds=instance_ids)
@@ -286,15 +315,11 @@ def stop(config: Config, name: str) -> List[Dict[str, Any]]:
     instances = describe(config, name)
 
     if not instances:
-        raise HandledError(f"No instances with {pretty_name_or_id(name)}")
+        raise NoInstanceError(name=name)
 
     response = ec2_client.stop_instances(InstanceIds=[instance["InstanceId"] for instance in instances])
 
     return [{"State": i["CurrentState"]["Name"], "InstanceId": i["InstanceId"]} for i in response["StoppingInstances"]]
-
-
-def pretty_name_or_id(name: str) -> str:
-    return f"instance id {name}" if name.startswith("i-") else f"name {name}"
 
 
 def terminate(config: Config, name: str) -> List[Dict[str, Any]]:
@@ -305,7 +330,7 @@ def terminate(config: Config, name: str) -> List[Dict[str, Any]]:
     instances = describe(config, name)
 
     if not instances:
-        raise HandledError(f"No instances with {pretty_name_or_id(name)}")
+        raise NoInstanceError(name=name)
 
     response = ec2_client.terminate_instances(InstanceIds=[instance["InstanceId"] for instance in instances])
 
@@ -322,7 +347,7 @@ def modify(config: Config, name: str, type: str) -> List[Instance]:
     instances = describe(config, name)
 
     if not instances:
-        raise HandledError(f"No instances with {pretty_name_or_id(name)}")
+        raise NoInstanceError(name=name)
 
     instance_id = instances[0]["InstanceId"]
     ec2_client.modify_instance_attribute(InstanceId=instance_id, InstanceType={"Value": type})
@@ -353,7 +378,7 @@ def logs(config: Config, name: str) -> str:
     instances = describe(config, name)
 
     if not instances:
-        raise HandledError(f"No instances with {pretty_name_or_id(name)}")
+        raise NoInstanceError(name=name)
 
     instance_id = instances[0]["InstanceId"]
     response = ec2_client.get_console_output(InstanceId=instance_id)
