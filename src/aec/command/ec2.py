@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, TypedDict
 import boto3
 from mypy_boto3_ec2.type_defs import TagTypeDef
 
-from aec.util.errors import HandledError, NoInstanceError
+from aec.util.errors import NoInstanceError
 
 if TYPE_CHECKING:
     from mypy_boto3_ec2.type_defs import BlockDeviceMappingTypeDef, FilterTypeDef
