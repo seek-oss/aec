@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import os
 import os.path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from datetime import datetime
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, TypedDict
 
 import boto3
 
@@ -19,6 +20,16 @@ def is_ebs_optimizable(instance_type: str) -> bool:
     return not instance_type.startswith("t2")
 
 
+class Instance(TypedDict):
+    State: str
+    Name: Optional[str]
+    Type: str
+    DnsName: str
+    LaunchTime: datetime
+    ImageId: str
+    InstanceId: str
+
+
 def launch(
     config: Config,
     name: str,
@@ -29,7 +40,7 @@ def launch(
     instance_type: Optional[str] = None,
     key_name: Optional[str] = None,
     userdata: Optional[str] = None,
-) -> List[Dict[str, Any]]:
+) -> List[Instance]:
     """Launch a tagged EC2 instance with an EBS volume."""
 
     if not (template or ami):
@@ -151,7 +162,7 @@ def describe(
     include_terminated: bool = False,
     show_running_only: bool = False,
     sort_by: str = "State,Name",
-) -> List[Dict[str, Any]]:
+) -> List[Instance]:
     """List EC2 instances in the region."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -160,7 +171,7 @@ def describe(
 
     # print(response["Reservations"][0]["Instances"][0])
 
-    instances: List[Dict[str, Any]] = [
+    instances: List[Instance] = [
         {
             "State": i["State"]["Name"],
             "Name": util_tags.get_value(i, "Name"),
@@ -244,7 +255,7 @@ def volume_tags(
     return sorted(volumes, key=lambda i: str(i["Name"]))
 
 
-def start(config: Config, name: str) -> List[Dict[str, Any]]:
+def start(config: Config, name: str) -> List[Instance]:
     """Start EC2 instance."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -301,7 +312,7 @@ def terminate(config: Config, name: str) -> List[Dict[str, Any]]:
     ]
 
 
-def modify(config: Config, name: str, type: str) -> List[Dict[str, Any]]:
+def modify(config: Config, name: str, type: str) -> List[Instance]:
     """Change an instance's type."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
