@@ -222,8 +222,6 @@ def tag(
     tagdefs: List[TagTypeDef] = []
     for t in tags:
         parts = t.split("=")
-        if len(parts) != 2:
-            raise HandledError(f"Invalid tag argument '{t}'. Must be in key=value form.")
         tagdefs.append({"Key": parts[0], "Value": parts[1]})
 
     instances = describe(config, name, name_match)

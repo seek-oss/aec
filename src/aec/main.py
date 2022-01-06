@@ -21,11 +21,17 @@ config_arg = Arg("--config", help="Section of the config file to use")
 
 def ami_arg_checker(s: str) -> str:
     if not (s.startswith("ami-") or s in ami.ami_keywords.keys()):
-        raise argparse.ArgumentTypeError(
-            f"must begin with 'ami-' or be one of {list(ami.ami_keywords.keys())}"
-        )
+        raise argparse.ArgumentTypeError(f"must begin with 'ami-' or be one of {list(ami.ami_keywords.keys())}")
 
     return s
+
+
+def tag_arg_checker(tag: str) -> str:
+    parts = tag.split("=")
+    if len(parts) != 2:
+        raise argparse.ArgumentTypeError(f"Invalid tag argument '{tag}'. Must be in key=value form.")
+
+    return tag
 
 
 # fmt: off
@@ -78,7 +84,7 @@ ec2_cli = [
     ]),
     Cmd(ec2.tag, [
         config_arg,
-        Arg("-t", "--tags", type=str, nargs='+', metavar="TAG", help="Tags to create in key=value form", required = True),
+        Arg("-t", "--tags", type=tag_arg_checker, nargs='+', metavar="TAG", help="Tags to create in key=value form", required = True),
         Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
         Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH.")
     ]),
