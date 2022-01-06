@@ -113,11 +113,11 @@ ec2 tags -v
 Tag an instance
 
 ```
-ec2 tag alice -t project="top secret"
+ec2 tag alice -t Project="top secret" keep=forever
 
-  InstanceId            Name   Tag: Project
- ──────────────────────────────────────────────────────────────
-  i-099fe44f811245812   alice  top secret
+  InstanceId            Name    Tag: Project   Tag: keep  
+ ──────────────────────────────────────────────────────────────────────
+  i-0f7f6a072d985fd2d   alice   top secret     forever  
 ```
 
 Show output as csv instead of a table (works with any command)
