@@ -6,7 +6,7 @@ class HandledError(Exception):
     pass
 
 
-class NoInstanceError(HandledError):
+class NoInstancesError(HandledError):
     def __init__(self, name: Optional[str] = None, name_match: Optional[str] = None):
         if name:
             pretty_name = "instance id {name}" if name.startswith("i-") else f"name {name}"
@@ -16,4 +16,4 @@ class NoInstanceError(HandledError):
         else:
             raise ValueError("Missing name or name_match")
 
-        super(NoInstanceError, self).__init__(msg)
+        super(NoInstancesError, self).__init__(msg)

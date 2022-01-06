@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, TypedDict
 import boto3
 from mypy_boto3_ec2.type_defs import TagTypeDef
 
-from aec.util.errors import NoInstanceError
+from aec.util.errors import NoInstancesError
 
 if TYPE_CHECKING:
     from mypy_boto3_ec2.type_defs import BlockDeviceMappingTypeDef, FilterTypeDef
@@ -229,7 +229,7 @@ def tag(
     ids = [i["InstanceId"] for i in instances]
 
     if not ids:
-        raise NoInstanceError(name=name, name_match=name_match)
+        raise NoInstancesError(name=name, name_match=name_match)
 
     ec2_client.create_tags(Resources=ids, Tags=tagdefs)
 
@@ -294,7 +294,7 @@ def start(config: Config, name: str) -> List[Instance]:
     instances = describe(config, name)
 
     if not instances:
-        raise NoInstanceError(name=name)
+        raise NoInstancesError(name=name)
 
     instance_ids = [instance["InstanceId"] for instance in instances]
     ec2_client.start_instances(InstanceIds=instance_ids)
@@ -313,7 +313,7 @@ def stop(config: Config, name: str) -> List[Dict[str, Any]]:
     instances = describe(config, name)
 
     if not instances:
-        raise NoInstanceError(name=name)
+        raise NoInstancesError(name=name)
 
     response = ec2_client.stop_instances(InstanceIds=[instance["InstanceId"] for instance in instances])
 
@@ -328,7 +328,7 @@ def terminate(config: Config, name: str) -> List[Dict[str, Any]]:
     instances = describe(config, name)
 
     if not instances:
-        raise NoInstanceError(name=name)
+        raise NoInstancesError(name=name)
 
     response = ec2_client.terminate_instances(InstanceIds=[instance["InstanceId"] for instance in instances])
 
@@ -345,7 +345,7 @@ def modify(config: Config, name: str, type: str) -> List[Instance]:
     instances = describe(config, name)
 
     if not instances:
-        raise NoInstanceError(name=name)
+        raise NoInstancesError(name=name)
 
     instance_id = instances[0]["InstanceId"]
     ec2_client.modify_instance_attribute(InstanceId=instance_id, InstanceType={"Value": type})
@@ -376,7 +376,7 @@ def logs(config: Config, name: str) -> str:
     instances = describe(config, name)
 
     if not instances:
-        raise NoInstanceError(name=name)
+        raise NoInstancesError(name=name)
 
     instance_id = instances[0]["InstanceId"]
     response = ec2_client.get_console_output(InstanceId=instance_id)
