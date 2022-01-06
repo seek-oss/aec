@@ -113,7 +113,7 @@ ec2 tags -v
 Tag an instance
 
 ```
-ec2 tag alice -t project="top secret
+ec2 tag alice -t project="top secret"
 
   InstanceId            Name   Tag: Project
  ──────────────────────────────────────────────────────────────
