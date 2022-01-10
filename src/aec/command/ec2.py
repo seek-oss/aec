@@ -2,14 +2,16 @@ from __future__ import annotations
 
 import os
 import os.path
+from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import boto3
+from typing_extensions import TypedDict
 
-from aec.util.error import HandledError
+from aec.util.errors import HandledError, NoInstancesError
 
 if TYPE_CHECKING:
-    from mypy_boto3_ec2.type_defs import BlockDeviceMappingTypeDef, FilterTypeDef
+    from mypy_boto3_ec2.type_defs import BlockDeviceMappingTypeDef, FilterTypeDef, TagTypeDef
 
 import aec.command.ami as ami_cmd
 import aec.util.tags as util_tags
@@ -19,6 +21,16 @@ from aec.util.ec2_types import RunArgs
 
 def is_ebs_optimizable(instance_type: str) -> bool:
     return not instance_type.startswith("t2")
+
+
+class Instance(TypedDict):
+    State: str
+    Name: Optional[str]
+    Type: str
+    DnsName: str
+    LaunchTime: datetime
+    ImageId: str
+    InstanceId: str
 
 
 def launch(
@@ -31,7 +43,7 @@ def launch(
     instance_type: Optional[str] = None,
     key_name: Optional[str] = None,
     userdata: Optional[str] = None,
-) -> List[Dict[str, Any]]:
+) -> List[Instance]:
     """Launch a tagged EC2 instance with an EBS volume."""
 
     if not (template or ami):
@@ -84,6 +96,8 @@ def launch(
     key = key_name or config.get("key_name", None)
     if key:
         runargs["KeyName"] = key
+    elif not template:
+        raise HandledError("Please provide a key name")
 
     if instance_type:
         runargs["InstanceType"] = instance_type
@@ -153,7 +167,7 @@ def describe(
     include_terminated: bool = False,
     show_running_only: bool = False,
     sort_by: str = "State,Name",
-) -> List[Dict[str, Any]]:
+) -> List[Instance]:
     """List EC2 instances in the region."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -162,7 +176,7 @@ def describe(
 
     # print(response["Reservations"][0]["Instances"][0])
 
-    instances: List[Dict[str, Any]] = [
+    instances: List[Instance] = [
         {
             "State": i["State"]["Name"],
             "Name": util_tags.get_value(i, "Name"),
@@ -184,7 +198,7 @@ def describe(
     )
 
 
-def tags(
+def describe_tags(
     config: Config,
     name: Optional[str] = None,
     name_match: Optional[str] = None,
@@ -196,6 +210,32 @@ def tags(
         return volume_tags(config, name, name_match, keys)
 
     return instance_tags(config, name, name_match, keys)
+
+
+def tag(
+    config: Config,
+    tags: List[str],
+    name: Optional[str] = None,
+    name_match: Optional[str] = None,
+) -> List[Dict[str, Any]]:
+    """Tag EC2 instance(s)."""
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
+
+    tagdefs: List[TagTypeDef] = []
+    for t in tags:
+        parts = t.split("=")
+        tagdefs.append({"Key": parts[0], "Value": parts[1]})
+
+    instances = describe(config, name, name_match)
+
+    ids = [i["InstanceId"] for i in instances]
+
+    if not ids:
+        raise NoInstancesError(name=name, name_match=name_match)
+
+    ec2_client.create_tags(Resources=ids, Tags=tagdefs)
+
+    return describe_tags(config, name, name_match, keys=[d["Key"] for d in tagdefs])
 
 
 def instance_tags(
@@ -246,7 +286,7 @@ def volume_tags(
     return sorted(volumes, key=lambda i: str(i["Name"]))
 
 
-def start(config: Config, name: str) -> List[Dict[str, Any]]:
+def start(config: Config, name: str) -> List[Instance]:
     """Start EC2 instance."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -256,7 +296,7 @@ def start(config: Config, name: str) -> List[Dict[str, Any]]:
     instances = describe(config, name)
 
     if not instances:
-        raise HandledError(f"No instances with {pretty_name_or_id(name)}")
+        raise NoInstancesError(name=name)
 
     instance_ids = [instance["InstanceId"] for instance in instances]
     ec2_client.start_instances(InstanceIds=instance_ids)
@@ -275,15 +315,11 @@ def stop(config: Config, name: str) -> List[Dict[str, Any]]:
     instances = describe(config, name)
 
     if not instances:
-        raise HandledError(f"No instances with {pretty_name_or_id(name)}")
+        raise NoInstancesError(name=name)
 
     response = ec2_client.stop_instances(InstanceIds=[instance["InstanceId"] for instance in instances])
 
     return [{"State": i["CurrentState"]["Name"], "InstanceId": i["InstanceId"]} for i in response["StoppingInstances"]]
-
-
-def pretty_name_or_id(name: str) -> str:
-    return f"instance id {name}" if name.startswith("i-") else f"name {name}"
 
 
 def terminate(config: Config, name: str) -> List[Dict[str, Any]]:
@@ -294,7 +330,7 @@ def terminate(config: Config, name: str) -> List[Dict[str, Any]]:
     instances = describe(config, name)
 
     if not instances:
-        raise HandledError(f"No instances with {pretty_name_or_id(name)}")
+        raise NoInstancesError(name=name)
 
     response = ec2_client.terminate_instances(InstanceIds=[instance["InstanceId"] for instance in instances])
 
@@ -303,7 +339,7 @@ def terminate(config: Config, name: str) -> List[Dict[str, Any]]:
     ]
 
 
-def modify(config: Config, name: str, type: str) -> List[Dict[str, Any]]:
+def modify(config: Config, name: str, type: str) -> List[Instance]:
     """Change an instance's type."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -311,7 +347,7 @@ def modify(config: Config, name: str, type: str) -> List[Dict[str, Any]]:
     instances = describe(config, name)
 
     if not instances:
-        raise HandledError(f"No instances with {pretty_name_or_id(name)}")
+        raise NoInstancesError(name=name)
 
     instance_id = instances[0]["InstanceId"]
     ec2_client.modify_instance_attribute(InstanceId=instance_id, InstanceType={"Value": type})
@@ -342,7 +378,7 @@ def logs(config: Config, name: str) -> str:
     instances = describe(config, name)
 
     if not instances:
-        raise HandledError(f"No instances with {pretty_name_or_id(name)}")
+        raise NoInstancesError(name=name)
 
     instance_id = instances[0]["InstanceId"]
     response = ec2_client.get_console_output(InstanceId=instance_id)

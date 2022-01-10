@@ -7,19 +7,18 @@ import boto3
 if TYPE_CHECKING:
     from mypy_boto3_ec2.type_defs import FilterTypeDef
 
-from typing_extensions import TypedDict
+from typing_extensions import NotRequired, TypedDict
 
 from aec.util.config import Config
 
 
-class Image(TypedDict, total=False):
+class Image(TypedDict):
     Name: Optional[str]
     ImageId: str
     CreationDate: str
     RootDeviceName: Optional[str]
     Size: Optional[int]
-    # optional
-    SnapshotId: str
+    SnapshotId: NotRequired[str]
 
 
 class AmiMatcher(NamedTuple):
@@ -88,7 +87,8 @@ def describe(
 
         filters: List[FilterTypeDef] = [] if name_match is None else [{"Name": "name", "Values": [f"*{name_match}*"]}]
 
-        print(f"Describing images owned by {owners_filter} with name matching {name_match if name_match else '*'}")
+        print(f'Describing images owned by {owners_filter} with name matching {name_match or "*"}')
+
         response = ec2_client.describe_images(Owners=owners_filter, Filters=filters)
 
     images = []

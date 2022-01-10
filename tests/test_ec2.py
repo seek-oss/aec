@@ -18,6 +18,7 @@ from aec.command.ec2 import (
     modify,
     start,
     stop,
+    tag,
     terminate,
     volume_tags,
 )
@@ -170,6 +171,15 @@ def test_describe_instance_without_tags(mock_aws_config):
     print(instances)
 
     assert len(instances) == 1
+
+
+def test_tag(mock_aws_config):
+    launch(mock_aws_config, "alice", ami_id)
+
+    instances = tag(mock_aws_config, ["Project=top secret"], "alice")
+
+    assert len(instances) == 1
+    assert instances[0]["Tag: Project"] == "top secret"
 
 
 def test_describe_by_name(mock_aws_config):

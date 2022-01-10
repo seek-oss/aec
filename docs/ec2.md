@@ -3,13 +3,13 @@
 Run `aec ec2 -h` for help:
 
 ```
-usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,tags,templates,terminate} ...
+usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,tag,tags,templates,terminate} ...
 
 optional arguments:
   -h, --help            show this help message and exit
 
 subcommands:
-  {create-key-pair,describe,launch,logs,modify,start,stop,tags,templates,terminate}
+  {create-key-pair,describe,launch,logs,modify,start,stop,tag,tags,templates,terminate}
     create-key-pair     Create a key pair.
     describe            List EC2 instances in the region.
     launch              Launch a tagged EC2 instance with an EBS volume.
@@ -17,6 +17,7 @@ subcommands:
     modify              Change an instance's type.
     start               Start EC2 instance.
     stop                Stop EC2 instance.
+    tag                 Tag EC2 instance(s).
     tags                List EC2 instances or volumes with their tags.
     templates           Describe launch templates.
     terminate           Terminate EC2 instance.
@@ -107,6 +108,16 @@ ec2 tags -v
   VolumeId              Name          Tags
  ───────────────────────────────────────────────────────────────────
   vol-0439c5ed37f6d455e   awesome-vol   Name=awesome-vol, Owner=jane
+```
+
+Tag an instance
+
+```
+ec2 tag alice -t Project="top secret" keep=forever
+
+  InstanceId            Name    Tag: Project   Tag: keep  
+ ──────────────────────────────────────────────────────────────────────
+  i-0f7f6a072d985fd2d   alice   top secret     forever  
 ```
 
 Show output as csv instead of a table (works with any command)
