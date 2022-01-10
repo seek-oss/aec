@@ -6,13 +6,12 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import boto3
-from mypy_boto3_ec2.type_defs import TagTypeDef
 from typing_extensions import TypedDict
 
 from aec.util.errors import HandledError, NoInstancesError
 
 if TYPE_CHECKING:
-    from mypy_boto3_ec2.type_defs import BlockDeviceMappingTypeDef, FilterTypeDef
+    from mypy_boto3_ec2.type_defs import BlockDeviceMappingTypeDef, FilterTypeDef, TagTypeDef
 
 import aec.command.ami as ami_cmd
 import aec.util.tags as util_tags
