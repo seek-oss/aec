@@ -3,12 +3,13 @@ from __future__ import annotations
 import os
 import os.path
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, TypedDict
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 
 import boto3
 from mypy_boto3_ec2.type_defs import TagTypeDef
+from typing_extensions import TypedDict
 
-from aec.util.errors import NoInstancesError
+from aec.util.errors import HandledError, NoInstancesError
 
 if TYPE_CHECKING:
     from mypy_boto3_ec2.type_defs import BlockDeviceMappingTypeDef, FilterTypeDef
@@ -96,6 +97,8 @@ def launch(
     key = key_name or config.get("key_name", None)
     if key:
         runargs["KeyName"] = key
+    elif not template:
+        raise HandledError("Please provide a key name")
 
     if instance_type:
         runargs["InstanceType"] = instance_type
