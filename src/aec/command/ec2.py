@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 import boto3
-from typing_extensions import Required, TypedDict
+from typing_extensions import TypedDict
 
 from aec.util.errors import HandledError, NoInstancesError
 
@@ -25,13 +25,11 @@ def is_ebs_optimizable(instance_type: str) -> bool:
 
 
 class Instance(TypedDict, total=False):
-    InstanceId: Required[str]
+    InstanceId: str
     State: str
     Name: Optional[str]
     Type: str
     DnsName: str
-    LaunchTime: datetime
-    ImageId: str
     SubnetId: str
 
 
@@ -179,7 +177,7 @@ def describe(
 
     # print(response["Reservations"][0]["Instances"][0])
 
-    cols = columns.split(",") if columns else ["State", "Name", "Type", "DnsName", "LaunchTime", "ImageId"]
+    cols = columns.split(",") if columns else ["InstanceId", "State", "Name", "Type", "DnsName"]
 
     # don't sort by cols we aren't showing
     sort_cols = [sc for sc in sort_by.split(",") if sc in cols]
@@ -190,7 +188,7 @@ def describe(
             if (include_terminated or i["State"]["Name"] != "terminated") and (
                 not show_running_only or i["State"]["Name"] in ["pending", "running"]
             ):
-                desc: Instance = {"InstanceId": i["InstanceId"]}
+                desc: Instance = {}
 
                 for col in cols:
                     if col == "State":
