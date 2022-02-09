@@ -168,7 +168,6 @@ def describe(
     include_terminated: bool = False,
     show_running_only: bool = False,
     sort_by: str = "State,Name",
-    columns: Optional[str] = None,
 ) -> List[Instance]:
     """List EC2 instances in the region."""
 
