@@ -84,6 +84,12 @@ Show running instances sorted by date started (ie: LaunchTime), oldest first:
 ec2 describe -r -s LaunchTime
 ```
 
+Show a custom set of columns
+
+```
+ec2 describe -c SubnetId,Name
+```
+
 Show instances and all their tags:
 
 ```
