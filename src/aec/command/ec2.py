@@ -3,7 +3,7 @@ from __future__ import annotations
 import os
 import os.path
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 import boto3
 from typing_extensions import TypedDict
@@ -12,6 +12,7 @@ from aec.util.errors import HandledError, NoInstancesError
 
 if TYPE_CHECKING:
     from mypy_boto3_ec2.type_defs import BlockDeviceMappingTypeDef, FilterTypeDef, TagTypeDef
+    from mypy_boto3_ec2.literals import InstanceTypeType
 
 import aec.command.ami as ami_cmd
 import aec.util.tags as util_tags
@@ -100,7 +101,7 @@ def launch(
         raise HandledError("Please provide a key name")
 
     if instance_type:
-        runargs["InstanceType"] = instance_type
+        runargs["InstanceType"] = cast("InstanceTypeType", instance_type)
         runargs["EbsOptimized"] = is_ebs_optimizable(instance_type)
 
     tags = [{"Key": "Name", "Value": name}]
