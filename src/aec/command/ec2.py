@@ -32,6 +32,7 @@ class Instance(TypedDict, total=False):
     LaunchTime: datetime
     ImageId: str
     InstanceId: Required[str]
+    SubnetId: str
 
 
 def launch(
@@ -101,7 +102,7 @@ def launch(
         raise HandledError("Please provide a key name")
 
     if instance_type:
-        runargs["InstanceType"] = cast(InstanceTypeType, instance_type)
+        runargs["InstanceType"] = cast("InstanceTypeType", instance_type)
         runargs["EbsOptimized"] = is_ebs_optimizable(instance_type)
 
     tags: List[TagTypeDef] = [{"Key": "Name", "Value": name}]
@@ -178,10 +179,10 @@ def describe(
 
     # print(response["Reservations"][0]["Instances"][0])
 
-    cols = columns.split(",") if columns else None
+    cols = columns.split(",") if columns else ["State", "Name", "Type", "DnsName", "LaunchTime", "ImageId"]
 
-    # if using custom columns don't sort by cols we don't have
-    sort_cols = sort_by.split(",") if not cols else [sc for sc in sort_by.split(",") if sc in cols]
+    # don't sort by cols we aren't showing
+    sort_cols = [sc for sc in sort_by.split(",") if sc in cols]
 
     instances: List[Instance] = []
     for r in response["Reservations"]:
@@ -191,26 +192,18 @@ def describe(
             ):
                 desc: Instance = {"InstanceId": i["InstanceId"]}
 
-                if cols:
-                    for col in cols:
-                        if col == "Name":
-                            desc[col] = util_tags.get_value(i, "Name")
-                        else:
-                            desc[col] = i[col]
-                else:
-                    desc.update(
-                        {
-                            "State": i["State"]["Name"],
-                            "Name": util_tags.get_value(i, "Name"),
-                            "Type": i["InstanceType"],
-                            "DnsName": i["PublicDnsName"]
-                            if i.get("PublicDnsName", None) != ""
-                            else i["PrivateDnsName"],
-                            "LaunchTime": i["LaunchTime"],
-                            "ImageId": i["ImageId"],
-                            "InstanceId": i["InstanceId"],
-                        }
-                    )
+                for col in cols:
+                    if col == "State":
+                        desc[col] = i["State"]["Name"]
+                    elif col == "Name":
+                        desc[col] = util_tags.get_value(i, "Name")
+                    elif col == "Type":
+                        desc[col] = i["InstanceType"]
+                    elif col == "DnsName":
+                        desc[col] = i["PublicDnsName"] if i.get("PublicDnsName", None) != "" else i["PrivateDnsName"]
+                    else:
+                        desc[col] = i[col]
+
                 instances.append(desc)
 
     return sorted(
