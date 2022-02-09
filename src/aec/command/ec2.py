@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 import boto3
-from typing_extensions import TypedDict
+from typing_extensions import NotRequired, Required, TypedDict
 
 from aec.util.errors import HandledError, NoInstancesError
 
@@ -24,14 +24,14 @@ def is_ebs_optimizable(instance_type: str) -> bool:
     return not instance_type.startswith("t2")
 
 
-class Instance(TypedDict):
+class Instance(TypedDict, total=False):
     State: str
     Name: Optional[str]
     Type: str
     DnsName: str
     LaunchTime: datetime
     ImageId: str
-    InstanceId: str
+    InstanceId: Required[str]
 
 
 def launch(
@@ -50,7 +50,7 @@ def launch(
     if not (template or ami):
         raise ValueError("Please specify either an ami or a launch template")
 
-    if not template and ami and not instance_type:
+    if not template and not instance_type:
         # if no instance type is provided set one
         instance_type = "t3.small"
 
@@ -101,10 +101,10 @@ def launch(
         raise HandledError("Please provide a key name")
 
     if instance_type:
-        runargs["InstanceType"] = cast("InstanceTypeType", instance_type)
+        runargs["InstanceType"] = cast(InstanceTypeType, instance_type)
         runargs["EbsOptimized"] = is_ebs_optimizable(instance_type)
 
-    tags = [{"Key": "Name", "Value": name}]
+    tags: List[TagTypeDef] = [{"Key": "Name", "Value": name}]
     additional_tags = config.get("additional_tags", {})
     if additional_tags:
         tags.extend([{"Key": k, "Value": v} for k, v in additional_tags.items()])
@@ -168,6 +168,7 @@ def describe(
     include_terminated: bool = False,
     show_running_only: bool = False,
     sort_by: str = "State,Name",
+    columns: Optional[str] = None,
 ) -> List[Instance]:
     """List EC2 instances in the region."""
 
@@ -177,25 +178,44 @@ def describe(
 
     # print(response["Reservations"][0]["Instances"][0])
 
-    instances: List[Instance] = [
-        {
-            "State": i["State"]["Name"],
-            "Name": util_tags.get_value(i, "Name"),
-            "Type": i["InstanceType"],
-            "DnsName": i["PublicDnsName"] if i.get("PublicDnsName", None) != "" else i["PrivateDnsName"],
-            "LaunchTime": i["LaunchTime"],
-            "ImageId": i["ImageId"],
-            "InstanceId": i["InstanceId"],
-        }
-        for r in response["Reservations"]
-        for i in r["Instances"]
-        if (include_terminated or i["State"]["Name"] != "terminated")
-        and (not show_running_only or i["State"]["Name"] in ["pending", "running"])
-    ]
+    cols = columns.split(",") if columns else None
+
+    # if using custom columns don't sort by cols we don't have
+    sort_cols = sort_by.split(",") if not cols else [sc for sc in sort_by.split(",") if sc in cols]
+
+    instances: List[Instance] = []
+    for r in response["Reservations"]:
+        for i in r["Instances"]:
+            if (include_terminated or i["State"]["Name"] != "terminated") and (
+                not show_running_only or i["State"]["Name"] in ["pending", "running"]
+            ):
+                desc: Instance = {"InstanceId": i["InstanceId"]}
+
+                if cols:
+                    for col in cols:
+                        if col == "Name":
+                            desc[col] = util_tags.get_value(i, "Name")
+                        else:
+                            desc[col] = i[col]
+                else:
+                    desc.update(
+                        {
+                            "State": i["State"]["Name"],
+                            "Name": util_tags.get_value(i, "Name"),
+                            "Type": i["InstanceType"],
+                            "DnsName": i["PublicDnsName"]
+                            if i.get("PublicDnsName", None) != ""
+                            else i["PrivateDnsName"],
+                            "LaunchTime": i["LaunchTime"],
+                            "ImageId": i["ImageId"],
+                            "InstanceId": i["InstanceId"],
+                        }
+                    )
+                instances.append(desc)
 
     return sorted(
         instances,
-        key=lambda i: "".join(str(i[field]) for field in sort_by.split(",")),
+        key=lambda i: "".join(str(i[field]) for field in sort_cols),
     )
 
 
