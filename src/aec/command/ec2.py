@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 import boto3
-from typing_extensions import NotRequired, Required, TypedDict
+from typing_extensions import Required, TypedDict
 
 from aec.util.errors import HandledError, NoInstancesError
 
@@ -25,13 +25,13 @@ def is_ebs_optimizable(instance_type: str) -> bool:
 
 
 class Instance(TypedDict, total=False):
+    InstanceId: Required[str]
     State: str
     Name: Optional[str]
     Type: str
     DnsName: str
     LaunchTime: datetime
     ImageId: str
-    InstanceId: Required[str]
     SubnetId: str
 
 
