@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import os
 import os.path
-from datetime import datetime
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 import boto3
