@@ -75,25 +75,25 @@ aec ec2 describe --config us
 Show running or pending instances only:
 
 ```
-ec2 describe -r
+aec ec2 describe -r
 ```
 
 Show running instances sorted by date started (ie: LaunchTime), oldest first:
 
 ```
-ec2 describe -r -s LaunchTime
+aec ec2 describe -r -s LaunchTime
 ```
 
 Show a custom set of columns
 
 ```
-ec2 describe -c SubnetId,Name
+aec ec2 describe -c SubnetId,Name
 ```
 
 Show instances and all their tags:
 
 ```
-ec2 tags
+aec ec2 tags
 
   InstanceId            Name        Tags
  ────────────────────────────────────────────────────────────────
@@ -103,7 +103,7 @@ ec2 tags
 Show instances and just the value of the tags `Owner` and `Project`:
 
 ```
-ec2 tags --keys Owner Project
+aec ec2 tags --keys Owner Project
 
   InstanceId            Name        Tag: Owner    Tag: Project
  ──────────────────────────────────────────────────────────────
@@ -113,7 +113,7 @@ ec2 tags --keys Owner Project
 Show volume tags
 
 ```
-ec2 tags -v
+aec ec2 tags -v
 
   VolumeId              Name          Tags
  ───────────────────────────────────────────────────────────────────
@@ -123,7 +123,7 @@ ec2 tags -v
 Tag an instance
 
 ```
-ec2 tag alice -t Project="top secret" keep=forever
+aec ec2 tag alice -t Project="top secret" keep=forever
 
   InstanceId            Name    Tag: Project   Tag: keep
  ──────────────────────────────────────────────────────────────────────
@@ -133,7 +133,7 @@ ec2 tag alice -t Project="top secret" keep=forever
 Show output as csv instead of a table (works with any command)
 
 ```
-ec2 tags -v -o csv
+aec ec2 tags -v -o csv
 VolumeId,Name,Tags
 vol-0439c5ed37f6d455e,awesome-vol,"Name=awesome-vol, Owner=jane"
 ```
@@ -141,5 +141,5 @@ vol-0439c5ed37f6d455e,awesome-vol,"Name=awesome-vol, Owner=jane"
 Terminate an instance using its id:
 
 ```
-ec2 terminate i-06814ad77d5177e5a
+aec ec2 terminate i-06814ad77d5177e5a
 ```

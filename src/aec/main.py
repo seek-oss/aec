@@ -53,7 +53,7 @@ ec2_cli = [
         Arg("-r", "--show-running-only", action='store_true', help="Show running or pending instances only"),
         Arg("-it", "--include-terminated", action='store_true', help="Include terminated instances"),
         Arg("-s", "--sort-by", type=str, help="Sort by one or more fields", default="State,Name"),
-        Arg("-c", "--columns", type=str, help="Customise the columns shown.", default="InstanceId,State,Name,Type,DnsName,LaunchTime,ImageId"),
+        Arg("-c", "--columns", type=str, help="Customise the columns shown", default="InstanceId,State,Name,Type,DnsName,LaunchTime,ImageId"),
     ]),
     Cmd(ec2.launch, [
         config_arg,
