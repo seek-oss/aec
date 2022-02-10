@@ -240,13 +240,28 @@ def test_describe_instance_id(mock_aws_config):
 def test_describe_sort_by(mock_aws_config):
     launch(mock_aws_config, "sam", ami_id)
     launch(mock_aws_config, "alice", ami_id)
+    stop(mock_aws_config, "alice")
 
-    instances = describe(config=mock_aws_config, sort_by="LaunchTime")
+    instances = describe(config=mock_aws_config, sort_by="Name")
     print(instances)
 
     assert len(instances) == 2
-    assert instances[0]["Name"] == "sam"
-    assert instances[1]["Name"] == "alice"
+    assert instances[0]["Name"] == "alice"
+    assert instances[1]["Name"] == "sam"
+
+
+def test_describe_columns(mock_aws_config):
+    launch(mock_aws_config, "sam", ami_id)
+    launch(mock_aws_config, "alice", ami_id)
+
+    instances = describe(config=mock_aws_config, columns="SubnetId,Name")
+    print(instances)
+
+    assert len(instances) == 2
+    assert instances[0]["Name"] == "alice"
+    assert instances[1]["Name"] == "sam"
+    assert "subnet" in instances[0]["SubnetId"]
+    assert "subnet" in instances[1]["SubnetId"]
 
 
 def describe_instance0(region_name, instance_id):

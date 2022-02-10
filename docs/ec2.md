@@ -47,43 +47,53 @@ Modify the instance type:
 aec ec2 modify "lady gaga" p2.xlarge
 ```
 
+List all instances in the region:
+
+```
+aec ec2 describe
+
+  InstanceId            State     Name    Type       DnsName                   LaunchTime                 ImageId
+ ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  i-db2e4e24c95fa5ed7   running   alice   t3.small   ec2-54-214-178-132.com…   2022-02-09                 ami-03cf127a
+                                                                               09:46:44+00:00
+  i-a91307a999f4309be   running   sam     t3.small   ec2-54-214-170-196.com…   2022-02-09                 ami-03cf127a
+                                                                               09:46:44+00:00
+```
+
 List instances containing `gaga` in the name:
 
 ```
 aec ec2 describe -q gaga
 ```
 
-By default, commands will use the default profile as specified in the config file. To list ec2 instances using the non-default config `us`:
+By default, commands will use the default profile as specified in the config file (_~/.aec/ec2.toml_). To list ec2 instances using the non-default config `us`:
 
 ```
 aec ec2 describe --config us
-
-  State     Name         Type          DnsName            LaunchTime         ImageId            InstanceId
- ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  running   instance A   t2.micro      ec2-34-222-181-…   2020-08-31         ami-042e958219c…   i-0547be212903d…
-                                                                22:33:29+00:00
-  running   instance B   m5.large      ip-10-17-26-251…   2020-10-18         ami-0e40c8f9700…   i-0e0ea2dc778d7…
-                                                                11:05:07+00:00
-  stopped   instance C   t2.nano       ip-10-17-26-180…   2020-10-22         ami-0d5f76fa1b9…   i-0882dcea73a85…
-                                                                19:29:14+00:00
 ```
 
 Show running or pending instances only:
 
 ```
-ec2 describe -r
+aec ec2 describe -r
 ```
 
 Show running instances sorted by date started (ie: LaunchTime), oldest first:
 
 ```
-ec2 describe -r -s LaunchTime
+aec ec2 describe -r -s LaunchTime
+```
+
+Show a custom set of columns
+
+```
+aec ec2 describe -c SubnetId,Name
 ```
 
 Show instances and all their tags:
 
 ```
-ec2 tags
+aec ec2 tags
 
   InstanceId            Name        Tags
  ────────────────────────────────────────────────────────────────
@@ -93,7 +103,7 @@ ec2 tags
 Show instances and just the value of the tags `Owner` and `Project`:
 
 ```
-ec2 tags --keys Owner Project
+aec ec2 tags --keys Owner Project
 
   InstanceId            Name        Tag: Owner    Tag: Project
  ──────────────────────────────────────────────────────────────
@@ -103,7 +113,7 @@ ec2 tags --keys Owner Project
 Show volume tags
 
 ```
-ec2 tags -v
+aec ec2 tags -v
 
   VolumeId              Name          Tags
  ───────────────────────────────────────────────────────────────────
@@ -113,17 +123,17 @@ ec2 tags -v
 Tag an instance
 
 ```
-ec2 tag alice -t Project="top secret" keep=forever
+aec ec2 tag alice -t Project="top secret" keep=forever
 
-  InstanceId            Name    Tag: Project   Tag: keep  
+  InstanceId            Name    Tag: Project   Tag: keep
  ──────────────────────────────────────────────────────────────────────
-  i-0f7f6a072d985fd2d   alice   top secret     forever  
+  i-0f7f6a072d985fd2d   alice   top secret     forever
 ```
 
 Show output as csv instead of a table (works with any command)
 
 ```
-ec2 tags -v -o csv
+aec ec2 tags -v -o csv
 VolumeId,Name,Tags
 vol-0439c5ed37f6d455e,awesome-vol,"Name=awesome-vol, Owner=jane"
 ```
@@ -131,5 +141,5 @@ vol-0439c5ed37f6d455e,awesome-vol,"Name=awesome-vol, Owner=jane"
 Terminate an instance using its id:
 
 ```
-ec2 terminate i-06814ad77d5177e5a
+aec ec2 terminate i-06814ad77d5177e5a
 ```
