@@ -1,11 +1,10 @@
 # use PyCharm default line length of 120
 
+[build-system]
+requires = ["setuptools", "wheel"]
+
 [tool.black]
 line-length = 120
-
-[tool.autopep8]
-max_line_length = 120
-aggressive = 1
 
 [tool.isort]
 # make isort compatible with black
