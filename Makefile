@@ -58,8 +58,7 @@ dist: $(venv)
 	rm -rf src/*.egg-info
 	# remove previous builds
 	rm -rf dist/* build/*
-	$(venv)/bin/python setup.py sdist
-	$(venv)/bin/python setup.py bdist_wheel
+	$(venv)/bin/python -m build --sdist --wheel
 
 ## test the wheel is correctly packaged
 test-dist: tmp_dir:=$(shell mktemp -d)
