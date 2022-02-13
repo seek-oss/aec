@@ -15,7 +15,7 @@ $(pip):
 # create venv using system python even when another venv is active
 	PATH=$${PATH#$${VIRTUAL_ENV}/bin:} python3 -m venv --clear $(venv)
 	$(venv)/bin/python --version
-	$(pip) install pip~=22.0 setuptools~=60.8 wheel~=0.37
+	$(pip) install pip~=22.0
 
 $(venv): setup.py $(pip)
 	$(pip) install -e '.[dev]'
@@ -58,8 +58,7 @@ dist: $(venv)
 	rm -rf src/*.egg-info
 	# remove previous builds
 	rm -rf dist/* build/*
-	$(venv)/bin/python setup.py sdist
-	$(venv)/bin/python setup.py bdist_wheel
+	$(venv)/bin/python -m build --sdist --wheel
 
 ## test the wheel is correctly packaged
 test-dist: tmp_dir:=$(shell mktemp -d)
