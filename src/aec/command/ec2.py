@@ -9,6 +9,7 @@ from typing_extensions import TypedDict
 
 from aec.util.ec2 import describe_instances_names
 from aec.util.errors import HandledError, NoInstancesError
+from aec.util.threads import executor
 
 if TYPE_CHECKING:
     from mypy_boto3_ec2.type_defs import (
@@ -421,8 +422,8 @@ def status(config: Config) -> List[Dict[str, Any]]:
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
 
-    response = ec2_client.describe_instance_status()
-    instances = describe_instances_names(config, {"instance-state-name": ["running"]})
+    response = executor.submit(ec2_client.describe_instance_status)
+    instances = executor.submit(describe_instances_names, config, {"instance-state-name": ["running"]}).result()
 
     statuses = [
         {
@@ -432,12 +433,12 @@ def status(config: Config) -> List[Dict[str, Any]]:
             "System status check": status_text(i["SystemStatus"]),
             "Instance status check": status_text(i["InstanceStatus"]),
         }
-        for i in response["InstanceStatuses"]
+        for i in response.result()["InstanceStatuses"]
     ]
 
     return sorted(
         statuses,
-        key=lambda i: "".join(str(i[field]) for field in ["State"]),
+        key=lambda i: "".join(str(i[field]) for field in ["State", "Name"]),
     )
 
 
