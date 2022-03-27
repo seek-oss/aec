@@ -96,6 +96,9 @@ ec2_cli = [
         Arg("-v", "--volumes", action='store_true', help="Show volumes"),
         Arg("-k", "--keys", type=str, nargs='*', metavar="KEY", help="Tags to display", default = []),
     ], name = "tags"),
+    Cmd(ec2.status, [
+        config_arg
+    ]),
     Cmd(ec2.templates, [
         config_arg
     ]),

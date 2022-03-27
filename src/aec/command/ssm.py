@@ -8,8 +8,8 @@ import boto3
 from botocore.exceptions import ClientError
 from typing_extensions import Literal, TypedDict
 
-import aec.util.tags as util_tags
 from aec.util.config import Config
+from aec.util.ec2 import describe_instances_names
 
 
 class Agent(TypedDict):
@@ -321,13 +321,3 @@ def fetch_instance_ids(config: Config, ids_or_names: List[str]) -> List[str]:
         except IndexError:
             raise ValueError(f"No instances with names {','.join(names)}")
     return ids
-
-
-def describe_instances_names(config: Config) -> Dict[str, Optional[str]]:
-    """List EC2 instance names in the region."""
-
-    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
-
-    response = ec2_client.describe_instances()
-
-    return {i["InstanceId"]: util_tags.get_value(i, "Name") for r in response["Reservations"] for i in r["Instances"]}
