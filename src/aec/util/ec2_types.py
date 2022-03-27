@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List
+from typing import TYPE_CHECKING, List, Sequence
 
 if TYPE_CHECKING:
     from mypy_boto3_ec2.literals import InstanceTypeType, ShutdownBehaviorType
@@ -12,6 +12,7 @@ if TYPE_CHECKING:
         ElasticGpuSpecificationTypeDef,
         ElasticInferenceAcceleratorTypeDef,
         EnclaveOptionsRequestTypeDef,
+        FilterTypeDef,
         HibernationOptionsRequestTypeDef,
         IamInstanceProfileSpecificationTypeDef,
         InstanceIpv6AddressTypeDef,
@@ -69,3 +70,11 @@ class RunArgs(_RequiredRunArgs, total=False):
     LicenseSpecifications: List[LicenseConfigurationRequestTypeDef]
     MetadataOptions: InstanceMetadataOptionsRequestTypeDef
     EnclaveOptions: EnclaveOptionsRequestTypeDef
+
+
+class DescribeArgs(TypedDict, total=False):
+    Filters: Sequence["FilterTypeDef"]
+    InstanceIds: Sequence[str]
+    DryRun: bool
+    MaxResults: int
+    NextToken: str

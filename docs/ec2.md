@@ -3,13 +3,13 @@
 Run `aec ec2 -h` for help:
 
 ```
-usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,tag,tags,templates,terminate} ...
+usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,tag,tags,status,templates,terminate} ...
 
 optional arguments:
   -h, --help            show this help message and exit
 
 subcommands:
-  {create-key-pair,describe,launch,logs,modify,start,stop,tag,tags,templates,terminate}
+  {create-key-pair,describe,launch,logs,modify,start,stop,tag,tags,status,templates,terminate}
     create-key-pair     Create a key pair.
     describe            List EC2 instances in the region.
     launch              Launch a tagged EC2 instance with an EBS volume.
@@ -19,6 +19,7 @@ subcommands:
     stop                Stop EC2 instance.
     tag                 Tag EC2 instance(s).
     tags                List EC2 instances or volumes with their tags.
+    status              Describe instances status checks.
     templates           Describe launch templates.
     terminate           Terminate EC2 instance.
 ```
@@ -136,6 +137,17 @@ Show output as csv instead of a table (works with any command)
 aec ec2 tags -v -o csv
 VolumeId,Name,Tags
 vol-0439c5ed37f6d455e,awesome-vol,"Name=awesome-vol, Owner=jane"
+```
+
+Show instances status checks:
+
+```
+aec ec2 status
+
+  InstanceId            State     Name    System status check   Instance status check
+ ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  i-178f32b2857e1ee7f   running   alice   reachability passed   reachability passed
+  i-fa8cba40e84f2afae   running   sam     reachability passed   reachability failed since 2022-03-27 03:17:00+00:00
 ```
 
 Terminate an instance using its id:

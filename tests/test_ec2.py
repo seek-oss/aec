@@ -17,6 +17,7 @@ from aec.command.ec2 import (
     logs,
     modify,
     start,
+    status,
     stop,
     tag,
     terminate,
@@ -340,6 +341,14 @@ def test_modify(mock_aws_config):
 
     assert instance["InstanceType"] == "t2.medium"
     assert instance["EbsOptimized"] is False
+
+
+def test_status(mock_aws_config):
+    launch(mock_aws_config, "alice", ami_id)
+
+    statuses = status(mock_aws_config)[0]
+    assert statuses["System status check"] == "reachability passed"
+    assert statuses["Instance status check"] == "reachability passed"
 
 
 def test_terminate(mock_aws_config):

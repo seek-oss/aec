@@ -7,14 +7,21 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 import boto3
 from typing_extensions import TypedDict
 
+from aec.util.ec2 import describe_running_instances_names
 from aec.util.errors import HandledError, NoInstancesError
+from aec.util.threads import executor
 
 if TYPE_CHECKING:
-    from mypy_boto3_ec2.type_defs import BlockDeviceMappingTypeDef, FilterTypeDef, TagTypeDef
+    from mypy_boto3_ec2.type_defs import (
+        BlockDeviceMappingTypeDef,
+        FilterTypeDef,
+        TagTypeDef,
+        InstanceStatusSummaryTypeDef,
+    )
     from mypy_boto3_ec2.literals import InstanceTypeType
 
 import aec.command.ami as ami_cmd
-import aec.util.tags as util_tags
+import aec.util.ec2 as util_tags
 from aec.util.config import Config
 from aec.util.ec2_types import RunArgs
 
@@ -408,6 +415,51 @@ def templates(config: Config) -> List[Dict[str, Any]]:
         {"Name": t["LaunchTemplateName"], "Default Version": t["DefaultVersionNumber"]}
         for t in response["LaunchTemplates"]
     ]
+
+
+def status(config: Config) -> List[Dict[str, Any]]:
+    """Describe instances status checks."""
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
+
+    kwargs = {"MaxResults": 50}
+
+    response_fut = executor.submit(ec2_client.describe_instance_status, **kwargs)
+    instances = executor.submit(describe_running_instances_names, config).result()
+    response = response_fut.result()
+
+    statuses = []
+    while True:
+        statuses.extend(
+            [
+                {
+                    "InstanceId": i["InstanceId"],
+                    "State": i["InstanceState"]["Name"],
+                    "Name": instances.get(i["InstanceId"], None),
+                    "System status check": status_text(i["SystemStatus"]),
+                    "Instance status check": status_text(i["InstanceStatus"]),
+                }
+                for i in response["InstanceStatuses"]
+            ]
+        )
+
+        next_token = response.get("NextToken", None)
+        if next_token:
+            kwargs = {"NextToken": next_token}
+            response = ec2_client.describe_instance_status(**kwargs)
+        else:
+            break
+
+    return sorted(
+        statuses,
+        key=lambda i: "".join(str(i[field]) for field in ["State", "Name"]),
+    )
+
+
+def status_text(summary: InstanceStatusSummaryTypeDef, key: str = "reachability") -> str:
+    status = [d for d in summary["Details"] if d["Name"] == key][0]
+    return f"{status['Name']} {status['Status']}" + (
+        f" since {status['ImpairedSince']}" if status.get("ImpairedSince", None) else ""
+    )
 
 
 def filters(name: Optional[str] = None, name_match: Optional[str] = None) -> List[FilterTypeDef]:
