@@ -37,7 +37,7 @@ setup(
             "flake8==4.0.1",
             "flake8-annotations==2.7.0",
             "flake8-colors==0.1.9",
-            "moto[ec2]==3.1.2",
+            "moto[ec2]==3.1.1",
             "pre-commit==2.17.0",
             "pyfakefs==4.5.6",
             "pytest==7.1.1",
