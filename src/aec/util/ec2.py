@@ -15,6 +15,9 @@ def get_value(instance: InstanceTypeDef | VolumeTypeDef, key: str) -> Optional[s
     tag_value = [t["Value"] for t in instance.get("Tags", []) if t["Key"] == key]
     return tag_value[0] if tag_value else None
 
+def describe_running_instances_names(config: Config) -> Dict[str, Optional[str]]:
+    # 2x speed up (8 -> 4 secs) compared to listing all names
+    return describe_instances_names(config, {"instance-state-name": ["running"]})
 
 def describe_instances_names(config: Config, filters: Optional[Dict[str, Sequence[str]]] = None) -> Dict[str, Optional[str]]:
     """List EC2 instance names in the region."""

@@ -9,7 +9,7 @@ from botocore.exceptions import ClientError
 from typing_extensions import Literal, TypedDict
 
 from aec.util.config import Config
-from aec.util.ec2 import describe_instances_names
+from aec.util.ec2 import describe_instances_names, describe_running_instances_names
 
 
 class Agent(TypedDict):
@@ -23,7 +23,7 @@ class Agent(TypedDict):
 def describe(config: Config) -> Iterator[Agent]:
     """List running instances with the SSM agent."""
 
-    instances_names = describe_instances_names(config)
+    instances_names = describe_running_instances_names(config)
 
     kwargs = {"MaxResults": 50}
     client = boto3.client("ssm", region_name=config.get("region", None))

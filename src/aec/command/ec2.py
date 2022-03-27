@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 import boto3
 from typing_extensions import TypedDict
 
-from aec.util.ec2 import describe_instances_names
+from aec.util.ec2 import describe_running_instances_names
 from aec.util.errors import HandledError, NoInstancesError
 from aec.util.threads import executor
 
@@ -421,20 +421,31 @@ def status(config: Config) -> List[Dict[str, Any]]:
     """Describe instance statuses."""
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
+    kwargs = {"MaxResults": 50}
 
-    response = executor.submit(ec2_client.describe_instance_status)
-    instances = executor.submit(describe_instances_names, config, {"instance-state-name": ["running"]}).result()
+    response_fut = executor.submit(ec2_client.describe_instance_status, **kwargs)
+    instances = executor.submit(describe_running_instances_names, config).result()
+    response = response_fut.result()
 
-    statuses = [
-        {
-            "InstanceId": i["InstanceId"],
-            "State": i["InstanceState"]["Name"],
-            "Name": instances.get(i["InstanceId"], None),
-            "System status check": status_text(i["SystemStatus"]),
-            "Instance status check": status_text(i["InstanceStatus"]),
-        }
-        for i in response.result()["InstanceStatuses"]
-    ]
+    statuses = []
+    while True:
+        statuses.extend([
+            {
+                "InstanceId": i["InstanceId"],
+                "State": i["InstanceState"]["Name"],
+                "Name": instances.get(i["InstanceId"], None),
+                "System status check": status_text(i["SystemStatus"]),
+                "Instance status check": status_text(i["InstanceStatus"]),
+            }
+            for i in response["InstanceStatuses"]
+        ])
+
+        next_token = response.get("NextToken", None)
+        if next_token:
+            kwargs = {"NextToken": next_token}
+            response = ec2_client.describe_instance_status(**kwargs)
+        else:
+            break
 
     return sorted(
         statuses,
