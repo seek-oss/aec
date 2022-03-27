@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict, Optional
+from typing import TYPE_CHECKING, Dict, Optional, Sequence
 
 import boto3
 
 from aec.util.config import Config
+from aec.util.ec2_types import DescribeArgs
 
 if TYPE_CHECKING:
     from mypy_boto3_ec2.type_defs import InstanceTypeDef, VolumeTypeDef
@@ -15,11 +16,14 @@ def get_value(instance: InstanceTypeDef | VolumeTypeDef, key: str) -> Optional[s
     return tag_value[0] if tag_value else None
 
 
-def describe_instances_names(config: Config) -> Dict[str, Optional[str]]:
+def describe_instances_names(config: Config, filters: Optional[Dict[str, Sequence[str]]] = None) -> Dict[str, Optional[str]]:
     """List EC2 instance names in the region."""
-
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    response = ec2_client.describe_instances()
+    kwargs: DescribeArgs = {}
+    if filters:
+        kwargs["Filters"] = [{"Name": k, "Values": v} for k, v in filters.items()]
+
+    response = ec2_client.describe_instances(**kwargs)
 
     return {i["InstanceId"]: get_value(i, "Name") for r in response["Reservations"] for i in r["Instances"]}

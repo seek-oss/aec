@@ -420,8 +420,9 @@ def status(config: Config) -> List[Dict[str, Any]]:
     """Describe instance statuses."""
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    instances = describe_instances_names(config)
+
     response = ec2_client.describe_instance_status()
+    instances = describe_instances_names(config, {"instance-state-name": ["running"]})
 
     statuses = [
         {
@@ -436,7 +437,7 @@ def status(config: Config) -> List[Dict[str, Any]]:
 
     return sorted(
         statuses,
-        key=lambda i: "".join(str(i[field]) for field in ["State", "Name"]),
+        key=lambda i: "".join(str(i[field]) for field in ["State"]),
     )
 
 
