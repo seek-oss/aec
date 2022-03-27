@@ -179,7 +179,11 @@ def describe(
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    response = ec2_client.describe_instances(Filters=filters(name, name_match))
+    filters = name_filters(name, name_match)
+    if show_running_only:
+        filters.append({"Name": "instance-state-name", "Values": ["pending", "running"]})
+
+    response = ec2_client.describe_instances(Filters=filters)
 
     # print(response["Reservations"][0]["Instances"][0])
 
@@ -191,9 +195,7 @@ def describe(
     instances: List[Instance] = []
     for r in response["Reservations"]:
         for i in r["Instances"]:
-            if (include_terminated or i["State"]["Name"] != "terminated") and (
-                not show_running_only or i["State"]["Name"] in ["pending", "running"]
-            ):
+            if include_terminated or i["State"]["Name"] != "terminated":
                 desc: Instance = {}
 
                 for col in cols:
@@ -263,7 +265,7 @@ def instance_tags(
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    response = ec2_client.describe_instances(Filters=filters(name, name_match))
+    response = ec2_client.describe_instances(Filters=name_filters(name, name_match))
 
     instances: List[Dict[str, Any]] = []
     for r in response["Reservations"]:
@@ -288,7 +290,7 @@ def volume_tags(
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    response = ec2_client.describe_volumes(Filters=filters(name, name_match))
+    response = ec2_client.describe_volumes(Filters=name_filters(name, name_match))
 
     volumes: List[Dict[str, Any]] = []
     for v in response["Volumes"]:
@@ -462,7 +464,7 @@ def status_text(summary: InstanceStatusSummaryTypeDef, key: str = "reachability"
     )
 
 
-def filters(name: Optional[str] = None, name_match: Optional[str] = None) -> List[FilterTypeDef]:
+def name_filters(name: Optional[str] = None, name_match: Optional[str] = None) -> List[FilterTypeDef]:
     if name and name.startswith("i-"):
         return [{"Name": "instance-id", "Values": [name]}]
     elif name:
