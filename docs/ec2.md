@@ -19,7 +19,7 @@ subcommands:
     stop                Stop EC2 instance.
     tag                 Tag EC2 instance(s).
     tags                List EC2 instances or volumes with their tags.
-    status              Describe instances statuses.
+    status              Describe instances status checks.
     templates           Describe launch templates.
     terminate           Terminate EC2 instance.
 ```
@@ -139,7 +139,7 @@ VolumeId,Name,Tags
 vol-0439c5ed37f6d455e,awesome-vol,"Name=awesome-vol, Owner=jane"
 ```
 
-Show instances statues:
+Show instances status checks:
 
 ```
 aec ec2 status

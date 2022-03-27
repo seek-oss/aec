@@ -418,7 +418,7 @@ def templates(config: Config) -> List[Dict[str, Any]]:
 
 
 def status(config: Config) -> List[Dict[str, Any]]:
-    """Describe instances statuses."""
+    """Describe instances status checks."""
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     kwargs = {"MaxResults": 50}
