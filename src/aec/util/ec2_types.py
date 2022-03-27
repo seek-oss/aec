@@ -71,6 +71,7 @@ class RunArgs(_RequiredRunArgs, total=False):
     MetadataOptions: InstanceMetadataOptionsRequestTypeDef
     EnclaveOptions: EnclaveOptionsRequestTypeDef
 
+
 class DescribeArgs(TypedDict, total=False):
     Filters: Sequence["FilterTypeDef"]
     InstanceIds: Sequence[str]

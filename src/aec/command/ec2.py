@@ -429,16 +429,18 @@ def status(config: Config) -> List[Dict[str, Any]]:
 
     statuses = []
     while True:
-        statuses.extend([
-            {
-                "InstanceId": i["InstanceId"],
-                "State": i["InstanceState"]["Name"],
-                "Name": instances.get(i["InstanceId"], None),
-                "System status check": status_text(i["SystemStatus"]),
-                "Instance status check": status_text(i["InstanceStatus"]),
-            }
-            for i in response["InstanceStatuses"]
-        ])
+        statuses.extend(
+            [
+                {
+                    "InstanceId": i["InstanceId"],
+                    "State": i["InstanceState"]["Name"],
+                    "Name": instances.get(i["InstanceId"], None),
+                    "System status check": status_text(i["SystemStatus"]),
+                    "Instance status check": status_text(i["InstanceStatus"]),
+                }
+                for i in response["InstanceStatuses"]
+            ]
+        )
 
         next_token = response.get("NextToken", None)
         if next_token:
