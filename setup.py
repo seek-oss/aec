@@ -42,7 +42,7 @@ setup(
             "pyfakefs==4.5.6",
             "pytest==7.1.1",
             "pytest-mock==3.7.0",
-            "twine==3.8.0",
+            "twine==4.0.0",
         ]
     },
 )
