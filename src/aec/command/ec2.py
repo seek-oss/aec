@@ -105,7 +105,7 @@ def launch(
     elif not template:
         print(
             "WARNING: You have not specified a key pair.",
-            "You will not be able connect to the instance unless you have chosen an AMI that is configured to allow users another way to log in.",
+"You will only be able to connect to this instance if it is configured for EC2 Instance Connect or Systems Manager Session Manager.",
         )
 
     if instance_type:
