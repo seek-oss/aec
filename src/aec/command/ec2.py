@@ -8,7 +8,7 @@ import boto3
 from typing_extensions import TypedDict
 
 from aec.util.ec2 import describe_running_instances_names
-from aec.util.errors import HandledError, NoInstancesError
+from aec.util.errors import NoInstancesError
 from aec.util.threads import executor
 
 if TYPE_CHECKING:
@@ -103,7 +103,10 @@ def launch(
     if key:
         runargs["KeyName"] = key
     elif not template:
-        raise HandledError("Please provide a key name")
+        print(
+            "WARNING: You have not specified a key pair.",
+"You will only be able to connect to this instance if it is configured for EC2 Instance Connect or Systems Manager Session Manager.",
+        )
 
     if instance_type:
         runargs["InstanceType"] = cast("InstanceTypeType", instance_type)
