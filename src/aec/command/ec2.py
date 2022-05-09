@@ -5,6 +5,8 @@ import os.path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 import boto3
+import warnings
+
 from typing_extensions import TypedDict
 
 from aec.util.ec2 import describe_running_instances_names
@@ -28,7 +30,6 @@ from aec.util.ec2_types import RunArgs
 
 def is_ebs_optimizable(instance_type: str) -> bool:
     return not instance_type.startswith("t2")
-
 
 class Instance(TypedDict, total=False):
     InstanceId: str
@@ -103,7 +104,7 @@ def launch(
     if key:
         runargs["KeyName"] = key
     elif not template:
-        raise HandledError("Please provide a key name")
+        warnings.warn("If you do not specify a key pair, you can't connect to the instance unless you choose an AMI that is configured to allow users another way to log in.")
 
     if instance_type:
         runargs["InstanceType"] = cast("InstanceTypeType", instance_type)
