@@ -5,12 +5,10 @@ import os.path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
 
 import boto3
-import warnings
-
 from typing_extensions import TypedDict
 
 from aec.util.ec2 import describe_running_instances_names
-from aec.util.errors import HandledError, NoInstancesError
+from aec.util.errors import NoInstancesError
 from aec.util.threads import executor
 
 if TYPE_CHECKING:
@@ -104,7 +102,10 @@ def launch(
     if key:
         runargs["KeyName"] = key
     elif not template:
-        warnings.warn("If you do not specify a key pair, you can't connect to the instance unless you choose an AMI that is configured to allow users another way to log in.")
+        print(
+            "WARNING: You have not specified a key pair.",
+            "You will not be able connect to the instance unless you have chosen an AMI that is configured to allow users another way to log in."
+            )
 
     if instance_type:
         runargs["InstanceType"] = cast("InstanceTypeType", instance_type)
