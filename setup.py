@@ -29,7 +29,7 @@ setup(
     ],
     extras_require={
         "dev": [
-            "black==22.1.0",
+            "black==22.3.0",
             "build~=0.7",
             "boto3-stubs[ec2,compute-optimizer,ssm,s3]==1.21.27",
             "darglint==1.8.1",
