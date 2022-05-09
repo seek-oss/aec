@@ -29,6 +29,7 @@ from aec.util.ec2_types import RunArgs
 def is_ebs_optimizable(instance_type: str) -> bool:
     return not instance_type.startswith("t2")
 
+
 class Instance(TypedDict, total=False):
     InstanceId: str
     State: str
@@ -104,8 +105,8 @@ def launch(
     elif not template:
         print(
             "WARNING: You have not specified a key pair.",
-            "You will not be able connect to the instance unless you have chosen an AMI that is configured to allow users another way to log in."
-            )
+            "You will not be able connect to the instance unless you have chosen an AMI that is configured to allow users another way to log in.",
+        )
 
     if instance_type:
         runargs["InstanceType"] = cast("InstanceTypeType", instance_type)
