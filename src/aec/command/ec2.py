@@ -105,7 +105,7 @@ def launch(
     elif not template:
         print(
             "WARNING: You have not specified a key pair.",
-"You will only be able to connect to this instance if it is configured for EC2 Instance Connect or Systems Manager Session Manager.",
+            "You will only be able to connect to this instance if it is configured for EC2 Instance Connect or Systems Manager Session Manager.",
         )
 
     if instance_type:
