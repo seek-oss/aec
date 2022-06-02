@@ -20,12 +20,12 @@ setup(
     package_dir={"": "src"},
     include_package_data=True,
     install_requires=[
-        "boto3==1.21.27",
-        "importlib_resources==5.6.0",
+        "boto3==1.24.1",
+        "importlib_resources==5.7.1",
         "pytoml==0.1.21",
         "pytz==2022.1",
-        "rich==12.0.1",
-        "typing_extensions==4.1.1",
+        "rich==12.4.4",
+        "typing_extensions==4.2.0",
     ],
     extras_require={
         "dev": [
@@ -35,14 +35,14 @@ setup(
             "darglint==1.8.1",
             "isort==5.10.1",
             "flake8==4.0.1",
-            "flake8-annotations==2.7.0",
+            "flake8-annotations~=2.9",
             "flake8-colors==0.1.9",
-            "moto[ec2]==3.1.1",
-            "pre-commit==2.17.0",
+            "moto[ec2]==3.1.11",
+            "pre-commit~=2.19",
             "pyfakefs==4.5.6",
-            "pytest==7.1.1",
+            "pytest~=7.1",
             "pytest-mock==3.7.0",
-            "twine==3.8.0",
+            "twine~=4.0",
         ]
     },
 )

@@ -1,6 +1,6 @@
 import pytest
 from moto import mock_ec2
-from moto.ec2.models import AMIS
+from moto.ec2.models.amis import AMIS
 
 from aec.command.ami import delete, describe, share
 

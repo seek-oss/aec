@@ -5,7 +5,7 @@ import boto3
 import pytest
 from moto import mock_ec2
 from moto.ec2 import ec2_backends
-from moto.ec2.models import AMIS
+from moto.ec2.models.amis import AMIS
 from mypy_boto3_ec2.type_defs import TagTypeDef
 from pytest_mock import MockFixture
 

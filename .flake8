@@ -19,3 +19,6 @@ max-complexity = 16
 # print stats & count
 statistics = True
 count = True
+
+# allow *args: Any, **kwargs: Any
+allow_star_arg_any = True
