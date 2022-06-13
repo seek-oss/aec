@@ -3,7 +3,7 @@ from moto.ec2 import ec2_backends
 from moto.ec2.models.amis import AMIS
 
 from aec import main
-from aec.command.ec2 import describe, launch
+from aec.command.ec2 import launch
 
 ami_id = AMIS[0]["ami_id"]
 
