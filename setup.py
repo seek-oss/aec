@@ -31,7 +31,7 @@ setup(
         "dev": [
             "black==22.3.0",
             "build~=0.7",
-            "boto3-stubs[ec2,compute-optimizer,ssm,s3]==1.21.27",
+            "boto3-stubs[ec2,compute-optimizer,ssm,s3]==1.24.21",
             "darglint==1.8.1",
             "isort==5.10.1",
             "flake8==4.0.1",
