@@ -41,7 +41,7 @@ setup(
             "pre-commit~=2.19",
             "pyfakefs==4.5.6",
             "pytest~=7.1",
-            "pytest-mock==3.7.0",
+            "pytest-mock==3.8.1",
             "twine~=4.0",
         ]
     },
