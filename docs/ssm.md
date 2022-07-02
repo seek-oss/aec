@@ -2,10 +2,13 @@
 
 Run `aec ssm -h` for help:
 
+<!-- [[[cog
+import cog
+from aec.main import build_parser
+cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ssm'].format_help()}```")
+]]] -->
 ```
-usage: aec ssm [-h]
-               {commands,compliance-summary,describe,invocations,output,patch,patch-summary,run}
-               ...
+usage: aec ssm [-h] {commands,compliance-summary,describe,invocations,output,patch,patch-summary,run} ...
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -13,15 +16,15 @@ optional arguments:
 subcommands:
   {commands,compliance-summary,describe,invocations,output,patch,patch-summary,run}
     commands            List commands by instance.
-    compliance-summary  Compliance summary for running instances.
+    compliance-summary  Compliance summary for running instances that have run the patch baseline.
     describe            List running instances with the SSM agent.
     invocations         List invocations of a command across instances.
     output              Fetch output of a command from S3.
     patch               Scan or install AWS patch baseline.
-    patch-summary       Patch summary for all instances.
-    run                 Run a shell script on instance(s). Script is read from
-                        stdin.
+    patch-summary       Patch summary for all instances that have run the patch baseline.
+    run                 Run a shell script on instance(s). Script is read from stdin.
 ```
+<!-- [[[end]]] -->
 
 ## Examples
 
@@ -62,10 +65,10 @@ Compliance status of running instances (that have run the patch baseline):
 ```
 ssm compliance-summary
 
-  InstanceId            Name                    Status          NonCompliantCount   Last operation time  
+  InstanceId            Name                    Status          NonCompliantCount   Last operation time
  ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  i-01579de1b005846cb   awesome-instance        COMPLIANT                           2021-06-05 22:08:26+10:00  
-  i-0f194c8d697f35240   even-better-instance    NON_COMPLIANT   22                  2021-06-05 22:11:53+10:00  
+  i-01579de1b005846cb   awesome-instance        COMPLIANT                           2021-06-05 22:08:26+10:00
+  i-0f194c8d697f35240   even-better-instance    NON_COMPLIANT   22                  2021-06-05 22:11:53+10:00
 ```
 
 Patch an instance but don't reboot:

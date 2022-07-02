@@ -1,7 +1,7 @@
 MAKEFLAGS += --warn-undefined-variables
 SHELL = /bin/bash -o pipefail
 .DEFAULT_GOAL := help
-.PHONY: help install check lint pyright test hooks install-hooks dist publish
+.PHONY: help install check lint pyright test hooks install-hooks docs dist publish
 
 ## display help message
 help:
@@ -51,6 +51,10 @@ pyright: node_modules $(venv)
 ## run tests
 test: $(venv)
 	$(venv)/bin/pytest
+
+## generate docs
+docs: $(venv)
+	cog -r docs/*.md
 
 ## build distribution
 dist: $(venv)
