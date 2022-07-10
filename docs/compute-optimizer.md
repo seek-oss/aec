@@ -2,6 +2,11 @@
 
 Run `aec co -h` for help:
 
+<!-- [[[cog
+import cog
+from aec.main import build_parser
+cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['co'].format_help()}```")
+]]] -->
 ```
 usage: aec co [-h] {over-provisioned} ...
 
@@ -12,6 +17,7 @@ subcommands:
   {over-provisioned}
     over-provisioned  Show recommendations for over-provisioned EC2 instances.
 ```
+<!-- [[[end]]] -->
 
 Show recommendations for over-provisioned instances (eg: idle instances running for more than 30 hours):
 

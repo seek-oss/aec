@@ -2,6 +2,11 @@
 
 Run `aec ami -h` for help:
 
+<!-- [[[cog
+import cog
+from aec.main import build_parser
+cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ami'].format_help()}```")
+]]] -->
 ```
 usage: aec ami [-h] {delete,describe,share} ...
 
@@ -14,6 +19,7 @@ subcommands:
     describe            List AMIs.
     share               Share an AMI with another account.
 ```
+<!-- [[[end]]] -->
 
 List images owned by accounts specified in the config file:
 

@@ -172,7 +172,8 @@ ssm_cli = [
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="aws ec2 cli")
+    # prog=aec so that we run in cog the program name isn't cog
+    parser = argparse.ArgumentParser(prog="aec", description="aws ec2 cli")
     subparsers = parser.add_subparsers(title="commands")
 
     cli.add_command_group(subparsers, "configure", "Configure subcommands", configure_cli)

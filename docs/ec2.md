@@ -2,6 +2,11 @@
 
 Run `aec ec2 -h` for help:
 
+<!-- [[[cog
+import cog
+from aec.main import build_parser
+cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ec2'].format_help()}```")
+]]] -->
 ```
 usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,tag,tags,status,templates,terminate} ...
 
@@ -23,6 +28,7 @@ subcommands:
     templates           Describe launch templates.
     terminate           Terminate EC2 instance.
 ```
+<!-- [[[end]]] -->
 
 Launch an instance named `food baby` from the [ec2 launch template](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html) named `yummy`:
 
