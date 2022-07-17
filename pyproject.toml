@@ -4,7 +4,7 @@ description = "AWS EC2 CLI"
 dynamic = ["version"]
 readme = "README.md"
 license = { file = "LICENSE" }
-keywords = ["AWS", "EC2", "command line"]
+keywords = ["AWS", "EC2", "command line", "cli"]
 classifiers = ["License :: OSI Approved :: MIT License"]
 requires-python = ">=3.6"
 dependencies = [
