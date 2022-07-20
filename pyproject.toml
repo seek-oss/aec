@@ -1,8 +1,53 @@
-# use PyCharm default line length of 120
+[project]
+name = "aec-cli"
+description = "AWS EC2 CLI"
+dynamic = ["version"]
+readme = "README.md"
+license = { file = "LICENSE" }
+keywords = ["AWS", "EC2", "command line", "cli"]
+classifiers = ["License :: OSI Approved :: MIT License"]
+requires-python = ">=3.6"
+dependencies = [
+    "boto3==1.24.1",
+    "importlib_resources==5.7.1",
+    "pytoml==0.1.21",
+    "pytz==2022.1",
+    "rich==12.4.4",
+    "typing_extensions==4.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black==22.3.0",
+    "build~=0.7",
+    "boto3-stubs[ec2,compute-optimizer,ssm,s3]==1.21.27",
+    "cogapp~=3.3",
+    "darglint==1.8.1",
+    "isort==5.10.1",
+    "flake8==4.0.1",
+    "flake8-annotations~=2.9",
+    "flake8-colors==0.1.9",
+    "moto[ec2]==3.1.11",
+    "pre-commit~=2.19",
+    "pyfakefs==4.5.6",
+    "pytest~=7.1",
+    "pytest-mock==3.7.0",
+    "twine~=4.0",
+]
+
+[project.scripts]
+aec = "aec.main:main"
+
+[project.urls]
+homepage = "https://github.com/seek-oss/aec"
 
 [build-system]
 requires = ["setuptools", "wheel"]
 
+[tool.setuptools.dynamic]
+version = { attr = "aec.__version__" }
+
+# use PyCharm default line length of 120
 [tool.black]
 line-length = 120
 
@@ -11,4 +56,4 @@ line-length = 120
 line_length = 120
 multi_line_output = 3
 include_trailing_comma = true
-skip = [ ".tox", "dist", "node_modules" , ".venv", "build", ".git", "typings"]
+skip = [".tox", "dist", "node_modules", ".venv", "build", ".git", "typings"]

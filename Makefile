@@ -17,7 +17,7 @@ $(pip):
 	$(venv)/bin/python --version
 	$(pip) install pip~=22.1
 
-$(venv): setup.py $(pip)
+$(venv): pyproject.toml $(pip)
 	$(pip) install -e '.[dev]'
 	touch $(venv)
 
