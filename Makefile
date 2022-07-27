@@ -15,7 +15,7 @@ $(pip):
 # create venv using system python even when another venv is active
 	PATH=$${PATH#$${VIRTUAL_ENV}/bin:} python3 -m venv --clear $(venv)
 	$(venv)/bin/python --version
-	$(pip) install pip~=22.1
+	$(pip) install pip~=22.2
 
 $(venv): pyproject.toml $(pip)
 	$(pip) install -e '.[dev]'
