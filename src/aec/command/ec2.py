@@ -17,6 +17,7 @@ if TYPE_CHECKING:
         FilterTypeDef,
         TagTypeDef,
         InstanceStatusSummaryTypeDef,
+        TagSpecificationTypeDef,
     )
     from mypy_boto3_ec2.literals import InstanceTypeType
 
@@ -117,8 +118,8 @@ def launch(
     if additional_tags:
         tags.extend([{"Key": k, "Value": v} for k, v in additional_tags.items()])
     runargs["TagSpecifications"] = [
-        {"ResourceType": "instance", "Tags": tags},
-        {"ResourceType": "volume", "Tags": tags},
+        cast("TagSpecificationTypeDef", {"ResourceType": "instance", "Tags": tags}),
+        cast("TagSpecificationTypeDef", {"ResourceType": "volume", "Tags": tags}),
     ]
 
     if config.get("vpc", None):
