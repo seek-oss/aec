@@ -118,8 +118,8 @@ def launch(
     if additional_tags:
         tags.extend([{"Key": k, "Value": v} for k, v in additional_tags.items()])
     runargs["TagSpecifications"] = [
-        cast(TagSpecificationTypeDef, {"ResourceType": "instance", "Tags": tags}),
-        cast(TagSpecificationTypeDef, {"ResourceType": "volume", "Tags": tags}),
+        cast("TagSpecificationTypeDef", {"ResourceType": "instance", "Tags": tags}),
+        cast("TagSpecificationTypeDef", {"ResourceType": "volume", "Tags": tags}),
     ]
 
     if config.get("vpc", None):
