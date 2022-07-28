@@ -250,6 +250,10 @@ def tag(
         parts = t.split("=")
         tagdefs.append({"Key": parts[0], "Value": parts[1]})
 
+    if not name and not name_match:
+        # avoid tagging all instances when there's no name
+        raise NoInstancesError(name=name, name_match=name_match)
+
     instances = describe(config, name, name_match)
 
     ids = [i["InstanceId"] for i in instances]
@@ -317,6 +321,10 @@ def start(config: Config, name: str) -> List[Instance]:
 
     print(f"Starting instances with the name {name} ... ")
 
+    if not name:
+        # avoid starting all instances when there's no name
+        raise NoInstancesError(name=name)
+
     instances = describe(config, name)
 
     if not instances:
@@ -336,6 +344,10 @@ def stop(config: Config, name: str) -> List[Dict[str, Any]]:
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
+    if not name:
+        # avoid stopping all instances when there's no name
+        raise NoInstancesError(name=name)
+
     instances = describe(config, name)
 
     if not instances:
@@ -350,6 +362,10 @@ def terminate(config: Config, name: str) -> List[Dict[str, Any]]:
     """Terminate EC2 instance."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
+
+    if not name:
+        # avoid terminating all instances when there's no name
+        raise NoInstancesError(name=name)
 
     instances = describe(config, name)
 
@@ -367,6 +383,10 @@ def modify(config: Config, name: str, type: str) -> List[Instance]:
     """Change an instance's type."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
+
+    if not name:
+        # avoid modifying all instances when there's no name
+        raise NoInstancesError(name=name)
 
     instances = describe(config, name)
 
@@ -398,6 +418,10 @@ def logs(config: Config, name: str) -> str:
     """Show the system logs."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
+
+    if not name:
+        # avoid describing all instances when there's no name
+        raise NoInstancesError(name=name)
 
     instances = describe(config, name)
 

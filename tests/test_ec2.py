@@ -357,6 +357,18 @@ def test_terminate(mock_aws_config):
     terminate(config=mock_aws_config, name="alice")
 
 
+def test_terminate_empty_name_does_not_delete_all_instances(mock_aws_config):
+    launch(mock_aws_config, "alice", ami_id)
+
+    with pytest.raises(ValueError) as exc_info:
+        terminate(config=mock_aws_config, name="")
+    print(exc_info.value.args[0])
+    assert exc_info.value.args[0] == """Missing name or name_match"""
+
+    instances = describe(config=mock_aws_config)
+    assert len(instances) == 1
+
+
 def test_logs(mock_aws_config):
     launch(mock_aws_config, "alice", ami_id)
 
