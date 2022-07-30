@@ -22,7 +22,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: .venv
-        key: ${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-venv-${{ hashFiles('setup.py') }}
+        key: ${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-venv-${{ hashFiles('pyproject.toml') }}
     - name: make install
       if: steps.cache-venv.outputs.cache-hit != 'true'
       run: make install
@@ -51,6 +51,6 @@ jobs:
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
         tag: "${{ env.version }}"
-    - name: Setup tmate session
-      if: ${{ failure() }}
-      uses: mxschmitt/action-tmate@v3
+    # - name: Setup tmate session
+    #   if: ${{ failure() }}
+    #   uses: mxschmitt/action-tmate@v3
