@@ -8,30 +8,30 @@ keywords = ["AWS", "EC2", "command line", "cli"]
 classifiers = ["License :: OSI Approved :: MIT License"]
 requires-python = ">=3.6"
 dependencies = [
-    "boto3==1.24.1",
-    "importlib_resources==5.7.1",
+    "boto3==1.24.41",
+    "importlib_resources==5.9.0",
     "pytoml==0.1.21",
     "pytz==2022.1",
-    "rich==12.4.4",
-    "typing_extensions==4.2.0",
+    "rich==12.5.1",
+    "typing_extensions==4.3.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "black==22.3.0",
+    "black~=22.6",
     "build~=0.7",
-    "boto3-stubs[ec2,compute-optimizer,ssm,s3]==1.21.27",
+    "boto3-stubs[ec2,compute-optimizer,ssm,s3]==1.24.41",
     "cogapp~=3.3",
-    "darglint==1.8.1",
-    "isort==5.10.1",
-    "flake8==4.0.1",
+    "darglint~=1.8",
+    "isort~=5.10",
+    "flake8~=4.0",
     "flake8-annotations~=2.9",
-    "flake8-colors==0.1.9",
-    "moto[ec2]==3.1.11",
-    "pre-commit~=2.19",
-    "pyfakefs==4.5.6",
+    "flake8-colors~=0.1",
+    "moto[ec2]==3.1.16",
+    "pre-commit~=2.20",
+    "pyfakefs~=4.6",
     "pytest~=7.1",
-    "pytest-mock==3.7.0",
+    "pytest-mock~=3.8",
     "twine~=4.0",
 ]
 
