@@ -253,9 +253,11 @@ def test_describe_sort_by(mock_aws_config):
 
 def test_describe_columns(mock_aws_config):
     launch(mock_aws_config, "sam", ami_id)
+
+    del mock_aws_config["key_name"]
     launch(mock_aws_config, "alice", ami_id)
 
-    instances = describe(config=mock_aws_config, columns="SubnetId,Name")
+    instances = describe(config=mock_aws_config, columns="SubnetId,Name,MissingKey")
     print(instances)
 
     assert len(instances) == 2
@@ -263,6 +265,10 @@ def test_describe_columns(mock_aws_config):
     assert instances[1]["Name"] == "sam"
     assert "subnet" in instances[0]["SubnetId"]
     assert "subnet" in instances[1]["SubnetId"]
+
+    # MissingKey will appear without values
+    assert instances[0]["MissingKey"] is None  # type: ignore
+    assert instances[1]["MissingKey"] is None  # type: ignore
 
 
 def describe_instance0(region_name, instance_id):
