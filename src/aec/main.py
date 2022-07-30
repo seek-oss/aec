@@ -105,7 +105,11 @@ ec2_cli = [
     Cmd(ec2.terminate, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance or instance id")
-    ])
+    ]),
+    Cmd(ec2.user_data, [
+        config_arg,
+        Arg("name", type=str, help="Name tag of instance or instance id"),
+    ]),
 ]
 
 ami_cli = [
