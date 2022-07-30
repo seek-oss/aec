@@ -20,10 +20,9 @@ tasks:
     input_paths:
       - Makefile
       - setup.py
+      - pyproject.toml
       - README.md
       - package.json
-      - package-lock.json
-      - .install-typings-boto3.sh
       - src/
     environment:
       CI: true
@@ -35,7 +34,6 @@ tasks:
     input_paths:
       - .darglint
       - .flake8
-      - pyproject.toml
       - pyrightconfig.json
       - tests/
     environment:
