@@ -212,7 +212,7 @@ def describe(
                     elif col == "DnsName":
                         desc[col] = i["PublicDnsName"] if i.get("PublicDnsName", None) != "" else i["PrivateDnsName"]
                     else:
-                        desc[col] = i[col]
+                        desc[col] = i.get(col, None)
 
                 instances.append(desc)
 
