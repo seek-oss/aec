@@ -7,6 +7,7 @@ import cog
 from aec.main import build_parser
 cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ec2'].format_help()}```")
 ]]] -->
+
 ```
 usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,tag,tags,status,templates,terminate,user-data} ...
 
@@ -29,6 +30,7 @@ subcommands:
     terminate           Terminate EC2 instance.
     user-data           Describe user data for an instance.
 ```
+
 <!-- [[[end]]] -->
 
 Launch an instance named `food baby` from the [ec2 launch template](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html) named `yummy`:
@@ -161,4 +163,14 @@ Terminate an instance using its id:
 
 ```
 aec ec2 terminate i-06814ad77d5177e5a
+```
+
+Show reason for termination:
+
+```
+aec ec2 describe -it i-02a840e0ca609c432 -c StateReason
+
+  StateReason
+ ─────────────────────────────────────────────────────────────────────────────────────────────
+  {'Code': 'Client.InternalError', 'Message': 'Client.InternalError: Client error on launch'}
 ```
