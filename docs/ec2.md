@@ -9,13 +9,13 @@ cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ec2'].format_hel
 ]]] -->
 
 ```
-usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,tag,tags,status,templates,terminate} ...
+usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,tag,tags,status,templates,terminate,user-data} ...
 
 optional arguments:
   -h, --help            show this help message and exit
 
 subcommands:
-  {create-key-pair,describe,launch,logs,modify,start,stop,tag,tags,status,templates,terminate}
+  {create-key-pair,describe,launch,logs,modify,start,stop,tag,tags,status,templates,terminate,user-data}
     create-key-pair     Create a key pair.
     describe            List EC2 instances in the region.
     launch              Launch a tagged EC2 instance with an EBS volume.
@@ -28,6 +28,7 @@ subcommands:
     status              Describe instances status checks.
     templates           Describe launch templates.
     terminate           Terminate EC2 instance.
+    user-data           Describe user data for an instance.
 ```
 
 <!-- [[[end]]] -->

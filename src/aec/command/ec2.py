@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import base64
 import os
 import os.path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
@@ -490,6 +491,28 @@ def status_text(summary: InstanceStatusSummaryTypeDef, key: str = "reachability"
     return f"{status['Name']} {status['Status']}" + (
         f" since {status['ImpairedSince']}" if status.get("ImpairedSince", None) else ""
     )
+
+
+def user_data(config: Config, name: str) -> Optional[str]:
+    """Describe user data for an instance."""
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
+
+    if not name:
+        # avoid describing all instances when there's no name
+        raise NoInstancesError(name=name)
+
+    instances = describe(config, name)
+
+    if not instances:
+        raise NoInstancesError(name=name)
+
+    instance_id = instances[0]["InstanceId"]
+    response = ec2_client.describe_instance_attribute(Attribute="userData", InstanceId=instance_id)
+
+    try:
+        return base64.b64decode(response["UserData"]["Value"]).decode("utf-8")
+    except KeyError:
+        return None
 
 
 def name_filters(name: Optional[str] = None, name_match: Optional[str] = None) -> List[FilterTypeDef]:

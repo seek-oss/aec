@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 from typing import List
 
 import boto3
@@ -21,6 +22,7 @@ from aec.command.ec2 import (
     stop,
     tag,
     terminate,
+    user_data,
     volume_tags,
 )
 
@@ -138,17 +140,6 @@ def test_config_override_volume_size(mock_aws_config):
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
     volumes = ec2_client.describe_volumes()
     assert volumes["Volumes"][0]["Size"] == 77
-
-
-def test_launch_has_userdata(mock_aws_config):
-    print(
-        launch(
-            mock_aws_config,
-            "test_userdata",
-            ami_id,
-            userdata="src/aec/config-example/userdata/amzn-install-docker.yaml",
-        )
-    )
 
 
 def test_describe(mock_aws_config):
@@ -409,3 +400,23 @@ def test_create_key_pair(mock_aws_config, mocker: MockFixture):
     (private_key,) = mocked_file().write.call_args[0]
     assert private_key.startswith("-----BEGIN RSA PRIVATE KEY-----")
     mocked_chmod.assert_called_once()
+
+
+def test_user_data(mock_aws_config):
+    userdata = Path("src/aec/config-example/userdata/amzn-install-docker.yaml")
+    launch(
+        mock_aws_config,
+        "has_userdata",
+        ami_id,
+        userdata=str(userdata),
+    )
+
+    data = user_data(config=mock_aws_config, name="has_userdata")
+    assert data == userdata.read_text()
+
+
+def test_user_data_missing(mock_aws_config):
+    launch(mock_aws_config, "no_userdata", ami_id)
+
+    data = user_data(config=mock_aws_config, name="no_userdata")
+    assert not data
