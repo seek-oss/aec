@@ -1,6 +1,6 @@
 import os.path
 from argparse import Namespace
-from typing import Any, Callable, Dict, Optional
+from typing import Any, Callable, Dict, Optional, List, Union
 
 import pytoml as toml
 from typing_extensions import TypedDict
@@ -26,7 +26,7 @@ class Config(TypedDict, total=False):
     additional_tags: Dict[str, str]
     iam_instance_profile_arn: str
     kms_key_id: str
-    describe_images_owners: str
+    describe_images_owners: Union[List[str], str]
     describe_images_name_match: str
 
 
