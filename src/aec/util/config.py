@@ -1,6 +1,6 @@
 import os.path
 from argparse import Namespace
-from typing import Any, Callable, Dict, Optional, List, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 import pytoml as toml
 from typing_extensions import TypedDict
