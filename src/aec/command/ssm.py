@@ -2,7 +2,7 @@ import codecs
 import json
 import sys
 import uuid
-from typing import IO, Any, Dict, Iterator, List, Optional, Sequence, TypeVar, cast
+from typing import IO, Any, Dict, Iterator, List, Optional, Sequence, TypeVar, Union, cast
 
 import boto3
 from botocore.exceptions import ClientError
@@ -190,31 +190,37 @@ def first(xs: Optional[Sequence[E]]) -> Optional[E]:
         return None
 
 
-def commands(config: Config, name: Optional[str]) -> List[Dict[str, Optional[str]]]:
+def commands(config: Config, name: Optional[str]) -> Iterator[Dict[str, Union[str, int, None]]]:
     """List commands by instance."""
 
     client = boto3.client("ssm", region_name=config.get("region", None))
-    instances_names = describe_instances_names(config)
+
+    kwargs: Dict[str, Any] = {"MaxResults": 50}
 
     if name:
-        instance_id = fetch_instance_id(config, name)
-        response = client.list_commands(InstanceId=instance_id)
-    else:
-        response = client.list_commands()
+        kwargs["InstanceId"] = fetch_instance_id(config, name)
 
-    return [
-        {
-            "RequestedDateTime": c["RequestedDateTime"].strftime("%Y-%m-%d %H:%M"),
-            "CommandId": c["CommandId"],
-            "InstanceIds": ",".join(c["InstanceIds"]),
-            "Names": ",".join([instances_names.get(i, None) or "" for i in c["InstanceIds"]]),
-            "Status": c["Status"],
-            "DocumentName": c["DocumentName"],
-            "Operation": first(c["Parameters"].get("Operation", None)),
-        }
-        for c in response["Commands"]
-    ]
+    while True:
+        response = client.list_commands(**kwargs)
 
+        for c in response["Commands"]:
+            yield {
+                "RequestedDateTime": c["RequestedDateTime"].strftime("%Y-%m-%d %H:%M"),
+                "CommandId": c["CommandId"],
+                "Status": c["Status"],
+                "DocumentName": c["DocumentName"],
+                "Operation": first(c["Parameters"].get("Operation", None)),
+                "# target": c["TargetCount"],
+                "# error": c["ErrorCount"],
+                "# timeout": c["DeliveryTimedOutCount"],
+                "# complete": c["CompletedCount"],
+            }
+
+        next_token = response.get("NextToken", None)
+        if next_token:
+            kwargs = {"NextToken": next_token}
+        else:
+            break
 
 def invocations(config: Config, command_id: str) -> List[Dict[str, Any]]:
     """List invocations of a command across instances."""
