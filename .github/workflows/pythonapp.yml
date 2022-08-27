@@ -47,7 +47,7 @@ jobs:
       run: make publish
     - name: Read version
       if: steps.version-bump.outputs.changed == 'true'
-      run: echo "version=$(python -c 'import aec;print(aec.__version__)')" >> $GITHUB_ENV
+      run: echo "version=$(.venv/bin/python -c 'import aec;print(aec.__version__)')" >> $GITHUB_ENV
     - name: Tag commit
       if: steps.version-bump.outputs.changed == 'true'
       uses: tvdias/github-tagger@v0.0.1
