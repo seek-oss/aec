@@ -56,9 +56,9 @@ List all commands
 ```
 aec ssm commands
   RequestedDateTime   CommandId                              Status     DocumentName           Operation   # target   # error   # timeout   # complete  
- ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
-  2022-08-27 15:10    6dc4699b-f9f2-43b5-8d46-314eaf11b8dc   Failed     AWS-RunPatchBaseline   Install     60         3                     60          
-  2022-08-26 22:15    3f12a15e-9149-4f55-a4ad-998fc8f731bb   Success    AWS-RunPatchBaseline   Scan        1                                1           
+ ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  2022-08-27 15:10    6dc4699b-f9f2-43b5-8d46-314eaf11b8dc   Failed     AWS-RunPatchBaseline   Install     60         3                     60  
+  2022-08-26 22:15    3f12a15e-9149-4f55-a4ad-998fc8f731bb   Success    AWS-RunPatchBaseline   Scan        1                                1  
 ```
 
 Patch summary for all instances (that have run the patch baseline):

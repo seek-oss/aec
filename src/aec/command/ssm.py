@@ -190,7 +190,7 @@ def first(xs: Optional[Sequence[E]]) -> Optional[E]:
         return None
 
 
-def commands(config: Config, name: Optional[str]) -> Iterator[Dict[str, Union[str, int, None]]]:
+def commands(config: Config, name: Optional[str] = None) -> Iterator[Dict[str, Union[str, int, None]]]:
     """List commands by instance."""
 
     client = boto3.client("ssm", region_name=config.get("region", None))
@@ -221,6 +221,7 @@ def commands(config: Config, name: Optional[str]) -> Iterator[Dict[str, Union[st
             kwargs = {"NextToken": next_token}
         else:
             break
+
 
 def invocations(config: Config, command_id: str) -> List[Dict[str, Any]]:
     """List invocations of a command across instances."""

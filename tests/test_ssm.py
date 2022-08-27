@@ -1,11 +1,12 @@
+import io
 from typing import Optional
 
 import boto3
 import pytest
-from moto import mock_ec2
+from moto import mock_ec2, mock_ssm
 from moto.ec2.models.amis import AMIS
 
-from aec.command.ssm import fetch_instance_ids
+from aec.command.ssm import commands, fetch_instance_ids, run
 
 # NB: moto provides limited coverage of the SSM API so there's not many tests here
 # see https://github.com/spulec/moto/blob/master/IMPLEMENTATION_COVERAGE.md
@@ -13,8 +14,8 @@ from aec.command.ssm import fetch_instance_ids
 
 @pytest.fixture
 def mock_aws_config():
-    mock = mock_ec2()
-    mock.start()
+    mock_ec2().start()
+    mock_ssm().start()
 
     return {
         "region": "ap-southeast-2",
@@ -45,3 +46,16 @@ def test_fetch_instance_ids(mock_aws_config):
         instance3,
         instance4,
     ]
+
+
+@pytest.mark.skip(reason="failing because of https://github.com/spulec/moto/issues/5424")
+def test_run_and_list(mock_aws_config, monkeypatch):
+    monkeypatch.setattr("sys.stdin", io.StringIO("ls"))
+    run(mock_aws_config, ["alice"])
+
+    results = list(commands(mock_aws_config))
+
+    print(results)
+
+    assert len(results) == 1
+    assert results[0]["Status"] == "Success"
