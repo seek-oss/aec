@@ -1,5 +1,4 @@
 import codecs
-import json
 import sys
 import uuid
 from typing import IO, Any, Dict, Iterator, List, Optional, Sequence, TypeVar, Union, cast
@@ -227,6 +226,7 @@ def invocations(config: Config, command_id: str) -> List[Dict[str, Any]]:
     """List invocations of a command across instances."""
 
     client = boto3.client("ssm", region_name=config.get("region", None))
+    region = client.meta.region_name
 
     command = client.list_commands(CommandId=command_id)["Commands"][0]
     invocations = client.list_command_invocations(CommandId=command_id)
@@ -237,12 +237,10 @@ def invocations(config: Config, command_id: str) -> List[Dict[str, Any]]:
             "RequestedDateTime": i["RequestedDateTime"].strftime("%Y-%m-%d %H:%M"),
             "InstanceId": i["InstanceId"],
             "Name": instances_names.get(i["InstanceId"], None),
-            "Status": i["Status"],
+            "StatusDetails": i["StatusDetails"],
             "DocumentName": i["DocumentName"],
-            "Parameters": json.dumps(command["Parameters"]),
-            "Output": f"s3://{command['OutputS3BucketName']}/{command['OutputS3KeyPrefix']}"
-            if command.get("OutputS3BucketName", None)
-            else None,
+            "Operation": ",".join(command["Parameters"]["Operation"]),
+            "ConsoleLink": f"https://{region}.console.aws.amazon.com/systems-manager/run-command/{command_id}/{i['InstanceId']}?region={region}",
         }
         for i in invocations["CommandInvocations"]
     ]
