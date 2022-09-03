@@ -240,9 +240,7 @@ def invocations(config: Config, command_id: str) -> List[Dict[str, Any]]:
             "StatusDetails": i["StatusDetails"],
             "DocumentName": i["DocumentName"],
             "Operation": ",".join(command["Parameters"]["Operation"]),
-            "ConsoleLink": f"https://${region}.console.aws.amazon.com/systems-manager/run-command/{command_id}/{i['InstanceId']}?region={region}"
-            if command.get("OutputS3BucketName", None)
-            else None,
+            "ConsoleLink": f"https://{region}.console.aws.amazon.com/systems-manager/run-command/{command_id}/{i['InstanceId']}?region={region}",
         }
         for i in invocations["CommandInvocations"]
     ]
