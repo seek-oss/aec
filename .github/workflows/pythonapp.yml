@@ -11,18 +11,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         # so marceloprado/has-changed-path@v1 can detect changes
         fetch-depth: 2
     - name: Set up Python 3.7
       id: setup-python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: 3.7
     - name: Cache virtualenv
       id: cache-venv
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: .venv
         key: ${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-venv-${{ hashFiles('pyproject.toml') }}
@@ -50,7 +50,7 @@ jobs:
       run: echo "version=$(.venv/bin/python -c 'import aec;print(aec.__version__)')" >> $GITHUB_ENV
     - name: Tag commit
       if: steps.version-bump.outputs.changed == 'true'
-      uses: tvdias/github-tagger@v0.0.1
+      uses: tvdias/github-tagger@v0.0.2
       with:
         repo-token: "${{ secrets.GITHUB_TOKEN }}"
         tag: "${{ env.version }}"
