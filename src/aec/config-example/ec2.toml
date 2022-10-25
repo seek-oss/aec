@@ -14,6 +14,7 @@ kms_key_id = "arn:aws:kms:ap-southeast-2:123456789012:key/abcdef"
 # include these accounts when listing AMIs
 describe_images_owners = "self"
 volume_size = 100
+template = "lt-000001"
 
 [syd.ssm]
 # log output of ssm commands to this location

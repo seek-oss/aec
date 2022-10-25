@@ -54,6 +54,8 @@ def launch(
 ) -> List[Instance]:
     """Launch a tagged EC2 instance with an EBS volume."""
 
+    template = template or config.get("template", None)
+
     if not (template or ami):
         raise ValueError("Please specify either an ami or a launch template")
 

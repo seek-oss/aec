@@ -28,6 +28,8 @@ class Config(TypedDict, total=False):
     kms_key_id: str
     describe_images_owners: Union[List[str], str]
     describe_images_name_match: str
+    template: str
+    volume_size: int
 
 
 def inject_config(config_file: str) -> Callable[[Namespace], None]:
