@@ -28,7 +28,7 @@ class Config(TypedDict, total=False):
     kms_key_id: str
     describe_images_owners: Union[List[str], str]
     describe_images_name_match: str
-    template: str
+    launch_template: str
     volume_size: int
 
 
