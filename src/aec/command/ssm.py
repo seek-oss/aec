@@ -324,5 +324,5 @@ def fetch_instance_ids(config: Config, ids_or_names: List[str]) -> List[str]:
                 for i in r["Instances"]:
                     ids.append(i["InstanceId"])
         except IndexError:
-            raise ValueError(f"No instances with names {','.join(names)}")
+            raise ValueError(f"No instances with ids or names {','.join(names)}")
     return ids
