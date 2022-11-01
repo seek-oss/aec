@@ -1,8 +1,11 @@
 <!-- [[[cog
 import cog
-import aec.util.docs as docs
+from aec.util.docgen import docs
+from aec.util.docgen import mock_aws_config as config
+import aec.command.ec2 as ec2
 ]]] -->
 <!-- [[[end]]] -->
+
 # EC2 Usage
 
 Run `aec ec2 -h` for help:
@@ -61,16 +64,19 @@ aec ec2 modify "lady gaga" p2.xlarge
 
 List all instances in the region:
 
+<!-- [[[cog
+cog.out(f"```\n{docs('aec ec2 describe', ec2.describe(config))}```")
+]]] -->
 ```
 aec ec2 describe
-
-  InstanceId            State     Name    Type       DnsName                   LaunchTime                 ImageId
- ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  i-db2e4e24c95fa5ed7   running   alice   t3.small   ec2-54-214-178-132.com…   2022-02-09                 ami-03cf127a
-                                                                               09:46:44+00:00
-  i-a91307a999f4309be   running   sam     t3.small   ec2-54-214-170-196.com…   2022-02-09                 ami-03cf127a
-                                                                               09:46:44+00:00
+                                                                                                                                                         
+  InstanceId            State     Name    Type       DnsName                                                   LaunchTime                  ImageId       
+ ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
+  i-e6beeeda8a61d68d6   running   alice   t3.small   ec2-54-214-207-11.ap-southeast-2.compute.amazonaws.com    2022-11-01 02:47:31+00:00   ami-03cf127a  
+  i-979653d69dda02aba   running   sam     t3.small   ec2-54-214-240-218.ap-southeast-2.compute.amazonaws.com   2022-11-01 02:47:32+00:00   ami-03cf127a  
+                                                                                                                                                         
 ```
+<!-- [[[end]]] -->
 
 List instances containing `gaga` in the name:
 
@@ -152,17 +158,14 @@ vol-0439c5ed37f6d455e,awesome-vol,"Name=awesome-vol, Owner=jane"
 
 Show instances status checks:
 
-<!-- [[[cog
-cog.out(f"```\n{docs.status()}```")
-]]] -->
 ```
-                                                                                       
-  InstanceId            State     Name    System status check   Instance status check  
- ───────────────────────────────────────────────────────────────────────────────────── 
-  i-e37da9f78cf7bc0cf   running   alice   reachability passed   reachability passed    
-                                                                                       
+aec ec2 status
+
+  InstanceId            State     Name    System status check   Instance status check
+ ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  i-178f32b2857e1ee7f   running   alice   reachability passed   reachability passed
+  i-fa8cba40e84f2afae   running   sam     reachability passed   reachability failed since 2022-03-27 03:17:00+00:00
 ```
-<!-- [[[end]]] -->
 
 Terminate an instance using its id:
 

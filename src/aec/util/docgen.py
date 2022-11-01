@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+from typing import Any, Dict, Iterator, List
 from aec.util.config import Config
 from moto import mock_ec2
 from moto.ec2.models.amis import AMIS
@@ -6,6 +9,7 @@ import aec.command.ec2 as ec2
 import aec.util.display as display
 from contextlib import redirect_stdout
 import io
+
 
 # fixtures
 mock_ec2().start()
@@ -23,11 +27,11 @@ mock_aws_config: Config = {
 ami_id = AMIS[0]["ami_id"]
 
 ec2.launch(mock_aws_config, "alice", ami_id)
+ec2.launch(mock_aws_config, "sam", ami_id)
 
 
-def describe():
+def docs(cmd_name: str, result: List[Dict[str, Any]] | Iterator[Dict[str, Any]] | Dict | str | None,):
     capture = io.StringIO()
     with redirect_stdout(capture):
-        result = ec2.describe(mock_aws_config)
         display.pretty_print(result)
-    return capture.getvalue()
+    return f"{cmd_name}\n{capture.getvalue()}"
