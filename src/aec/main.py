@@ -64,7 +64,7 @@ ec2_cli = [
         Arg("--encrypted", type=bool, help="Whether the EBS volume is encrypted", default=True),
         Arg("--instance-type", type=str, help="Instance type"),
         Arg("--key-name", type=str, help="Key name"),
-        Arg("--userdata", type=str, help="Path to user data file")
+        Arg("--userdata", type=str, help="User data file path or http URL")
     ]),
     Cmd(ec2.logs, [
         config_arg,
