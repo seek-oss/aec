@@ -7,6 +7,7 @@ import cog
 from aec.main import build_parser
 cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ssm'].format_help()}```")
 ]]] -->
+
 ```
 usage: aec ssm [-h] {commands,compliance-summary,describe,invocations,output,patch,patch-summary,run} ...
 
@@ -24,6 +25,7 @@ subcommands:
     patch-summary       Patch summary for all instances that have run the patch baseline.
     run                 Run a shell script on instance(s). Script is read from stdin.
 ```
+
 <!-- [[[end]]] -->
 
 ## Examples
@@ -55,15 +57,28 @@ List all commands
 
 ```
 aec ssm commands
-  RequestedDateTime   CommandId                              Status     DocumentName           Operation   # target   # error   # timeout   # complete  
+  RequestedDateTime   CommandId                              Status     DocumentName           Operation   # target   # error   # timeout   # complete
  ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  2022-08-27 15:10    6dc4699b-f9f2-43b5-8d46-314eaf11b8dc   Failed     AWS-RunPatchBaseline   Install     60         3                     60  
-  2022-08-26 22:15    3f12a15e-9149-4f55-a4ad-998fc8f731bb   Success    AWS-RunPatchBaseline   Scan        1                                1  
+  2022-08-27 15:10    6dc4699b-f9f2-43b5-8d46-314eaf11b8dc   Failed     AWS-RunPatchBaseline   Install     60         3                     60
+  2022-08-26 22:15    3f12a15e-9149-4f55-a4ad-998fc8f731bb   Success    AWS-RunPatchBaseline   Scan        1                                1
+```
+
+Invocations of a command
+
+```
+aec ssm invocations 6dc4699b-f9f2-43b5-8d46-314eaf11b8dc
+```
+
+Invocations of a command, with output formatted using [xsv](https://github.com/BurntSushi/xsv) so ConsoleLink is visible:
+
+```
+aec ssm invocations 6dc4699b-f9f2-43b5-8d46-314eaf11b8dc -o csv | xsv select Name,StatusDetails,ConsoleLink | xsv table
 ```
 
 Patch summary for all instances (that have run the patch baseline):
 
 ```
+aec ssm patch-summary
   InstanceId            Name                            Needed   Pending Reboot   Errored   Rejected   Last operation time         Last operation
  ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
   i-01579de1b005846cb   awesome-instance                                                               2021-06-04 23:13:56+10:00   Scan
@@ -73,7 +88,7 @@ Patch summary for all instances (that have run the patch baseline):
 Compliance status of running instances (that have run the patch baseline):
 
 ```
-ssm compliance-summary
+aec ssm compliance-summary
 
   InstanceId            Name                    Status          NonCompliantCount   Last operation time
  ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
