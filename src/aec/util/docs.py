@@ -25,9 +25,9 @@ ami_id = AMIS[0]["ami_id"]
 ec2.launch(mock_aws_config, "alice", ami_id)
 
 
-def status():
+def describe():
     capture = io.StringIO()
     with redirect_stdout(capture):
-        result = ec2.status(mock_aws_config)
+        result = ec2.describe(mock_aws_config)
         display.pretty_print(result)
     return capture.getvalue()
