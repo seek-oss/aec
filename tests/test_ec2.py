@@ -25,10 +25,11 @@ from aec.command.ec2 import (
     user_data,
     volume_tags,
 )
+from aec.util.config import Config
 
 
 @pytest.fixture
-def mock_aws_config():
+def mock_aws_config() -> Config:
     mock = mock_ec2()
     mock.start()
     region = "ap-southeast-2"

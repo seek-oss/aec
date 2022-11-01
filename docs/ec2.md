@@ -1,13 +1,16 @@
+<!-- [[[cog
+import cog
+import aec.util.docs as docs
+]]] -->
+<!-- [[[end]]] -->
 # EC2 Usage
 
 Run `aec ec2 -h` for help:
 
 <!-- [[[cog
-import cog
 from aec.main import build_parser
 cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ec2'].format_help()}```")
 ]]] -->
-
 ```
 usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,tag,tags,status,templates,terminate,user-data} ...
 
@@ -30,7 +33,6 @@ subcommands:
     terminate           Terminate EC2 instance.
     user-data           Describe user data for an instance.
 ```
-
 <!-- [[[end]]] -->
 
 Launch an instance named `food baby` from the [ec2 launch template](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html) named `yummy`:
@@ -150,14 +152,17 @@ vol-0439c5ed37f6d455e,awesome-vol,"Name=awesome-vol, Owner=jane"
 
 Show instances status checks:
 
+<!-- [[[cog
+cog.out(f"```\n{docs.status()}```")
+]]] -->
 ```
-aec ec2 status
-
-  InstanceId            State     Name    System status check   Instance status check
- ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  i-178f32b2857e1ee7f   running   alice   reachability passed   reachability passed
-  i-fa8cba40e84f2afae   running   sam     reachability passed   reachability failed since 2022-03-27 03:17:00+00:00
+                                                                                       
+  InstanceId            State     Name    System status check   Instance status check  
+ ───────────────────────────────────────────────────────────────────────────────────── 
+  i-e37da9f78cf7bc0cf   running   alice   reachability passed   reachability passed    
+                                                                                       
 ```
+<!-- [[[end]]] -->
 
 Terminate an instance using its id:
 

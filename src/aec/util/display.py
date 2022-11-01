@@ -39,7 +39,7 @@ def as_strings(values: Iterable[Any]) -> List[str]:
 
 def pretty_print(
     result: List[Dict[str, Any]] | Iterator[Dict[str, Any]] | Dict | str | None,
-    output_format: OutputFormat,
+    output_format: OutputFormat = OutputFormat.table,
 ) -> None:
     """print results as table/csv/json."""
 
