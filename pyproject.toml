@@ -9,7 +9,7 @@ classifiers = ["License :: OSI Approved :: MIT License"]
 requires-python = ">=3.6"
 dependencies = [
     "boto3==1.24.41",
-    "importlib_resources==5.9.0",
+    "importlib_resources==5.10.0",
     "pytoml==0.1.21",
     "pytz==2022.1",
     "rich==12.5.1",
