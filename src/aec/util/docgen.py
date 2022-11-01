@@ -1,15 +1,16 @@
 from __future__ import annotations
 
+import io
+from contextlib import redirect_stdout
 from typing import Any, Dict, Iterator, List
-from aec.util.config import Config
+
 from moto import mock_ec2
-from moto.ec2.models.amis import AMIS
 from moto.ec2 import ec2_backends
+from moto.ec2.models.amis import AMIS
+
 import aec.command.ec2 as ec2
 import aec.util.display as display
-from contextlib import redirect_stdout
-import io
-
+from aec.util.config import Config
 
 # fixtures
 mock_ec2().start()
@@ -30,7 +31,10 @@ ec2.launch(mock_aws_config, "alice", ami_id)
 ec2.launch(mock_aws_config, "sam", ami_id)
 
 
-def docs(cmd_name: str, result: List[Dict[str, Any]] | Iterator[Dict[str, Any]] | Dict | str | None,):
+def docs(
+    cmd_name: str,
+    result: List[Dict[str, Any]] | Iterator[Dict[str, Any]] | Dict | str | None,
+) -> str:
     capture = io.StringIO()
     with redirect_stdout(capture):
         display.pretty_print(result)
