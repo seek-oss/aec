@@ -104,7 +104,8 @@ def dispatch(parser: ArgumentParser, args: List[str]) -> Tuple[Any, OutputFormat
 
 
 def parameter_defaults(func: Callable) -> Dict[str, Any]:
-    """Get a function's parameter defaults.
+    """
+    Get a function's parameter defaults.
 
     Args:
         func (Callable): function
