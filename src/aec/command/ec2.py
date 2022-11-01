@@ -535,8 +535,10 @@ def read_file(filepath: str) -> str:
     with open(os.path.expanduser(filepath)) as file:
         return file.read()
 
+
 def read_url(url: str) -> str:
     import requests
+
     r = requests.get(url)
     r.raise_for_status()
     return r.text
