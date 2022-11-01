@@ -15,6 +15,7 @@ from aec.util.ec2 import describe_instances_names, describe_running_instances_na
 if TYPE_CHECKING:
     from mypy_boto3_ssm.type_defs import InstanceInformationStringFilterTypeDef
 
+
 class Agent(TypedDict):
     ID: str
     Name: Optional[str]
@@ -346,6 +347,7 @@ def fetch_instance_ids(config: Config, ids_or_names: List[str]) -> List[str]:
         except IndexError:
             raise ValueError(f"No instances with names {','.join(names)}")
     return ids
+
 
 def name_filters(names_or_ids: Optional[List[str]] = None) -> List[InstanceInformationStringFilterTypeDef]:
     if names_or_ids and names_or_ids[0].startswith("i-"):

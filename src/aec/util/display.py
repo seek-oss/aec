@@ -77,7 +77,7 @@ def pretty_print(
         except StopIteration:
             console.print("No results")
             return
-            
+
         table = Table(box=box.SIMPLE)
         for c in first.keys():
             table.add_column(c)
