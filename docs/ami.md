@@ -27,6 +27,12 @@ List images owned by accounts specified in the config file:
 ami describe
 ```
 
+List image by id
+
+```
+ami describe ami-025b9fd66d61d093a
+```
+
 List Amazon Deep Learning images:
 
 ```
