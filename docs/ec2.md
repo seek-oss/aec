@@ -65,16 +65,14 @@ aec ec2 modify "lady gaga" p2.xlarge
 List all instances in the region:
 
 <!-- [[[cog
-cog.out(f"```\n{docs('aec ec2 describe', ec2.describe(config))}```")
+cog.out(f"```\n{docs('aec ec2 describe', ec2.describe(config))}\n```")
 ]]] -->
 ```
 aec ec2 describe
-
-  InstanceId            State     Name    Type       DnsName                                                   LaunchTime                  ImageId  
+InstanceId            State     Name    Type       DnsName                                                   LaunchTime                  ImageId  
  ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  i-e6beeeda8a61d68d6   running   alice   t3.small   ec2-54-214-207-11.ap-southeast-2.compute.amazonaws.com    2022-11-01 02:47:31+00:00   ami-03cf127a  
-  i-979653d69dda02aba   running   sam     t3.small   ec2-54-214-240-218.ap-southeast-2.compute.amazonaws.com   2022-11-01 02:47:32+00:00   ami-03cf127a  
-
+  i-c42573a4089b65678   running   alice   t3.small   ec2-54-214-215-234.ap-southeast-2.compute.amazonaws.com   2022-11-01 02:59:34+00:00   ami-03cf127a  
+  i-8c7eeff04f15670a8   running   sam     t3.small   ec2-54-214-57-59.ap-southeast-2.compute.amazonaws.com     2022-11-01 02:59:36+00:00   ami-03cf127a
 ```
 <!-- [[[end]]] -->
 
