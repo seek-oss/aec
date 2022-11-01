@@ -1,7 +1,9 @@
+from __future__ import annotations
+
 import codecs
 import sys
 import uuid
-from typing import IO, Any, Dict, Iterator, List, Optional, Sequence, TypeVar, Union, cast
+from typing import IO, TYPE_CHECKING, Any, Dict, Iterator, List, Optional, Sequence, TypeVar, Union, cast
 
 import boto3
 from botocore.exceptions import ClientError
@@ -10,6 +12,8 @@ from typing_extensions import Literal, TypedDict
 from aec.util.config import Config
 from aec.util.ec2 import describe_instances_names, describe_running_instances_names
 
+if TYPE_CHECKING:
+    from mypy_boto3_ssm.type_defs import InstanceInformationStringFilterTypeDef
 
 class Agent(TypedDict):
     ID: str
@@ -19,12 +23,28 @@ class Agent(TypedDict):
     AgentVersion: Optional[str]
 
 
-def describe(config: Config) -> Iterator[Agent]:
+def describe(
+    config: Config,
+    name: Optional[str] = None,
+    name_match: Optional[str] = None,
+) -> Iterator[Agent]:
     """List running instances with the SSM agent."""
 
     instances_names = describe_running_instances_names(config)
 
-    kwargs = {"MaxResults": 50}
+    if name:
+        filters = name_filters([name])
+    elif name_match:
+        # unlike ec2 describe_instances, ssm describe_instance_information doesn't
+        # support a wildcard name filter. So do the name match here.
+        names = [n for n in instances_names.values() if n and name_match in n]
+        if not names:
+            return
+        filters = name_filters(names)
+    else:
+        filters = []
+
+    kwargs: Dict[str, Any] = {"MaxResults": 50, "Filters": filters}
     client = boto3.client("ssm", region_name=config.get("region", None))
     while True:
         response = client.describe_instance_information(**kwargs)
@@ -41,7 +61,7 @@ def describe(config: Config) -> Iterator[Agent]:
 
         next_token = response.get("NextToken", None)
         if next_token:
-            kwargs = {"NextToken": next_token}
+            kwargs["NextToken"] = next_token
         else:
             break
 
@@ -217,7 +237,7 @@ def commands(config: Config, name: Optional[str] = None) -> Iterator[Dict[str, U
 
         next_token = response.get("NextToken", None)
         if next_token:
-            kwargs = {"NextToken": next_token}
+            kwargs["NextToken"] = next_token
         else:
             break
 
@@ -326,3 +346,11 @@ def fetch_instance_ids(config: Config, ids_or_names: List[str]) -> List[str]:
         except IndexError:
             raise ValueError(f"No instances with names {','.join(names)}")
     return ids
+
+def name_filters(names_or_ids: Optional[List[str]] = None) -> List[InstanceInformationStringFilterTypeDef]:
+    if names_or_ids and names_or_ids[0].startswith("i-"):
+        return [{"Key": "InstanceIds", "Values": names_or_ids}]
+    elif names_or_ids:
+        return [{"Key": "tag:Name", "Values": names_or_ids}]
+    else:
+        return []
