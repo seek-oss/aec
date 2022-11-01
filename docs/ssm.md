@@ -7,6 +7,7 @@ import cog
 from aec.main import build_parser
 cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ssm'].format_help()}```")
 ]]] -->
+
 ```
 usage: aec ssm [-h] {commands,compliance-summary,describe,invocations,output,patch,patch-summary,run} ...
 
@@ -24,6 +25,7 @@ subcommands:
     patch-summary       Patch summary for all instances that have run the patch baseline.
     run                 Run a shell script on instance(s). Script is read from stdin.
 ```
+
 <!-- [[[end]]] -->
 
 ## Examples
