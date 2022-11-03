@@ -39,10 +39,10 @@ Launch an instance named `food baby` from the [ec2 launch template](https://docs
 aec ec2 launch "food baby" --template yummy
 ```
 
-Launch a t2.medium instance named `lady gaga` with a 50gb EBS volume, with other settings read from the config file:
+Launch a t2.medium instance named `lady gaga` with a 50gb EBS volume, userdata, and other settings read from the config file:
 
 ```
-aec ec2 launch "lady gaga" --ami ubuntu1804 --instance-type t2.medium --volume-size 50
+aec ec2 launch "lady gaga" --ami ubuntu2004 --instance-type t2.medium --volume-size 50 --userdata https://raw.githubusercontent.com/tekumara/setup-ubuntu/main/setup-ubuntu.yaml
 ```
 
 Stop the instance:

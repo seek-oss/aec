@@ -151,7 +151,10 @@ def launch(
         runargs["IamInstanceProfile"] = {"Arn": iam_instance_profile_arn}
 
     if userdata:
-        runargs["UserData"] = read_file(userdata)
+        if userdata.startswith("http://") or userdata.startswith("https://"):
+            runargs["UserData"] = read_url(userdata)
+        else:
+            runargs["UserData"] = read_file(userdata)
 
     # use IMDSv2 to prevent SSRF
     runargs["MetadataOptions"] = {"HttpTokens": "required"}
@@ -531,3 +534,11 @@ def name_filters(name: Optional[str] = None, name_match: Optional[str] = None) -
 def read_file(filepath: str) -> str:
     with open(os.path.expanduser(filepath)) as file:
         return file.read()
+
+
+def read_url(url: str) -> str:
+    import requests
+
+    r = requests.get(url)
+    r.raise_for_status()
+    return r.text

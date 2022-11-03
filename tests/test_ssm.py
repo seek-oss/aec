@@ -40,10 +40,11 @@ def test_fetch_instance_ids(mock_aws_config):
     instance3 = run_instances(client)
     instance4 = run_instances(client, "alex")
 
-    fetch_instance_ids(mock_aws_config, [instance1, "alice", instance3, "alex"]) == [
+    assert fetch_instance_ids(mock_aws_config, [instance1, "alice", instance3, "alex"]) == [
         instance1,
-        instance2,
+        # NB: fetch_instance_ids does not preserve order
         instance3,
+        instance2,
         instance4,
     ]
 
