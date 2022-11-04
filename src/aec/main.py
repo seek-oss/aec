@@ -146,7 +146,9 @@ ssm_cli = [
         config_arg
     ]),
     Cmd(ssm.describe, [
-        config_arg
+        config_arg,
+        Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
+        Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
     ]),
     Cmd(ssm.invocations, [
         config_arg,

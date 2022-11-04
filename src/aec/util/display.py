@@ -72,7 +72,12 @@ def pretty_print(
             writer.writerow(r)
 
     elif isinstance(result, Iterator) and output_format == OutputFormat.table:
-        first = next(result)
+        try:
+            first = next(result)
+        except StopIteration:
+            console.print("No results")
+            return
+
         table = Table(box=box.SIMPLE)
         for c in first.keys():
             table.add_column(c)

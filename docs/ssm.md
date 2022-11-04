@@ -41,6 +41,12 @@ aec ssm describe
   i-0f194c8d697f35240   even-better-instance   Online       Ubuntu 20.04     2.3.978.0
 ```
 
+List running instances containing `gaga` in the name:
+
+```
+aec ssm describe -q gaga
+```
+
 Run a hello world command on multiple instances:
 
 ```
