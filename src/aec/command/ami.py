@@ -55,6 +55,7 @@ def fetch(config: Config, ami: str) -> Image:
             raise RuntimeError(f"Could not find {ami}")
     return ami_details
 
+
 def describe(
     config: Config,
     id: Optional[str] = None,
