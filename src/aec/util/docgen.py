@@ -38,4 +38,4 @@ def docs(
     capture = io.StringIO()
     with redirect_stdout(capture):
         display.pretty_print(result)
-    return f"{cmd_name}\n{capture.getvalue().strip()}"
+    return f"{cmd_name}\n{capture.getvalue().rstrip()}"

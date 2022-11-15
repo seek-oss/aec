@@ -55,7 +55,7 @@ test: $(venv)
 
 ## generate docs
 docs: $(venv)
-	cog -r docs/*.md
+	$(venv)/bin/cog -r docs/*.md
 
 ## build distribution
 dist: $(venv)

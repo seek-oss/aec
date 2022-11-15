@@ -119,7 +119,7 @@ ami_cli = [
     ]),
     Cmd(ami.describe, [
         config_arg,
-        Arg("--ami", type=str, help="Filter to this AMI id"),
+        Arg("id", type=str, nargs='?', help="Filter to this AMI id"),
         Arg("--owner", type=str, help="Filter to this owning account"),
         Arg("-q", type=str, dest='name_match', help="Filter to images with a name containing NAME_MATCH."),
         Arg("--show-snapshot-id", action='store_true', help="Show snapshot id")

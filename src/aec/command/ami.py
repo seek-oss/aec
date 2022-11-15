@@ -50,7 +50,7 @@ def fetch(config: Config, ami: str) -> Image:
     else:
         try:
             # lookup by ami id
-            ami_details = describe(config, ami=ami)[0]
+            ami_details = describe(config, id=ami)[0]
         except IndexError:
             raise RuntimeError(f"Could not find {ami}")
     return ami_details
@@ -58,7 +58,7 @@ def fetch(config: Config, ami: str) -> Image:
 
 def describe(
     config: Config,
-    ami: Optional[str] = None,
+    id: Optional[str] = None,
     owner: Optional[str] = None,
     name_match: Optional[str] = None,
     show_snapshot_id: bool = False,
@@ -67,8 +67,8 @@ def describe(
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    if ami:
-        response = ec2_client.describe_images(ImageIds=[ami])
+    if id:
+        response = ec2_client.describe_images(ImageIds=[id])
     else:
         if owner:
             owners_filter = [owner]
