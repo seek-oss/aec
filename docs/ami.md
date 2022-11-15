@@ -46,13 +46,13 @@ aec ami describe
 List image by id
 
 ```
-ami describe ami-025b9fd66d61d093a
+aec ami describe ami-025b9fd66d61d093a
 ```
 
 List Amazon Deep Learning images:
 
 ```
-ami describe --owner 898082745236
+aec ami describe --owner 898082745236
 ```
 
 List ubuntu focal images owned by Canonical:
