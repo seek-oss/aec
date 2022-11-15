@@ -1,13 +1,19 @@
+<!-- [[[cog
+import cog
+from aec.util.docgen import docs
+from aec.util.docgen import mock_aws_config as config
+import aec.command.ec2 as ec2
+]]] -->
+<!-- [[[end]]] -->
+
 # EC2 Usage
 
 Run `aec ec2 -h` for help:
 
 <!-- [[[cog
-import cog
 from aec.main import build_parser
 cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ec2'].format_help()}```")
 ]]] -->
-
 ```
 usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,tag,tags,status,templates,terminate,user-data} ...
 
@@ -30,7 +36,6 @@ subcommands:
     terminate           Terminate EC2 instance.
     user-data           Describe user data for an instance.
 ```
-
 <!-- [[[end]]] -->
 
 Launch an instance named `food baby` from the [ec2 launch template](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html) named `yummy`:
@@ -39,10 +44,10 @@ Launch an instance named `food baby` from the [ec2 launch template](https://docs
 aec ec2 launch "food baby" --template yummy
 ```
 
-Launch a t2.medium instance named `lady gaga` with a 50gb EBS volume, with other settings read from the config file:
+Launch a t2.medium instance named `lady gaga` with a 50gb EBS volume, userdata, and other settings read from the config file:
 
 ```
-aec ec2 launch "lady gaga" --ami ubuntu1804 --instance-type t2.medium --volume-size 50
+aec ec2 launch "lady gaga" --ami ubuntu2004 --instance-type t2.medium --volume-size 50 --userdata https://raw.githubusercontent.com/tekumara/setup-ubuntu/main/setup-ubuntu.yaml
 ```
 
 Stop the instance:
@@ -59,16 +64,17 @@ aec ec2 modify "lady gaga" p2.xlarge
 
 List all instances in the region:
 
+<!-- [[[cog
+cog.out(f"```\n{docs('aec ec2 describe', ec2.describe(config))}\n```")
+]]] -->
 ```
 aec ec2 describe
-
-  InstanceId            State     Name    Type       DnsName                   LaunchTime                 ImageId
- ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  i-db2e4e24c95fa5ed7   running   alice   t3.small   ec2-54-214-178-132.com…   2022-02-09                 ami-03cf127a
-                                                                               09:46:44+00:00
-  i-a91307a999f4309be   running   sam     t3.small   ec2-54-214-170-196.com…   2022-02-09                 ami-03cf127a
-                                                                               09:46:44+00:00
+InstanceId            State     Name    Type       DnsName                                                   LaunchTime                  ImageId  
+ ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  i-c42573a4089b65678   running   alice   t3.small   ec2-54-214-215-234.ap-southeast-2.compute.amazonaws.com   2022-11-01 02:59:34+00:00   ami-03cf127a  
+  i-8c7eeff04f15670a8   running   sam     t3.small   ec2-54-214-57-59.ap-southeast-2.compute.amazonaws.com     2022-11-01 02:59:36+00:00   ami-03cf127a
 ```
+<!-- [[[end]]] -->
 
 List instances containing `gaga` in the name:
 

@@ -7,7 +7,6 @@ import cog
 from aec.main import build_parser
 cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ssm'].format_help()}```")
 ]]] -->
-
 ```
 usage: aec ssm [-h] {commands,compliance-summary,describe,invocations,output,patch,patch-summary,run} ...
 
@@ -25,7 +24,6 @@ subcommands:
     patch-summary       Patch summary for all instances that have run the patch baseline.
     run                 Run a shell script on instance(s). Script is read from stdin.
 ```
-
 <!-- [[[end]]] -->
 
 ## Examples
@@ -39,6 +37,12 @@ aec ssm describe
  ─────────────────────────────────────────────────────────────────────────────────────────
   i-01579de1b005846cb   awesome-instance       Online       Amazon Linux 2   2.3.1319.0
   i-0f194c8d697f35240   even-better-instance   Online       Ubuntu 20.04     2.3.978.0
+```
+
+List running instances containing `gaga` in the name:
+
+```
+aec ssm describe -q gaga
 ```
 
 Run a hello world command on multiple instances:

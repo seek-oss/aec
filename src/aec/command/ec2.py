@@ -151,7 +151,10 @@ def launch(
         runargs["IamInstanceProfile"] = {"Arn": iam_instance_profile_arn}
 
     if userdata:
-        runargs["UserData"] = read_file(userdata)
+        if userdata.startswith("http://") or userdata.startswith("https://"):
+            runargs["UserData"] = read_url(userdata)
+        else:
+            runargs["UserData"] = read_file(userdata)
 
     # use IMDSv2 to prevent SSRF
     runargs["MetadataOptions"] = {"HttpTokens": "required"}
@@ -180,7 +183,7 @@ def describe(
     include_terminated: bool = False,
     show_running_only: bool = False,
     sort_by: str = "State,Name",
-    columns: Optional[str] = None,
+    columns: str = "InstanceId,State,Name,Type,DnsName,LaunchTime,ImageId",
 ) -> List[Instance]:
     """List EC2 instances in the region."""
 
@@ -190,11 +193,12 @@ def describe(
     if show_running_only:
         filters.append({"Name": "instance-state-name", "Values": ["pending", "running"]})
 
-    response = ec2_client.describe_instances(Filters=filters)
+    # TODO: handle more than 1000 results by looping using NextToken
+    response = ec2_client.describe_instances(MaxResults=1000, Filters=filters)
 
     # print(response["Reservations"][0]["Instances"][0])
 
-    cols = columns.split(",") if columns else ["InstanceId", "State", "Name", "Type", "DnsName"]
+    cols = columns.split(",")
 
     # don't sort by cols we aren't showing
     sort_cols = [sc for sc in sort_by.split(",") if sc in cols]
@@ -454,7 +458,7 @@ def status(config: Config) -> List[Dict[str, Any]]:
     """Describe instances status checks."""
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    kwargs = {"MaxResults": 50}
+    kwargs: Dict[str, Any] = {"MaxResults": 50}
 
     response_fut = executor.submit(ec2_client.describe_instance_status, **kwargs)
     instances = executor.submit(describe_running_instances_names, config).result()
@@ -477,7 +481,7 @@ def status(config: Config) -> List[Dict[str, Any]]:
 
         next_token = response.get("NextToken", None)
         if next_token:
-            kwargs = {"NextToken": next_token}
+            kwargs["NextToken"] = next_token
             response = ec2_client.describe_instance_status(**kwargs)
         else:
             break
@@ -517,11 +521,11 @@ def user_data(config: Config, name: str) -> Optional[str]:
         return None
 
 
-def name_filters(name: Optional[str] = None, name_match: Optional[str] = None) -> List[FilterTypeDef]:
-    if name and name.startswith("i-"):
-        return [{"Name": "instance-id", "Values": [name]}]
-    elif name:
-        return [{"Name": "tag:Name", "Values": [name]}]
+def name_filters(name_or_id: Optional[str] = None, name_match: Optional[str] = None) -> List[FilterTypeDef]:
+    if name_or_id and name_or_id.startswith("i-"):
+        return [{"Name": "instance-id", "Values": [name_or_id]}]
+    elif name_or_id:
+        return [{"Name": "tag:Name", "Values": [name_or_id]}]
     elif name_match:
         return [{"Name": "tag:Name", "Values": [f"*{name_match}*"]}]
     else:
@@ -531,3 +535,11 @@ def name_filters(name: Optional[str] = None, name_match: Optional[str] = None) -
 def read_file(filepath: str) -> str:
     with open(os.path.expanduser(filepath)) as file:
         return file.read()
+
+
+def read_url(url: str) -> str:
+    import requests
+
+    r = requests.get(url)
+    r.raise_for_status()
+    return r.text

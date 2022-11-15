@@ -2,7 +2,7 @@
 
 import inspect
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace, _SubParsersAction
-from typing import Any, Callable, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 from aec.util.display import OutputFormat
 
@@ -101,3 +101,17 @@ def dispatch(parser: ArgumentParser, args: List[str]) -> Tuple[Any, OutputFormat
         delattr(pargs, "output")
 
     return (call_me(**vars(pargs)), output_format)
+
+
+def parameter_defaults(func: Callable) -> Dict[str, Any]:
+    """
+    Get a function's parameter defaults.
+
+    Args:
+        func (Callable): function
+
+    Returns:
+        Dict[str, Any]: Dictionary of parameter name => default value or None
+    """
+    signature = inspect.signature(func)
+    return {k: v.default for k, v in signature.parameters.items() if v.default is not inspect.Parameter.empty}

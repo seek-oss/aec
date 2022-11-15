@@ -39,7 +39,7 @@ def as_strings(values: Iterable[Any]) -> List[str]:
 
 def pretty_print(
     result: List[Dict[str, Any]] | Iterator[Dict[str, Any]] | Dict | str | None,
-    output_format: OutputFormat,
+    output_format: OutputFormat = OutputFormat.table,
 ) -> None:
     """print results as table/csv/json."""
 
@@ -72,7 +72,12 @@ def pretty_print(
             writer.writerow(r)
 
     elif isinstance(result, Iterator) and output_format == OutputFormat.table:
-        first = next(result)
+        try:
+            first = next(result)
+        except StopIteration:
+            console.print("No results")
+            return
+
         table = Table(box=box.SIMPLE)
         for c in first.keys():
             table.add_column(c)

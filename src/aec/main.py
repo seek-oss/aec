@@ -13,7 +13,7 @@ import aec.util.cli as cli
 import aec.util.config as config
 import aec.util.configure as configure
 import aec.util.display as display
-from aec.util.cli import Arg, Cmd
+from aec.util.cli import Arg, Cmd, parameter_defaults
 from aec.util.errors import HandledError
 
 config_arg = Arg("--config", help="Section of the config file to use")
@@ -52,8 +52,8 @@ ec2_cli = [
         Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
         Arg("-r", "--show-running-only", action='store_true', help="Show running or pending instances only"),
         Arg("-it", "--include-terminated", action='store_true', help="Include terminated instances"),
-        Arg("-s", "--sort-by", type=str, help="Sort by one or more fields", default="State,Name"),
-        Arg("-c", "--columns", type=str, help="Customise the columns shown", default="InstanceId,State,Name,Type,DnsName,LaunchTime,ImageId"),
+        Arg("-s", "--sort-by", type=str, help="Sort by one or more fields", default=parameter_defaults(ec2.describe)["sort_by"]),
+        Arg("-c", "--columns", type=str, help="Customise the columns shown", default=parameter_defaults(ec2.describe)["columns"]),
     ]),
     Cmd(ec2.launch, [
         config_arg,
@@ -64,7 +64,7 @@ ec2_cli = [
         Arg("--encrypted", type=bool, help="Whether the EBS volume is encrypted", default=True),
         Arg("--instance-type", type=str, help="Instance type"),
         Arg("--key-name", type=str, help="Key name"),
-        Arg("--userdata", type=str, help="Path to user data file")
+        Arg("--userdata", type=str, help="User data file path or http URL")
     ]),
     Cmd(ec2.logs, [
         config_arg,
@@ -146,7 +146,9 @@ ssm_cli = [
         config_arg
     ]),
     Cmd(ssm.describe, [
-        config_arg
+        config_arg,
+        Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
+        Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
     ]),
     Cmd(ssm.invocations, [
         config_arg,
