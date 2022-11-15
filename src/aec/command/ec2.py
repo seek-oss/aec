@@ -183,7 +183,7 @@ def describe(
     include_terminated: bool = False,
     show_running_only: bool = False,
     sort_by: str = "State,Name",
-    columns: Optional[str] = None,
+    columns: str = "InstanceId,State,Name,Type,DnsName,LaunchTime,ImageId",
 ) -> List[Instance]:
     """List EC2 instances in the region."""
 
@@ -198,7 +198,7 @@ def describe(
 
     # print(response["Reservations"][0]["Instances"][0])
 
-    cols = columns.split(",") if columns else ["InstanceId", "State", "Name", "Type", "DnsName"]
+    cols = columns.split(",")
 
     # don't sort by cols we aren't showing
     sort_cols = [sc for sc in sort_by.split(",") if sc in cols]
