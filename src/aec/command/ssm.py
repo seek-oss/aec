@@ -323,7 +323,6 @@ def fetch_instance_id(config: Config, name: str) -> str:
 
 
 def fetch_instance_ids(config: Config, ids_or_names: List[str]) -> List[str]:
-
     if ids_or_names == ["all"]:
         return [i["ID"] for i in describe(config)]
 
