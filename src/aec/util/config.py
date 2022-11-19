@@ -38,7 +38,7 @@ def inject_config(config_file: str) -> Callable[[Namespace], None]:
     def inner(namespace: Namespace) -> None:
         # replace the "config" arg value with a dict loaded from the config file
         if "config" in namespace:
-            setattr(namespace, "config", load_config(config_file, namespace.config))
+            namespace.config = load_config(config_file, namespace.config)
 
     return inner
 

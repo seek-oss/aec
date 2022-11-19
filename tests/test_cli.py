@@ -7,7 +7,7 @@ from aec.util.cli import Arg, Cmd
 
 
 def test_cli_injects_config():
-    def eat(config: Dict[str, Any], thing_one, temp: Optional[str] = None):
+    def eat(config: Dict[str, Any], thing_one: str, temp: Optional[str] = None):
         print(config)
         assert config and isinstance(config, dict) and config["region"]
         assert thing_one == "cheese"
