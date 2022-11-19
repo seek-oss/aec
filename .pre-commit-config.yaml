@@ -15,7 +15,6 @@ repos:
       - id: autoflake
         name: autoflake
         entry: .venv/bin/autoflake
-        args: [--in-place,--recursive,--remove-all-unused-imports,--ignore-init-module-imports]
         language: system
         types: [python]
       - id: black
