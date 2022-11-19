@@ -25,6 +25,7 @@ dev = [
     "boto3-stubs[ec2,compute-optimizer,ssm,s3]==1.24.41",
     "cogapp~=3.3",
     "darglint~=1.8",
+    "docformatter[toml]~=1.5.0",
     "isort~=5.10",
     "flake8~=4.0",
     "flake8-annotations~=2.9",

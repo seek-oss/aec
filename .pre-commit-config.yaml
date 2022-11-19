@@ -28,11 +28,13 @@ repos:
         entry: .venv/bin/isort
         language: system
         types: [python]
-  - repo: https://github.com/myint/docformatter
-    rev: v1.5.0
-    hooks:
+      # use docformatter from the venv so that it reads from pyproject.toml (which requires tomli)
       - id: docformatter
+        name: docformatter
+        entry: .venv/bin/docformatter
         args: [--in-place]
+        language: system
+        types: [python]
   # vscode/the cli uses flake8 too so it has been installed into the virtualenv
   - repo: local
     hooks:
