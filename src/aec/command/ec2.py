@@ -469,9 +469,15 @@ def status(
     instances = executor.submit(describe_running_instances_names, config).result()
     response = response_fut.result()
 
-    def match(instance_name: Optional[str]) -> bool:
+    def match(instance_id: str, instance_name: Optional[str]) -> bool:
         # describe_instance_status doesn't support name filters in the request so match here
-        return (not name or name == instance_name) and (not name_match or name_match in (instance_name or ""))
+        if not name and not name_match:
+            return True
+
+        if name is not None:
+            return (name.startswith("i-") and name == instance_id) or (name == instance_name)
+
+        return not name_match or name_match in (instance_name or "")
 
     statuses = []
     while True:
@@ -485,7 +491,7 @@ def status(
                     "Instance status check": status_text(i["InstanceStatus"]),
                 }
                 for i in response["InstanceStatuses"]
-                if match(instances.get(i["InstanceId"], None))
+                if match(i["InstanceId"], instances.get(i["InstanceId"], None))
             ]
         )
 
