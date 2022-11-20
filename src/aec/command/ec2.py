@@ -13,14 +13,14 @@ from aec.util.errors import NoInstancesError
 from aec.util.threads import executor
 
 if TYPE_CHECKING:
+    from mypy_boto3_ec2.literals import InstanceTypeType
     from mypy_boto3_ec2.type_defs import (
         BlockDeviceMappingTypeDef,
         FilterTypeDef,
-        TagTypeDef,
         InstanceStatusSummaryTypeDef,
         TagSpecificationTypeDef,
+        TagTypeDef,
     )
-    from mypy_boto3_ec2.literals import InstanceTypeType
 
 import aec.command.ami as ami_cmd
 import aec.util.ec2 as util_tags

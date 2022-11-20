@@ -89,8 +89,8 @@ select = [
     "N",
     # bugbear
     "B",
-    # isort: pending https://github.com/charliermarsh/ruff/issues/815
-    #"I"
+    # isort
+    "I"
 ]
 ignore = [
     # allow untyped self and cls args, and no return type from dunder methods
@@ -102,6 +102,8 @@ ignore = [
     # until https://github.com/charliermarsh/ruff/issues/572 is resolved
     "B006",
 ]
+# first-party imports for sorting
+src = ["src", "tests"]
 
 fix = true
 
