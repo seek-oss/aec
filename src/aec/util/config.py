@@ -14,7 +14,8 @@ class SsmConfig(TypedDict, total=False):
 class VpcConfig(TypedDict, total=False):
     name: str
     subnet: str
-    security_group: str
+    security_group: Union[str, List[str]]
+    associate_public_ip_address: bool
 
 
 class Config(TypedDict, total=False):
