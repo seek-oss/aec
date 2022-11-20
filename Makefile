@@ -32,13 +32,12 @@ install: $(venv) node_modules $(if $(value CI),,install-hooks)
 format: $(venv)
 	$(venv)/bin/black .
 	$(venv)/bin/docformatter . --in-place -e build dist node_modules typings
-	$(venv)/bin/isort .
 	$(venv)/bin/ruff .
 
 ## lint code and run static type check
 check: lint pyright
 
-## lint using flake8
+## lint using ruff
 lint: $(venv)
 	$(venv)/bin/ruff .
 

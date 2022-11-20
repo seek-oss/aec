@@ -33,7 +33,6 @@ tasks:
       - install
     input_paths:
       - .darglint
-      - .flake8
       - pyrightconfig.json
       - tests/
     environment:

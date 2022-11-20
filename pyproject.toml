@@ -26,10 +26,6 @@ dev = [
     "cogapp~=3.3",
     "darglint~=1.8",
     "docformatter[toml]~=1.5.0",
-    "isort~=5.10",
-    "flake8~=4.0",
-    "flake8-annotations~=2.9",
-    "flake8-colors~=0.1",
     "moto[ec2]==3.1.16",
     "pre-commit~=2.20",
     "pyfakefs~=4.6",
@@ -66,12 +62,6 @@ pre-summary-newline = true
 recursive = true
 wrap-descriptions = 120
 wrap-summaries = 120
-
-[tool.isort]
-# make isort compatible with black
-line_length = 120
-profile = "black"
-skip = [".tox", "dist", "node_modules", ".venv", "build", ".git", "typings"]
 
 [tool.ruff]
 line-length = 120
