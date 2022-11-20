@@ -13,14 +13,14 @@ from aec.util.errors import NoInstancesError
 from aec.util.threads import executor
 
 if TYPE_CHECKING:
+    from mypy_boto3_ec2.literals import InstanceTypeType
     from mypy_boto3_ec2.type_defs import (
         BlockDeviceMappingTypeDef,
         FilterTypeDef,
-        TagTypeDef,
         InstanceStatusSummaryTypeDef,
         TagSpecificationTypeDef,
+        TagTypeDef,
     )
-    from mypy_boto3_ec2.literals import InstanceTypeType
 
 import aec.command.ami as ami_cmd
 import aec.util.ec2 as util_tags
@@ -109,7 +109,8 @@ def launch(
     elif not template:
         print(
             "WARNING: You have not specified a key pair.",
-            "You will only be able to connect to this instance if it is configured for EC2 Instance Connect or Systems Manager Session Manager.",
+            "You will only be able to connect to this instance if it is configured for "
+            + "EC2 Instance Connect or Systems Manager Session Manager.",
         )
 
     if instance_type:

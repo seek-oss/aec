@@ -30,17 +30,16 @@ install: $(venv) node_modules $(if $(value CI),,install-hooks)
 
 ## format all code
 format: $(venv)
-	$(venv)/bin/autoflake .
-	$(venv)/bin/docformatter . --in-place -e build dist node_modules typings
 	$(venv)/bin/black .
-	$(venv)/bin/isort .
+	$(venv)/bin/docformatter . --in-place -e build dist node_modules typings
+	$(venv)/bin/ruff .
 
 ## lint code and run static type check
 check: lint pyright
 
-## lint using flake8
+## lint using ruff
 lint: $(venv)
-	$(venv)/bin/flake8
+	$(venv)/bin/ruff .
 
 node_modules: package.json
 	npm install --no-save

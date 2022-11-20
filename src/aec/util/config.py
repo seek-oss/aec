@@ -14,7 +14,8 @@ class SsmConfig(TypedDict, total=False):
 class VpcConfig(TypedDict, total=False):
     name: str
     subnet: str
-    security_group: str
+    security_group: Union[str, List[str]]
+    associate_public_ip_address: bool
 
 
 class Config(TypedDict, total=False):
@@ -38,7 +39,7 @@ def inject_config(config_file: str) -> Callable[[Namespace], None]:
     def inner(namespace: Namespace) -> None:
         # replace the "config" arg value with a dict loaded from the config file
         if "config" in namespace:
-            setattr(namespace, "config", load_config(config_file, namespace.config))
+            namespace.config = load_config(config_file, namespace.config)
 
     return inner
 

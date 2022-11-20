@@ -26,15 +26,12 @@ dev = [
     "cogapp~=3.3",
     "darglint~=1.8",
     "docformatter[toml]~=1.5.0",
-    "isort~=5.10",
-    "flake8~=4.0",
-    "flake8-annotations~=2.9",
-    "flake8-colors~=0.1",
     "moto[ec2]==3.1.16",
     "pre-commit~=2.20",
     "pyfakefs~=4.6",
     "pytest~=7.1",
     "pytest-mock~=3.8",
+    "ruff~=0.0.128",
     "twine~=4.0",
 ]
 
@@ -66,8 +63,53 @@ recursive = true
 wrap-descriptions = 120
 wrap-summaries = 120
 
-[tool.isort]
-# make isort compatible with black
-line_length = 120
-profile = "black"
-skip = [".tox", "dist", "node_modules", ".venv", "build", ".git", "typings"]
+[tool.ruff]
+line-length = 120
+
+# rules to enable/ignore
+select = [
+    # pyflakes
+    "F",
+    # pycodestyle
+    "E",
+    "W",
+    # type annotations
+    "ANN",
+    # pep8-naming
+    "N",
+    # bugbear
+    "B",
+    # isort
+    "I"
+]
+ignore = [
+    # allow untyped self and cls args, and no return type from dunder methods
+    "ANN101",
+    "ANN102",
+    "ANN204",
+    # allow == True because pandas dataframes overload equality
+    "E712",
+    # until https://github.com/charliermarsh/ruff/issues/572 is resolved
+    "B006",
+]
+# first-party imports for sorting
+src = ["src", "tests"]
+
+fix = true
+
+# imports in __init__.py don't need to be used in __init__.py
+# test functions don't need return types
+# main.py can have long lines
+per-file-ignores = { "__init__.py" = [
+    "F401",
+], "tests/*" = [
+    "ANN201",
+    "ANN202",
+], "src/aec/main.py" = [
+    "E501",
+] }
+
+target-version = "py39"
+
+[tool.ruff.flake8-annotations]
+allow-star-arg-any = true

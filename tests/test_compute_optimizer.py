@@ -5,6 +5,7 @@ from moto.ec2.models.amis import AMIS
 
 from aec.command.compute_optimizer import describe_instances_uptime
 from aec.command.ec2 import launch
+from aec.util.config import Config
 
 
 @pytest.fixture
@@ -26,6 +27,6 @@ def mock_aws_config():
     }
 
 
-def test_describe_instances_uptime(mock_aws_config):
+def test_describe_instances_uptime(mock_aws_config: Config):
     launch(mock_aws_config, "alice", AMIS[0]["ami_id"])
     describe_instances_uptime(mock_aws_config)

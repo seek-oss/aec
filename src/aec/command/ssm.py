@@ -261,7 +261,7 @@ def invocations(config: Config, command_id: str) -> List[Dict[str, Any]]:
             "StatusDetails": i["StatusDetails"],
             "DocumentName": i["DocumentName"],
             "Operation": ",".join(command["Parameters"]["Operation"]),
-            "ConsoleLink": f"https://{region}.console.aws.amazon.com/systems-manager/run-command/{command_id}/{i['InstanceId']}?region={region}",
+            "ConsoleLink": f"https://{region}.console.aws.amazon.com/systems-manager/run-command/{command_id}/{i['InstanceId']}?region={region}",  # noqa: E501
         }
         for i in invocations["CommandInvocations"]
     ]
@@ -285,7 +285,8 @@ def output(config: Config, command_id: str, instance_id: str, stderr: bool) -> N
         doc_path = DOC_PATHS[command["DocumentName"]]
     except KeyError:
         raise NotImplementedError(
-            f"for {command['DocumentName']}. Run aws s3 ls {command['OutputS3KeyPrefix']}/{command_id}/{instance_id}/awsrunShellScript/"
+            f"for {command['DocumentName']}. "
+            + "Run aws s3 ls {command['OutputS3KeyPrefix']}/{command_id}/{instance_id}/awsrunShellScript/"
         )
 
     std = "stderr" if stderr else "stdout"
