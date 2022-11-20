@@ -3,7 +3,7 @@ from __future__ import annotations
 import base64
 import os
 import os.path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, cast
 
 import boto3
 from typing_extensions import TypedDict
@@ -234,7 +234,7 @@ def describe_tags(
     config: Config,
     name: Optional[str] = None,
     name_match: Optional[str] = None,
-    keys: List[str] = [],
+    keys: Sequence[str] = [],
     volumes: bool = False,
 ) -> List[Dict[str, Any]]:
     """List EC2 instances or volumes with their tags."""
@@ -275,7 +275,7 @@ def tag(
 
 
 def instance_tags(
-    config: Config, name: Optional[str] = None, name_match: Optional[str] = None, keys: List[str] = []
+    config: Config, name: Optional[str] = None, name_match: Optional[str] = None, keys: Sequence[str] = []
 ) -> List[Dict[str, Any]]:
     """List EC2 instances with their tags."""
 
@@ -300,7 +300,7 @@ def instance_tags(
 
 
 def volume_tags(
-    config: Config, name: Optional[str] = None, name_match: Optional[str] = None, keys: List[str] = []
+    config: Config, name: Optional[str] = None, name_match: Optional[str] = None, keys: Sequence[str] = []
 ) -> List[Dict[str, Any]]:
     """List EC2 volumes with their tags."""
 
