@@ -455,15 +455,23 @@ def templates(config: Config) -> List[Dict[str, Any]]:
     ]
 
 
-def status(config: Config) -> List[Dict[str, Any]]:
+def status(
+    config: Config,
+    name: Optional[str] = None,
+    name_match: Optional[str] = None,
+) -> List[Dict[str, Any]]:
     """Describe instances status checks."""
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    kwargs: Dict[str, Any] = {"MaxResults": 50}
+    kwargs: Dict[str, Any] = {"MaxResults": 1000}
 
     response_fut = executor.submit(ec2_client.describe_instance_status, **kwargs)
     instances = executor.submit(describe_running_instances_names, config).result()
     response = response_fut.result()
+
+    def match(instance_name: Optional[str]) -> bool:
+        # describe_instance_status doesn't support name filters in the request so match here
+        return (not name or name == instance_name) and (not name_match or name_match in (instance_name or ""))
 
     statuses = []
     while True:
@@ -477,6 +485,7 @@ def status(config: Config) -> List[Dict[str, Any]]:
                     "Instance status check": status_text(i["InstanceStatus"]),
                 }
                 for i in response["InstanceStatuses"]
+                if match(instances.get(i["InstanceId"], None))
             ]
         )
 

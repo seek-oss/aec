@@ -349,6 +349,15 @@ def test_status(mock_aws_config: Config):
     assert statuses["Instance status check"] == "reachability passed"
 
 
+def test_status_name(mock_aws_config: Config):
+    launch(mock_aws_config, "alice", ami_id)
+    launch(mock_aws_config, "sam", ami_id)
+
+    assert len(status(mock_aws_config)) == 2
+    assert len(status(mock_aws_config, name="alice")) == 1
+    assert len(status(mock_aws_config, name_match="lic")) == 1
+
+
 def test_terminate(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
 

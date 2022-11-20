@@ -97,7 +97,9 @@ ec2_cli = [
         Arg("-k", "--keys", type=str, nargs='*', metavar="KEY", help="Tags to display", default = []),
     ], name = "tags"),
     Cmd(ec2.status, [
-        config_arg
+        config_arg,
+        Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
+        Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
     ]),
     Cmd(ec2.templates, [
         config_arg
