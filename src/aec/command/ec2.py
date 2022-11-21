@@ -3,7 +3,7 @@ from __future__ import annotations
 import base64
 import os
 import os.path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, cast
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, cast
 
 import boto3
 from typing_extensions import TypedDict
@@ -234,7 +234,7 @@ def describe_tags(
     config: Config,
     name: Optional[str] = None,
     name_match: Optional[str] = None,
-    keys: List[str] = [],
+    keys: Sequence[str] = [],
     volumes: bool = False,
 ) -> List[Dict[str, Any]]:
     """List EC2 instances or volumes with their tags."""
@@ -275,7 +275,7 @@ def tag(
 
 
 def instance_tags(
-    config: Config, name: Optional[str] = None, name_match: Optional[str] = None, keys: List[str] = []
+    config: Config, name: Optional[str] = None, name_match: Optional[str] = None, keys: Sequence[str] = []
 ) -> List[Dict[str, Any]]:
     """List EC2 instances with their tags."""
 
@@ -300,7 +300,7 @@ def instance_tags(
 
 
 def volume_tags(
-    config: Config, name: Optional[str] = None, name_match: Optional[str] = None, keys: List[str] = []
+    config: Config, name: Optional[str] = None, name_match: Optional[str] = None, keys: Sequence[str] = []
 ) -> List[Dict[str, Any]]:
     """List EC2 volumes with their tags."""
 
@@ -455,15 +455,29 @@ def templates(config: Config) -> List[Dict[str, Any]]:
     ]
 
 
-def status(config: Config) -> List[Dict[str, Any]]:
+def status(
+    config: Config,
+    name: Optional[str] = None,
+    name_match: Optional[str] = None,
+) -> List[Dict[str, Any]]:
     """Describe instances status checks."""
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    kwargs: Dict[str, Any] = {"MaxResults": 50}
+    kwargs: Dict[str, Any] = {"MaxResults": 1000}
 
     response_fut = executor.submit(ec2_client.describe_instance_status, **kwargs)
     instances = executor.submit(describe_running_instances_names, config).result()
     response = response_fut.result()
+
+    def match(instance_id: str, instance_name: Optional[str]) -> bool:
+        # describe_instance_status doesn't support name filters in the request so match here
+        if not name and not name_match:
+            return True
+
+        if name is not None:
+            return (name.startswith("i-") and name == instance_id) or (name == instance_name)
+
+        return not name_match or name_match in (instance_name or "")
 
     statuses = []
     while True:
@@ -477,6 +491,7 @@ def status(config: Config) -> List[Dict[str, Any]]:
                     "Instance status check": status_text(i["InstanceStatus"]),
                 }
                 for i in response["InstanceStatuses"]
+                if match(i["InstanceId"], instances.get(i["InstanceId"], None))
             ]
         )
 
