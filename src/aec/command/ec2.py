@@ -164,7 +164,7 @@ def launch(
 
     print(
         f"Launching a {instance_type if instance_type else 'instance'} in "
-        + "{region_name}{vpc_name} named {name} using {desc} ... "
+        + f"{region_name}{vpc_name} named {name} using {desc} ... "
     )
     response = ec2_client.run_instances(**runargs)
 
