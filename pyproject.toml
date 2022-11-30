@@ -91,7 +91,7 @@ ignore = [
     "E712",
 ]
 # first-party imports for sorting
-src = ["src", "tests"]
+src = ["src"]
 
 fix = true
 
@@ -107,7 +107,6 @@ per-file-ignores = { "__init__.py" = [
     "E501",
 ] }
 
-target-version = "py39"
-
 [tool.ruff.flake8-annotations]
+# allow *args: Any, **kwargs: Any
 allow-star-arg-any = true
