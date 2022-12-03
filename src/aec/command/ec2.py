@@ -163,7 +163,7 @@ def launch(
     region_name = ec2_client.meta.region_name
 
     print(
-        f"Launching a {instance_type if instance_type else 'instance'} in "
+        f"Launching {'a ' + instance_type if instance_type else 'an instance'} in "
         + f"{region_name}{vpc_name} named {name} using {desc} ... "
     )
     response = ec2_client.run_instances(**runargs)
