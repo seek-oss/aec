@@ -287,7 +287,7 @@ def output(config: Config, command_id: str, instance_id: str, stderr: bool) -> N
         raise NotImplementedError(
             f"for {command['DocumentName']}. "
             + "Run aws s3 ls {command['OutputS3KeyPrefix']}/{command_id}/{instance_id}/awsrunShellScript/"
-        )
+        ) from None
 
     std = "stderr" if stderr else "stdout"
     key = f"{command['OutputS3KeyPrefix']}/{command_id}/{instance_id}/awsrunShellScript/{doc_path}/{std}"
@@ -298,7 +298,7 @@ def output(config: Config, command_id: str, instance_id: str, stderr: bool) -> N
         response = s3_client.get_object(Bucket=bucket, Key=key)
     except ClientError as e:
         if e.response["Error"]["Code"] == "NoSuchKey":
-            raise KeyError(f"s3://{bucket}/{key} does not exist")
+            raise KeyError(f"s3://{bucket}/{key} does not exist") from None
         else:
             raise e
 
@@ -320,7 +320,7 @@ def fetch_instance_id(config: Config, name: str) -> str:
     try:
         return response["Reservations"][0]["Instances"][0]["InstanceId"]
     except IndexError:
-        raise ValueError(f"No instance named {name}")
+        raise ValueError(f"No instance named {name}") from None
 
 
 def fetch_instance_ids(config: Config, ids_or_names: List[str]) -> List[str]:
@@ -345,7 +345,7 @@ def fetch_instance_ids(config: Config, ids_or_names: List[str]) -> List[str]:
                 for i in r["Instances"]:
                     ids.append(i["InstanceId"])
         except IndexError:
-            raise ValueError(f"No instances with ids or names {','.join(names)}")
+            raise ValueError(f"No instances with ids or names {','.join(names)}") from None
     return ids
 
 
