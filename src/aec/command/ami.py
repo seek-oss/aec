@@ -46,13 +46,13 @@ def fetch(config: Config, ami: str) -> Image:
         except IndexError:
             raise RuntimeError(
                 f"Could not find ami with name matching {ami_matcher.match_string} owned by account {ami_matcher.owner}"
-            )
+            ) from None
     else:
         try:
             # lookup by ami id
             ami_details = describe(config, id=ami)[0]
         except IndexError:
-            raise RuntimeError(f"Could not find {ami}")
+            raise RuntimeError(f"Could not find {ami}") from None
     return ami_details
 
 

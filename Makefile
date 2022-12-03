@@ -37,7 +37,7 @@ format: $(venv)
 ## lint code and run static type check
 check: lint pyright
 
-## lint using ruff
+## lint code
 lint: $(venv)
 	$(venv)/bin/ruff .
 
@@ -47,7 +47,8 @@ node_modules: package.json
 
 ## pyright
 pyright: node_modules $(venv)
-	source $(venv)/bin/activate && node_modules/.bin/pyright
+# activate venv so pyright can find dependencies
+	PATH="$(venv)/bin:$$PATH" node_modules/.bin/pyright
 
 ## run tests
 test: $(venv)

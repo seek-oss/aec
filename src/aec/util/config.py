@@ -71,7 +71,7 @@ def load_config(config_file: str, profile_override: Optional[str] = None) -> Con
     try:
         return config[profile]
     except KeyError:
-        raise Exception(f"Missing profile {profile_override} in {config_filepath}")
+        raise Exception(f"Missing profile {profile_override} in {config_filepath}") from None
 
 
 def load_user_config_file(config_filepath: str) -> Dict[str, Any]:
