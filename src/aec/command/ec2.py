@@ -197,10 +197,11 @@ def describe(
     if show_running_only:
         filters.append({"Name": "instance-state-name", "Values": ["pending", "running"]})
 
-    # TODO: handle more than 1000 results by looping using NextToken
-    response = ec2_client.describe_instances(MaxResults=1000, Filters=filters)
+    kwargs: Dict[str, Any] = {"MaxResults": 1000, "Filters": filters}
 
-    # print(response["Reservations"][0]["Instances"][0])
+    response = ec2_client.describe_instances(**kwargs)
+
+    # import json; print(json.dumps(response))
 
     cols = columns.split(",")
 
@@ -208,24 +209,34 @@ def describe(
     sort_cols = [sc for sc in sort_by.split(",") if sc in cols]
 
     instances: List[Instance] = []
-    for r in response["Reservations"]:
-        for i in r["Instances"]:
-            if include_terminated or i["State"]["Name"] != "terminated":
-                desc: Instance = {}
+    while True:
+        for r in response["Reservations"]:
+            for i in r["Instances"]:
+                if include_terminated or i["State"]["Name"] != "terminated":
+                    desc: Instance = {}
 
-                for col in cols:
-                    if col == "State":
-                        desc[col] = i["State"]["Name"]
-                    elif col == "Name":
-                        desc[col] = util_tags.get_value(i, "Name")
-                    elif col == "Type":
-                        desc[col] = i["InstanceType"]
-                    elif col == "DnsName":
-                        desc[col] = i["PublicDnsName"] if i.get("PublicDnsName", None) != "" else i["PrivateDnsName"]
-                    else:
-                        desc[col] = i.get(col, None)
+                    for col in cols:
+                        if col == "State":
+                            desc[col] = i["State"]["Name"]
+                        elif col == "Name":
+                            desc[col] = util_tags.get_value(i, "Name")
+                        elif col == "Type":
+                            desc[col] = i["InstanceType"]
+                        elif col == "DnsName":
+                            desc[col] = (
+                                i["PublicDnsName"] if i.get("PublicDnsName", None) != "" else i["PrivateDnsName"]
+                            )
+                        else:
+                            desc[col] = i.get(col, None)
 
-                instances.append(desc)
+                    instances.append(desc)
+
+        next_token = response.get("NextToken", None)
+        if next_token:
+            kwargs["NextToken"] = next_token
+            response = ec2_client.describe_instances(**kwargs)
+        else:
+            break
 
     return sorted(
         instances,
