@@ -81,6 +81,8 @@ select = [
     "B",
     # isort
     "I",
+    # flake8-unused-arguments
+    "ARG",
 ]
 ignore = [
     # allow untyped self and cls args, and no return type from dunder methods

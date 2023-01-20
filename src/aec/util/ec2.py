@@ -1,19 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict, Optional, Sequence
+from typing import Dict, Optional, Sequence
 
 import boto3
 
+import aec.util.tags as util_tags
 from aec.util.config import Config
 from aec.util.ec2_types import DescribeArgs
-
-if TYPE_CHECKING:
-    from mypy_boto3_ec2.type_defs import InstanceTypeDef, VolumeTypeDef
-
-
-def get_value(instance: InstanceTypeDef | VolumeTypeDef, key: str) -> Optional[str]:
-    tag_value = [t["Value"] for t in instance.get("Tags", []) if t["Key"] == key]
-    return tag_value[0] if tag_value else None
 
 
 def describe_running_instances_names(config: Config) -> Dict[str, Optional[str]]:
@@ -39,7 +32,7 @@ def describe_instances_names(
         for r in response["Reservations"]:
             for i in r["Instances"]:
                 instance_id = i["InstanceId"]
-                instances[instance_id] = get_value(i, "Name")
+                instances[instance_id] = util_tags.get_value(i, "Name")
 
         next_token = response.get("NextToken", None)
         if next_token:

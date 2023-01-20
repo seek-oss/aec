@@ -126,6 +126,13 @@ ami_cli = [
         Arg("-q", type=str, dest='name_match', help="Filter to images with a name containing NAME_MATCH."),
         Arg("--show-snapshot-id", action='store_true', help="Show snapshot id")
     ]),
+    Cmd(ami.describe_tags, [
+        config_arg,
+        Arg("id", type=str, nargs='?', help="Filter to this AMI id"),
+        Arg("--owner", type=str, help="Filter to this owning account"),
+        Arg("-q", type=str, dest='name_match', help="Filter to images with a name containing NAME_MATCH."),
+        Arg("-k", "--keys", type=str, nargs='*', metavar="KEY", help="Tags to display", default = []),
+    ], name = "tags"),
     Cmd(ami.share, [
         config_arg,
         Arg("ami", type=str, help="AMI id"),
