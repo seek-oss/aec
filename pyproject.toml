@@ -31,7 +31,7 @@ dev = [
     "pyfakefs~=4.6",
     "pytest~=7.1",
     "pytest-mock~=3.8",
-    "ruff~=0.0.129",
+    "ruff~=0.0.226",
     "twine~=4.0",
 ]
 
