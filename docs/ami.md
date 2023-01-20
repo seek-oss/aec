@@ -15,15 +15,16 @@ from aec.main import build_parser
 cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ami'].format_help()}```")
 ]]] -->
 ```
-usage: aec ami [-h] {delete,describe,share} ...
+usage: aec ami [-h] {delete,describe,tags,share} ...
 
 optional arguments:
   -h, --help            show this help message and exit
 
 subcommands:
-  {delete,describe,share}
+  {delete,describe,tags,share}
     delete              Deregister an AMI and delete its snapshot.
     describe            List AMIs.
+    tags                List AMI images with their tags.
     share               Share an AMI with another account.
 ```
 <!-- [[[end]]] -->
@@ -38,8 +39,8 @@ aec ami describe
 
   Name                                                              ImageId        CreationDate               RootDeviceName   Size  
  ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-20170727   ami-1e749f67   2022-11-15T04:12:25.000Z   /dev/sda1        15  
-  ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20170721   ami-785db401   2022-11-15T04:12:25.000Z   /dev/sda1        15
+  ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-20170727   ami-1e749f67   2023-01-20T01:51:34.000Z   /dev/sda1        15  
+  ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20170721   ami-785db401   2023-01-20T01:51:34.000Z   /dev/sda1        15
 ```
 <!-- [[[end]]] -->
 
@@ -59,4 +60,10 @@ List ubuntu focal images owned by Canonical:
 
 ```
 aec ami describe --owner 099720109477 -q ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64
+```
+
+List tags for image
+
+```
+aec ami tags ami-12345678012
 ```

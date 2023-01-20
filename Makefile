@@ -57,6 +57,8 @@ test: $(venv)
 ## generate docs
 docs: $(venv)
 	$(venv)/bin/cog -r docs/*.md
+# trim trailing whitespace so hooks are happy
+	$(venv)/bin/pre-commit run --files docs/* --hook-stage push trailing-whitespace > /dev/null || true
 
 ## build distribution
 dist: $(venv)
