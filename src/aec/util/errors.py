@@ -16,4 +16,4 @@ class NoInstancesError(HandledError):
         else:
             raise ValueError("Missing name or name_match")
 
-        super(NoInstancesError, self).__init__(msg)
+        super().__init__(msg)
