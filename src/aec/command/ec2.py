@@ -4,7 +4,7 @@ import base64
 import os
 import os.path
 from time import sleep
-from typing import TYPE_CHECKING, Any, Iterator, Sequence, Optional, cast, List, Dict
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, cast
 
 import boto3
 from typing_extensions import TypedDict
@@ -52,8 +52,8 @@ def launch(
     instance_type: Optional[str] = None,
     key_name: Optional[str] = None,
     userdata: Optional[str] = None,
-    wait_ssm: bool = False
-) -> Iterator[Instance]:
+    wait_ssm: bool = False,
+) -> List[Instance]:
     """Launch a tagged EC2 instance with an EBS volume."""
 
     template = template or config.get("launch_template", None)
@@ -175,16 +175,18 @@ def launch(
     waiter = ec2_client.get_waiter("instance_running")
     waiter.wait(InstanceIds=[instance_id])
 
+    if wait_ssm:
+        print(f"Instance {instance_id} running. Waiting for SSM agent to come online ...")
+        _wait_ssm_agent(config, [instance_id])
+
     # the response from run_instances above always contains an empty string
     # for PublicDnsName, so we call describe to get it
-    yield from describe(config=config, name=instance_id)
-
-    if wait_ssm:
-        _wait_ssm_agent(config, [instance_id])
+    return describe(config=config, name=instance_id)
 
 
 def _wait_ssm_agent(config: Config, instance_ids: List[str]) -> None:
-    """Wait for ssm to come online.
+    """
+    Wait for ssm to come online.
 
     This ensures the instance is ready to accept ssh logins.
     """
@@ -358,7 +360,7 @@ def start(
     config: Config,
     name: str,
     wait_ssm: bool = False,
-) -> Iterator[Instance]:
+) -> List[Instance]:
     """Start EC2 instance."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -380,10 +382,11 @@ def start(
     waiter = ec2_client.get_waiter("instance_running")
     waiter.wait(InstanceIds=instance_ids)
 
-    yield from describe(config, name)
-
     if wait_ssm:
+        print(f"Instance {', '.join(instance_ids)} running. Waiting for SSM agent to come online ...")
         _wait_ssm_agent(config, instance_ids)
+
+    return describe(config, name)
 
 
 def stop(config: Config, name: str) -> List[Dict[str, Any]]:
