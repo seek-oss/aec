@@ -3,7 +3,8 @@ from __future__ import annotations
 import base64
 import os
 import os.path
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, cast
+from time import sleep
+from typing import TYPE_CHECKING, Any, Iterator, Sequence, Optional, cast, List, Dict
 
 import boto3
 from typing_extensions import TypedDict
@@ -51,7 +52,8 @@ def launch(
     instance_type: Optional[str] = None,
     key_name: Optional[str] = None,
     userdata: Optional[str] = None,
-) -> List[Instance]:
+    wait_ssm: bool = False
+) -> Iterator[Instance]:
     """Launch a tagged EC2 instance with an EBS volume."""
 
     template = template or config.get("launch_template", None)
@@ -168,16 +170,32 @@ def launch(
     )
     response = ec2_client.run_instances(**runargs)
 
-    instance = response["Instances"][0]
+    instance_id = response["Instances"][0]["InstanceId"]
 
     waiter = ec2_client.get_waiter("instance_running")
-    waiter.wait(InstanceIds=[instance["InstanceId"]])
-
-    # TODO: wait until instance checks passed (as they do in the console)
+    waiter.wait(InstanceIds=[instance_id])
 
     # the response from run_instances above always contains an empty string
     # for PublicDnsName, so we call describe to get it
-    return describe(config=config, name=name)
+    yield from describe(config=config, name=instance_id)
+
+    if wait_ssm:
+        _wait_ssm_agent(config, [instance_id])
+
+
+def _wait_ssm_agent(config: Config, instance_ids: List[str]) -> None:
+    """Wait for ssm to come online.
+
+    This ensures the instance is ready to accept ssh logins.
+    """
+    #
+    client = boto3.client("ssm", region_name=config.get("region", None))
+
+    while True:
+        response = client.describe_instance_information(Filters=[{"Key": "InstanceIds", "Values": instance_ids}])
+        if response["InstanceInformationList"]:
+            break
+        sleep(1)
 
 
 def describe(
@@ -336,7 +354,11 @@ def volume_tags(
     return sorted(volumes, key=lambda i: str(i["Name"]))
 
 
-def start(config: Config, name: str) -> List[Instance]:
+def start(
+    config: Config,
+    name: str,
+    wait_ssm: bool = False,
+) -> Iterator[Instance]:
     """Start EC2 instance."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -358,7 +380,10 @@ def start(config: Config, name: str) -> List[Instance]:
     waiter = ec2_client.get_waiter("instance_running")
     waiter.wait(InstanceIds=instance_ids)
 
-    return describe(config, name)
+    yield from describe(config, name)
+
+    if wait_ssm:
+        _wait_ssm_agent(config, instance_ids)
 
 
 def stop(config: Config, name: str) -> List[Dict[str, Any]]:
