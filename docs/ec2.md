@@ -62,6 +62,12 @@ Modify the instance type:
 aec ec2 modify "lady gaga" p2.xlarge
 ```
 
+Start a stopped instance, and wait for the SSM agent to come online (at which point SSH will be available):
+
+```
+aec ec2 start "lady gaga" -w
+```
+
 List all instances in the region:
 
 <!-- [[[cog
