@@ -43,7 +43,7 @@ class Cmd:
 def usage_exit(parser: ArgumentParser) -> Callable[[], None]:
     def inner() -> None:
         parser.print_usage()
-        parser.exit(1, "{}: no subcommand specified\n".format(parser.prog))
+        parser.exit(1, f"{parser.prog}: no subcommand specified\n")
 
     return inner
 
@@ -86,7 +86,7 @@ def dispatch(parser: ArgumentParser, args: List[str]) -> Tuple[Any, OutputFormat
 
     if "call_me" not in pargs:
         parser.print_usage()
-        parser.exit(1, "{}: no command specified\n".format(parser.prog))
+        parser.exit(1, f"{parser.prog}: no command specified\n")
 
     call_me = pargs.call_me
     # remove call_me arg because the call_me function doesn't expect it
