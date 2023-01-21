@@ -200,7 +200,7 @@ def _wait_ssm_agent_online(config: Config, instance_ids: List[str]) -> None:
             return
         sleep(1)
 
-    raise TimeoutError("Timed out waiting for SSM agent to come online")
+    raise TimeoutError(f"SSM agent not online after {timeout} seconds")
 
 
 def describe(
