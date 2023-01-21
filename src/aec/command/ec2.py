@@ -177,14 +177,14 @@ def launch(
 
     if wait_ssm:
         print(f"Instance {instance_id} running. Waiting for SSM agent to come online ...")
-        _wait_ssm_agent(config, [instance_id])
+        _wait_ssm_agent_online(config, [instance_id])
 
     # the response from run_instances above always contains an empty string
     # for PublicDnsName, so we call describe to get it
     return describe(config=config, name=instance_id)
 
 
-def _wait_ssm_agent(config: Config, instance_ids: List[str]) -> None:
+def _wait_ssm_agent_online(config: Config, instance_ids: List[str]) -> None:
     """
     Wait for ssm to come online.
 
@@ -193,11 +193,14 @@ def _wait_ssm_agent(config: Config, instance_ids: List[str]) -> None:
     #
     client = boto3.client("ssm", region_name=config.get("region", None))
 
-    while True:
+    timeout = 60 * 3  # seconds
+    for _ in range(timeout):
         response = client.describe_instance_information(Filters=[{"Key": "InstanceIds", "Values": instance_ids}])
         if response["InstanceInformationList"]:
-            break
+            return
         sleep(1)
+
+    raise TimeoutError("Timed out waiting for SSM agent to come online")
 
 
 def describe(
@@ -384,7 +387,7 @@ def start(
 
     if wait_ssm:
         print(f"Instance {', '.join(instance_ids)} running. Waiting for SSM agent to come online ...")
-        _wait_ssm_agent(config, instance_ids)
+        _wait_ssm_agent_online(config, instance_ids)
 
     return describe(config, name)
 
