@@ -65,5 +65,9 @@ aec ami describe --owner 099720109477 -q ubuntu/images/hvm-ssd/ubuntu-focal-20.0
 List tags for image
 
 ```
-aec ami tags ami-12345678012
+aec ami tags ami-1234567890abcef12
+
+ ImageId                Name                  Tags
+ ────────────────────────────────────────────────────────────────────────────────────
+ami-1234567890abcef12   Best Awesome Ubuntu   Team=Engineering, Source AMI=ami-12345
 ```
