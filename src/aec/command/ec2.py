@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     )
 
 import aec.command.ami as ami_cmd
-import aec.util.ec2 as util_tags
+import aec.util.tags as util_tags
 from aec.util.config import Config
 from aec.util.ec2_types import RunArgs
 

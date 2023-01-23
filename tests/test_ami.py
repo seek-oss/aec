@@ -1,8 +1,13 @@
+from typing import List
+
+import boto3
 import pytest
 from moto import mock_ec2
 from moto.ec2.models.amis import AMIS
+from mypy_boto3_ec2 import EC2Client
+from mypy_boto3_ec2.type_defs import TagTypeDef
 
-from aec.command.ami import delete, describe, share
+from aec.command.ami import delete, describe, describe_tags, share
 from aec.util.config import Config
 
 
@@ -47,6 +52,30 @@ def test_describe_images_name_match(mock_aws_config: Config):
 
     assert len(images) == 1
     assert images[0]["Name"] == "ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-20170727"
+
+
+def test_tags_image(mock_aws_config: Config):
+    ec2_client: EC2Client = boto3.client("ec2", region_name=mock_aws_config["region"])
+
+    response = ec2_client.run_instances(MaxCount=1, MinCount=1)
+    instance_id = response["Instances"][0]["InstanceId"]
+
+    tags: List[TagTypeDef] = [{"Key": "Team", "Value": "Engineering"}, {"Key": "Source AMI", "Value": "ami-12345"}]
+
+    ec2_client.create_image(
+        InstanceId=instance_id, Name="Beautiful Image", TagSpecifications=[{"ResourceType": "image", "Tags": tags}]
+    )
+
+    images = describe_tags(config=mock_aws_config)
+
+    assert len(images) == 1
+    assert images[0]["Tags"] == "Team=Engineering, Source AMI=ami-12345"
+
+    images = describe_tags(config=mock_aws_config, keys=["Team", "Source AMI"])
+
+    assert len(images) == 1
+    assert images[0]["Tag: Team"] == "Engineering"
+    assert images[0]["Tag: Source AMI"] == "ami-12345"
 
 
 def test_delete_image(mock_aws_config: Config):

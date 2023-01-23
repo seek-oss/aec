@@ -1,14 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, NamedTuple, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional, Sequence
 
 import boto3
 
 if TYPE_CHECKING:
-    from mypy_boto3_ec2.type_defs import FilterTypeDef
+    from mypy_boto3_ec2.type_defs import DescribeImagesResultTypeDef, FilterTypeDef
 
 from typing_extensions import NotRequired, TypedDict
 
+import aec.util.tags as util_tags
 from aec.util.config import Config
 
 
@@ -56,15 +57,12 @@ def fetch(config: Config, ami: str) -> Image:
     return ami_details
 
 
-def describe(
+def _describe_images(
     config: Config,
     id: Optional[str] = None,
     owner: Optional[str] = None,
     name_match: Optional[str] = None,
-    show_snapshot_id: bool = False,
-) -> List[Image]:
-    """List AMIs."""
-
+) -> DescribeImagesResultTypeDef:
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     if id:
@@ -90,6 +88,19 @@ def describe(
         print(f'Describing images owned by {owners_filter} with name matching {name_match or "*"}')
 
         response = ec2_client.describe_images(Owners=owners_filter, Filters=filters)
+    return response
+
+
+def describe(
+    config: Config,
+    id: Optional[str] = None,
+    owner: Optional[str] = None,
+    name_match: Optional[str] = None,
+    show_snapshot_id: bool = False,
+) -> List[Image]:
+    """List AMIs."""
+
+    response = _describe_images(config, id, owner, name_match)
 
     images = []
     for i in response["Images"]:
@@ -105,6 +116,31 @@ def describe(
         images.append(image)
 
     return sorted(images, key=lambda i: i["CreationDate"], reverse=True)
+
+
+def describe_tags(
+    config: Config,
+    id: Optional[str] = None,
+    owner: Optional[str] = None,
+    name_match: Optional[str] = None,
+    keys: Sequence[str] = [],
+) -> List[Dict[str, Any]]:
+    """List AMI images with their tags."""
+
+    response = _describe_images(config, id, owner, name_match)
+
+    images = []
+    for i in response["Images"]:
+        image = {"ImageId": i["ImageId"], "Name": util_tags.get_value(i, "Name")}
+        if not keys:
+            image["Tags"] = ", ".join(f"{tag['Key']}={tag['Value']}" for tag in i.get("Tags", []))
+        else:
+            for key in keys:
+                image[f"Tag: {key}"] = util_tags.get_value(i, key)
+
+        images.append(image)
+
+    return sorted(images, key=lambda i: str(i["Name"]))
 
 
 def delete(config: Config, ami: str) -> None:
