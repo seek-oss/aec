@@ -64,7 +64,8 @@ ec2_cli = [
         Arg("--encrypted", type=bool, help="Whether the EBS volume is encrypted", default=True),
         Arg("--instance-type", type=str, help="Instance type"),
         Arg("--key-name", type=str, help="Key name"),
-        Arg("--userdata", type=str, help="User data file path or http URL")
+        Arg("--userdata", type=str, help="User data file path or http URL"),
+        Arg("-w", "--wait-ssm", action='store_true', help="Wait until the SSM agent is online before exiting"),
     ]),
     Cmd(ec2.logs, [
         config_arg,
@@ -77,7 +78,8 @@ ec2_cli = [
     ]),
     Cmd(ec2.start, [
         config_arg,
-        Arg("name", type=str, help="Name tag of instance or instance id")
+        Arg("name", type=str, help="Name tag of instance or instance id"),
+        Arg("-w", "--wait-ssm", action='store_true', help="Wait until the SSM agent is online before exiting"),
     ]),
     Cmd(ec2.stop, [
         config_arg,

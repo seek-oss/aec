@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import os
 import os.path
+from time import sleep
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, cast
 
 import boto3
@@ -51,6 +52,7 @@ def launch(
     instance_type: Optional[str] = None,
     key_name: Optional[str] = None,
     userdata: Optional[str] = None,
+    wait_ssm: bool = False,
 ) -> List[Instance]:
     """Launch a tagged EC2 instance with an EBS volume."""
 
@@ -168,16 +170,37 @@ def launch(
     )
     response = ec2_client.run_instances(**runargs)
 
-    instance = response["Instances"][0]
+    instance_id = response["Instances"][0]["InstanceId"]
 
     waiter = ec2_client.get_waiter("instance_running")
-    waiter.wait(InstanceIds=[instance["InstanceId"]])
+    waiter.wait(InstanceIds=[instance_id])
 
-    # TODO: wait until instance checks passed (as they do in the console)
+    if wait_ssm:
+        print(f"Instance {instance_id} running. Waiting for SSM agent to come online ...")
+        _wait_ssm_agent_online(config, [instance_id])
 
     # the response from run_instances above always contains an empty string
     # for PublicDnsName, so we call describe to get it
-    return describe(config=config, name=name)
+    return describe(config=config, name=instance_id)
+
+
+def _wait_ssm_agent_online(config: Config, instance_ids: List[str]) -> None:
+    """
+    Wait for ssm to come online.
+
+    This ensures the instance is ready to accept ssh logins.
+    """
+    #
+    client = boto3.client("ssm", region_name=config.get("region", None))
+
+    timeout = 60 * 3  # seconds
+    for _ in range(timeout):
+        response = client.describe_instance_information(Filters=[{"Key": "InstanceIds", "Values": instance_ids}])
+        if response["InstanceInformationList"]:
+            return
+        sleep(1)
+
+    raise TimeoutError(f"SSM agent not online after {timeout} seconds")
 
 
 def describe(
@@ -336,7 +359,11 @@ def volume_tags(
     return sorted(volumes, key=lambda i: str(i["Name"]))
 
 
-def start(config: Config, name: str) -> List[Instance]:
+def start(
+    config: Config,
+    name: str,
+    wait_ssm: bool = False,
+) -> List[Instance]:
     """Start EC2 instance."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -357,6 +384,10 @@ def start(config: Config, name: str) -> List[Instance]:
 
     waiter = ec2_client.get_waiter("instance_running")
     waiter.wait(InstanceIds=instance_ids)
+
+    if wait_ssm:
+        print(f"Instance {', '.join(instance_ids)} running. Waiting for SSM agent to come online ...")
+        _wait_ssm_agent_online(config, instance_ids)
 
     return describe(config, name)
 
