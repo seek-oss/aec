@@ -160,7 +160,7 @@ def launch(
             runargs["UserData"] = read_file(userdata)
 
     # use IMDSv2 to prevent SSRF
-    runargs["MetadataOptions"] = {"HttpTokens": "required"}
+    runargs["MetadataOptions"] = {"HttpTokens": "required", "InstanceMetadataTags": "enabled"}
 
     region_name = ec2_client.meta.region_name
 
