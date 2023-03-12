@@ -25,13 +25,13 @@ dev = [
     "boto3-stubs[ec2,compute-optimizer,ssm,s3]==1.24.41",
     "cogapp~=3.3",
     "darglint~=1.8",
-    "docformatter[toml]~=1.5.0",
+    "docformatter~=1.5",
     "moto[ec2]==3.1.16",
     "pre-commit~=2.20",
     "pyfakefs~=4.6",
     "pytest~=7.1",
     "pytest-mock~=3.8",
-    "ruff~=0.0.235",
+    "ruff~=0.0.241",
     "twine~=4.0",
 ]
 
@@ -85,6 +85,8 @@ select = [
     "ARG",
     # pyupgrade
     "UP",
+    # flake8-self
+    "SLF",
 ]
 ignore = [
     # allow untyped self and cls args, and no return type from dunder methods
