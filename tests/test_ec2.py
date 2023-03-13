@@ -4,7 +4,7 @@ from typing import List
 
 import boto3
 import pytest
-from moto import mock_ec2
+from moto import mock_ec2, mock_iam
 from moto.ec2 import ec2_backends
 from moto.ec2.models.amis import AMIS
 from mypy_boto3_ec2.type_defs import TagTypeDef
@@ -32,17 +32,16 @@ from aec.util.config import Config
 def mock_aws_config() -> Config:
     mock = mock_ec2()
     mock.start()
-    region = "ap-southeast-2"
+    region = "us-east-1"
 
     return {
         "region": region,
         "key_name": "test_key",
         "vpc": {
             "name": "test vpc",
-            "subnet": next(ec2_backends[region].get_all_subnets()).id,
+            "subnet": ec2_backends["123456789012"]["us-east-1"].get_default_subnet("us-east-1a").id,
             "security_group": "default",
         },
-        "iam_instance_profile_arn": "test_profile",
     }
 
 
@@ -93,14 +92,26 @@ def test_launch_multiple_security_groups(mock_aws_config: Config):
     print(launch(mock_aws_config, "alice", ami_id))
 
 
-def test_launch_without_instance_profile(mock_aws_config: Config):
-    del mock_aws_config["iam_instance_profile_arn"]
+@mock_iam
+def test_launch_with_instance_profile(mock_aws_config: Config):
+    iam = boto3.client("iam", "us-east-1")
+
+    profile = iam.create_instance_profile(
+        InstanceProfileName="test-profile",
+    )
+
+    mock_aws_config["iam_instance_profile_arn"] = profile["InstanceProfile"]["Arn"]
     print(launch(mock_aws_config, "alice", ami_id))
 
 
 def test_launch_no_region_specified(mock_aws_config: Config):
     del mock_aws_config["region"]
     os.environ["AWS_DEFAULT_REGION"] = "ap-southeast-2"
+
+    mock_aws_config["vpc"]["subnet"] = (
+        ec2_backends["123456789012"]["ap-southeast-2"].get_default_subnet("ap-southeast-2a").id
+    )
+
     instances = launch(mock_aws_config, "alice", ami_id)
     assert "amazonaws.com" in instances[0]["DnsName"]
 

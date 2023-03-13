@@ -22,7 +22,10 @@ def test_as_table_infer_keys():
 
 
 def test_as_table_with_datetime():
-    assert as_table([{"a": 1, "b": datetime.datetime(2019, 8, 19, 6, 3, 6, tzinfo=tzutc())}], ["a", "b"],) == [
+    assert as_table(
+        [{"a": 1, "b": datetime.datetime(2019, 8, 19, 6, 3, 6, tzinfo=tzutc())}],
+        ["a", "b"],
+    ) == [
         ["a", "b"],
         ["1", "2019-08-19 06:03:06+00:00"],
     ]
