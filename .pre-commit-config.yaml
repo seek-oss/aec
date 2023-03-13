@@ -9,6 +9,10 @@ repos:
         stages: [push]
       - id: end-of-file-fixer
         stages: [push]
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.13.20
+    hooks:
+      - id: typos
   # vscode & the cli uses these too so they has been installed into the virtualenv
   - repo: local
     hooks:

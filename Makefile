@@ -39,7 +39,7 @@ check: lint pyright
 
 ## lint code
 lint: $(venv)
-	$(venv)/bin/ruff .
+	SKIP=pyright,test $(venv)/bin/pre-commit run --show-diff-on-failure --color=always --all-files --hook-stage push
 
 node_modules: package.json
 	npm install --no-save
