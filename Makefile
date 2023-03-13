@@ -1,7 +1,7 @@
 MAKEFLAGS += --warn-undefined-variables
 SHELL = /bin/bash -o pipefail
 .DEFAULT_GOAL := help
-.PHONY: help install check lint pyright test hooks install-hooks docs dist publish
+.PHONY: help install check lint pyright test install-hooks hooks docs dist publish
 
 ## display help message
 help:
@@ -17,7 +17,7 @@ $(pip):
 	$(venv)/bin/python --version
 	$(pip) install pip~=23.0
 
-$(venv): pyproject.toml $(pip)
+$(venv): $(if $(value CI),|,) pyproject.toml $(pip)
 	$(pip) install -e '.[dev]'
 	touch $(venv)
 
@@ -85,7 +85,7 @@ outdated: $(venv)
 	npm outdated
 
 ## run pre-commit git hooks on all files
-hooks: | $(venv)
+hooks: $(venv)
 	$(venv)/bin/pre-commit run --show-diff-on-failure --color=always --all-files --hook-stage push
 
 install-hooks: .git/hooks/pre-commit .git/hooks/pre-push
