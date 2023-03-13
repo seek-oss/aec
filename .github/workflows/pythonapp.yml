@@ -35,8 +35,9 @@ jobs:
     - name: make install
       if: steps.cache-venv.outputs.cache-hit != 'true'
       run: make install
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+    - name: touch virtualenv
+      if: steps.cache-venv.outputs.cache-hit == 'true'
+      run: touch .venv
     - name: make hooks
       run: make hooks
     - name: Make and test distribution
