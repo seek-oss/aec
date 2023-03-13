@@ -85,7 +85,7 @@ outdated: $(venv)
 	npm outdated
 
 ## run pre-commit git hooks on all files
-hooks: $(venv)
+hooks: | $(venv)
 	$(venv)/bin/pre-commit run --show-diff-on-failure --color=always --all-files --hook-stage push
 
 install-hooks: .git/hooks/pre-commit .git/hooks/pre-push
