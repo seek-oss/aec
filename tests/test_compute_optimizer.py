@@ -12,7 +12,7 @@ from aec.util.config import Config
 def mock_aws_config():
     mock = mock_ec2()
     mock.start()
-    region = "ap-southeast-2"
+    region = "us-east-1"
 
     return {
         "region": region,
@@ -20,10 +20,9 @@ def mock_aws_config():
         "key_name": "test_key",
         "vpc": {
             "name": "test vpc",
-            "subnet": next(ec2_backends[region].get_all_subnets()).id,
+            "subnet": ec2_backends["123456789012"]["us-east-1"].get_default_subnet("us-east-1a").id,
             "security_group": "default",
         },
-        "iam_instance_profile_arn": "test_profile",
     }
 
 

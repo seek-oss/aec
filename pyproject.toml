@@ -8,30 +8,29 @@ keywords = ["AWS", "EC2", "command line", "cli"]
 classifiers = ["License :: OSI Approved :: MIT License"]
 requires-python = ">=3.7"
 dependencies = [
-    "boto3==1.24.41",
-    "importlib_resources==5.9.0",
+    "boto3==1.26.89",
+    "importlib_resources==5.12.0",
     "pytoml==0.1.21",
-    "pytz==2022.1",
-    "requests==2.28.1",
-    "rich==12.5.1",
-    "typing_extensions==4.3.0",
+    "pytz==2022.7.1",
+    "requests==2.28.2",
+    "rich==13.3.2",
+    "typing_extensions==4.5.0",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "autoflake~=1.7",
-    "black~=22.6",
+    "black~=23.1",
     "build~=0.7",
-    "boto3-stubs[ec2,compute-optimizer,ssm,s3]==1.24.41",
+    "boto3-stubs[ec2,compute-optimizer,ssm,s3]==1.26.89",
     "cogapp~=3.3",
     "darglint~=1.8",
-    "docformatter[toml]~=1.5.0",
-    "moto[ec2]==3.1.16",
+    "docformatter~=1.5",
+    "moto[ec2]==4.1.4",
     "pre-commit~=2.20",
-    "pyfakefs~=4.6",
-    "pytest~=7.1",
+    "pyfakefs~=5.1",
+    "pytest~=7.2",
     "pytest-mock~=3.8",
-    "ruff~=0.0.235",
+    "ruff~=0.0.254",
     "twine~=4.0",
 ]
 
@@ -46,12 +45,6 @@ requires = ["setuptools", "wheel"]
 
 [tool.setuptools.dynamic]
 version = { attr = "aec.__version__" }
-
-[tool.autoflake]
-in-place = true
-recursive = true
-remove-all-unused-imports = true
-ignore-init-module-imports = true
 
 [tool.black]
 # use PyCharm default line length of 120
@@ -99,6 +92,7 @@ src = ["src"]
 # pyupgrade target
 target-version = "py37"
 fix = true
+show-fixes = true
 
 [tool.ruff.pyupgrade]
 # Preserve types, even if a file imports `from __future__ import annotations`.

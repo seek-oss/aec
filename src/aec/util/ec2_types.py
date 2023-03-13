@@ -35,15 +35,15 @@ class _RequiredRunArgs(TypedDict, total=True):
 
 
 class RunArgs(_RequiredRunArgs, total=False):
-    BlockDeviceMappings: List["BlockDeviceMappingTypeDef"]
+    BlockDeviceMappings: List[BlockDeviceMappingTypeDef]
     ImageId: str
     InstanceType: InstanceTypeType
     Ipv6AddressCount: int
-    Ipv6Addresses: List["InstanceIpv6AddressTypeDef"]
+    Ipv6Addresses: List[InstanceIpv6AddressTypeDef]
     KernelId: str
     KeyName: str
-    Monitoring: "RunInstancesMonitoringEnabledTypeDef"
-    Placement: "PlacementTypeDef"
+    Monitoring: RunInstancesMonitoringEnabledTypeDef
+    Placement: PlacementTypeDef
     RamdiskId: str
     SecurityGroupIds: List[str]
     SecurityGroups: List[str]
@@ -54,16 +54,16 @@ class RunArgs(_RequiredRunArgs, total=False):
     DisableApiTermination: bool
     DryRun: bool
     EbsOptimized: bool
-    IamInstanceProfile: "IamInstanceProfileSpecificationTypeDef"
+    IamInstanceProfile: IamInstanceProfileSpecificationTypeDef
     InstanceInitiatedShutdownBehavior: ShutdownBehaviorType
-    NetworkInterfaces: List["InstanceNetworkInterfaceSpecificationTypeDef"]
+    NetworkInterfaces: List[InstanceNetworkInterfaceSpecificationTypeDef]
     PrivateIpAddress: str
-    ElasticGpuSpecification: List["ElasticGpuSpecificationTypeDef"]
+    ElasticGpuSpecification: List[ElasticGpuSpecificationTypeDef]
     ElasticInferenceAccelerators: List[ElasticInferenceAcceleratorTypeDef]
-    TagSpecifications: List["TagSpecificationTypeDef"]
+    TagSpecifications: List[TagSpecificationTypeDef]
     LaunchTemplate: LaunchTemplateSpecificationTypeDef
     InstanceMarketOptions: InstanceMarketOptionsRequestTypeDef
-    CreditSpecification: "CreditSpecificationRequestTypeDef"
+    CreditSpecification: CreditSpecificationRequestTypeDef
     CpuOptions: CpuOptionsRequestTypeDef
     CapacityReservationSpecification: CapacityReservationSpecificationTypeDef
     HibernationOptions: HibernationOptionsRequestTypeDef
@@ -73,7 +73,7 @@ class RunArgs(_RequiredRunArgs, total=False):
 
 
 class DescribeArgs(TypedDict, total=False):
-    Filters: Sequence["FilterTypeDef"]
+    Filters: Sequence[FilterTypeDef]
     InstanceIds: Sequence[str]
     DryRun: bool
     MaxResults: int
