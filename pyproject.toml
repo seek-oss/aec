@@ -78,6 +78,10 @@ select = [
     "ARG",
     # pyupgrade
     "UP",
+    # flake8-self
+    "SLF",
+    # ruff-specific
+    "RUF",
 ]
 ignore = [
     # allow untyped self and cls args, and no return type from dunder methods
