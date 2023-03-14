@@ -1,14 +1,13 @@
-name: Draft Release
+name: Update draft release
 
 on:
   push:
-    # update draft release on push to master
     branches:
       - master
-  # pull_request event is required only for autolabeler
+  # required only for autolabeler
   pull_request:
     types: [opened, reopened, synchronize]
-  # pull_request_target event is required for autolabeler to support PRs from forks
+  # required for autolabeler to support PRs from forks
   pull_request_target:
     types: [opened, reopened, synchronize]
 

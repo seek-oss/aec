@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
   release:
     types: [published]
@@ -13,9 +13,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-      with:
-        # so marceloprado/has-changed-path@v1 can detect changes
-        fetch-depth: 2
     - name: Set up Python 3.7
       id: setup-python
       uses: actions/setup-python@v4
