@@ -1,24 +1,4 @@
-template: |
-  $CHANGES
-
-  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
-
-categories:
-  - title: '❗ Breaking Change'
-    labels:
-      - 'breaking'
-  - title: '🚀 Features'
-    labels:
-      - 'feature'
-  - title: '🐛 Bug Fixes'
-    labels:
-      - 'bug'
-  - title: '🧹 Maintenance'
-    label: 'build'
-    label: 'chore'
-  - title: '📚 Documentation'
-    labels:
-        - 'docs'
+# automatically label PRs based on the following title regexs
 autolabeler:
   - label: 'breaking'
     title:
@@ -38,10 +18,36 @@ autolabeler:
   - label: 'docs'
     title:
       - '/docs/i'
+
+# release notes template
+template: |
+  $CHANGES
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
+
+# $CHANGES is categorised based on PR labels
+categories:
+  - title: '❗ Breaking Change'
+    labels:
+      - 'breaking'
+  - title: '🚀 Features'
+    labels:
+      - 'feature'
+  - title: '🐛 Bug Fixes'
+    labels:
+      - 'bug'
+  - title: '🧹 Maintenance'
+    label: 'build'
+    label: 'chore'
+  - title: '📚 Documentation'
+    labels:
+        - 'docs'
+
+# determine the draft release version based on the following labels
 version-resolver:
     major:
         labels:
-            - 'major'
+            - 'breaking'
     minor:
         labels:
             - 'feature'

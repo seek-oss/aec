@@ -28,7 +28,7 @@ The [Release Drafter workflow](https://github.com/seek-oss/aec/actions/workflows
 
 To release:
 
-- visit the [release](https://github.com/seek-oss/aec/releases) page and edit the draft release
+- visit the [release](https://github.com/seek-oss/aec/releases) page and edit the pre-prepared draft release
 - check the tag version number and release notes are good to go
 - click `Publish release`. This will
   - tag the commit
