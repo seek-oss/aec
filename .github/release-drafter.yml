@@ -45,16 +45,16 @@ categories:
 
 # determine the draft release version from these PR labels
 version-resolver:
-    major:
-        labels:
-            - 'breaking'
-    minor:
-        labels:
-            - 'feature'
-    patch:
-        labels:
-            - 'bug'
-            - 'build'
-            - 'chore'
-            - 'docs'
-    default: patch
+  major:
+    labels:
+        - 'breaking'
+  minor:
+    labels:
+        - 'feature'
+  patch:
+    labels:
+        - 'bug'
+        - 'build'
+        - 'chore'
+        - 'docs'
+  default: patch
