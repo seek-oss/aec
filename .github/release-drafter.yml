@@ -37,24 +37,25 @@ categories:
     labels:
       - 'bug'
   - title: '🧹 Maintenance'
-    label: 'build'
-    label: 'chore'
+    labels:
+      - 'build'
+      - 'chore'
   - title: '📚 Documentation'
     labels:
-        - 'docs'
+      - 'docs'
 
 # determine the draft release version from these PR labels
 version-resolver:
   major:
     labels:
-        - 'breaking'
+      - 'breaking'
   minor:
     labels:
-        - 'feature'
+      - 'feature'
   patch:
     labels:
-        - 'bug'
-        - 'build'
-        - 'chore'
-        - 'docs'
+      - 'bug'
+      - 'build'
+      - 'chore'
+      - 'docs'
   default: patch
