@@ -1,27 +1,54 @@
 template: |
-  ## What’s Changed
-
   $CHANGES
 
   **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
 
-  Thank you to $CONTRIBUTORS
 categories:
+  - title: '❗ Breaking Change'
+    labels:
+      - 'breaking'
   - title: '🚀 Features'
     labels:
       - 'feature'
   - title: '🐛 Bug Fixes'
     labels:
       - 'bug'
-  - title: '🧰 Maintenance'
+  - title: '🧹 Maintenance'
+    label: 'build'
     label: 'chore'
+  - title: '📚 Documentation'
+    labels:
+        - 'docs'
 autolabeler:
+  - label: 'breaking'
+    title:
+      - '/!/i'
   - label: 'feature'
     title:
       - '/feat/i'
   - label: 'bug'
     title:
       - '/fix/i'
+  - label: 'build'
+    title:
+      - '/build/i'
   - label: 'chore'
     title:
       - '/chore/i'
+  - label: 'docs'
+    title:
+      - '/docs/i'
+version-resolver:
+    major:
+        labels:
+            - 'major'
+    minor:
+        labels:
+            - 'feature'
+    patch:
+        labels:
+            - 'bug'
+            - 'build'
+            - 'chore'
+            - 'docs'
+    default: patch
