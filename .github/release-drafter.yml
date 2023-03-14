@@ -25,7 +25,7 @@ template: |
 
   **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
 
-# $CHANGES is categorised based on PR labels
+# $CHANGES are categorised by these PR labels
 categories:
   - title: '❗ Breaking Change'
     labels:
@@ -43,7 +43,7 @@ categories:
     labels:
         - 'docs'
 
-# determine the draft release version based on the following labels
+# determine the draft release version from these PR labels
 version-resolver:
     major:
         labels:
