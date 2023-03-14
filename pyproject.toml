@@ -41,10 +41,7 @@ aec = "aec.main:main"
 homepage = "https://github.com/seek-oss/aec"
 
 [build-system]
-requires = ["setuptools", "wheel"]
-
-[tool.setuptools.dynamic]
-version = { attr = "aec.__version__" }
+requires = ["setuptools", "setuptools_scm[toml]", "wheel"]
 
 [tool.black]
 # use PyCharm default line length of 120

@@ -4,7 +4,8 @@ on:
   push:
     branches: [ master ]
   pull_request:
-
+  release:
+    types: [published]
 jobs:
   build:
 
@@ -39,27 +40,13 @@ jobs:
       run: make hooks
     - name: Make and test distribution
       run: make dist test-dist
-    - name: Check for version bump
-      if: github.ref == 'refs/heads/master'
-      uses: marceloprado/has-changed-path@v1
-      id: version-bump
-      with:
-        paths: src/aec/__init__.py
+      if: github.event.action == 'published'
     - name: Upload dist to pypi
-      if: steps.version-bump.outputs.changed == 'true'
+      if: github.event.action == 'published'
       env:
         TWINE_USERNAME: __token__
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: make publish
-    - name: Read version
-      if: steps.version-bump.outputs.changed == 'true'
-      run: echo "version=$(.venv/bin/python -c 'import aec;print(aec.__version__)')" >> $GITHUB_ENV
-    - name: Tag commit
-      if: steps.version-bump.outputs.changed == 'true'
-      uses: tvdias/github-tagger@v0.0.2
-      with:
-        repo-token: "${{ secrets.GITHUB_TOKEN }}"
-        tag: "${{ env.version }}"
     # - name: Setup tmate session
     #   if: ${{ failure() }}
     #   uses: mxschmitt/action-tmate@v3
