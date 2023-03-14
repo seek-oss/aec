@@ -27,7 +27,7 @@ template: |
 
 # $CHANGES are categorised by these PR labels
 categories:
-  - title: '❗ Breaking Change'
+  - title: '❗ Breaking changes'
     labels:
       - 'breaking'
   - title: '🚀 Features'
