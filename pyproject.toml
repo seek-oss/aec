@@ -43,6 +43,9 @@ homepage = "https://github.com/seek-oss/aec"
 [build-system]
 requires = ["setuptools", "setuptools_scm[toml]", "wheel"]
 
+# enable setuptools_scm to set the version based on git tags
+[tool.setuptools_scm]
+
 [tool.black]
 # use PyCharm default line length of 120
 line-length = 120

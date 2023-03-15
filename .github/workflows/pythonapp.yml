@@ -38,7 +38,7 @@ jobs:
     - name: Make and test distribution
       run: make dist test-dist
       if: github.event.action == 'published'
-    - name: Upload dist to pypi
+    - name: Publish to pypi
       if: github.event.action == 'published'
       env:
         TWINE_USERNAME: __token__
