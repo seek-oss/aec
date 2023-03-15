@@ -22,6 +22,10 @@ The make targets will update the virtualenv when _pyproject.toml_ changes.
 
 Run `make` to see the options for running tests, linting, formatting etc.
 
+## PRs
+
+Use [conventional commit types](https://www.conventionalcommits.org/en/v1.0.0/) in the PR title. These are used to [label the PR](.github/release-drafter.yml) and categorise the release notes.
+
 ## Release
 
 The [Release Drafter workflow](https://github.com/seek-oss/aec/actions/workflows/draft.yml) will automatically create and update a draft release whenever a PR is merged.

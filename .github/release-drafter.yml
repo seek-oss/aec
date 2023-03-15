@@ -3,21 +3,25 @@ autolabeler:
   - label: 'breaking'
     title:
       - '/!/i'
+    body:
+      - '/breaking change/i'
   - label: 'feature'
     title:
       - '/feat/i'
   - label: 'bug'
     title:
       - '/fix/i'
-  - label: 'build'
-    title:
-      - '/build/i'
-  - label: 'chore'
-    title:
-      - '/chore/i'
   - label: 'docs'
     title:
       - '/docs/i'
+  - label: 'build'
+    title:
+      - '/build/i'
+      - '/ci/i'
+  - label: 'maintenance'
+    title:
+      - '/chore/i'
+      - '/refactor/i'
 
 # release notes template
 template: |
@@ -36,13 +40,15 @@ categories:
   - title: '🐛 Bug Fixes'
     labels:
       - 'bug'
+  - title: '📚 Documentation'
+    labels:
+      - 'docs'
   - title: '🧹 Maintenance'
     labels:
       - 'build'
       - 'chore'
-  - title: '📚 Documentation'
-    labels:
-      - 'docs'
+      - 'ci'
+      - 'refactor'
 
 # determine the draft release version from these PR labels
 version-resolver:
