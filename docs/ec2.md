@@ -76,10 +76,10 @@ cog.out(f"```\n{docs('aec ec2 describe', ec2.describe(config))}\n```")
 ```
 aec ec2 describe
 
-  InstanceId            State     Name    Type       DnsName                                                   LaunchTime                  ImageId  
- ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  i-2a2b0d20265804f0b   running   alice   t3.small   ec2-54-214-139-222.ap-southeast-2.compute.amazonaws.com   2023-01-20 01:51:34+00:00   ami-03cf127a  
-  i-5335e9d8454376469   running   sam     t3.small   ec2-54-214-228-49.ap-southeast-2.compute.amazonaws.com    2023-01-20 01:51:35+00:00   ami-03cf127a
+  InstanceId            State     Name    Type       DnsName                                      LaunchTime                  ImageId  
+ ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  i-b5f2c2719ad4a4204   running   alice   t3.small   ec2-54-214-90-201.compute-1.amazonaws.com    2023-03-15 23:25:13+00:00   ami-03cf127a  
+  i-17227103cbf97cb86   running   sam     t3.small   ec2-54-214-204-133.compute-1.amazonaws.com   2023-03-15 23:25:14+00:00   ami-03cf127a
 ```
 <!-- [[[end]]] -->
 
