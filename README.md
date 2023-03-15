@@ -69,24 +69,13 @@ export AWS_DEFAULT_PROFILE=production
 aec ec2 describe
 ```
 
-## Development
-
-Pre-reqs:
-
-- make
-- node (required for pyright)
-
-To get started run `make install`. This will:
-
-- install git hooks for formatting & linting on git push
-- create the virtualenv
-- install this package in editable mode
-
-Then run `make` to see the options for running checks, tests etc.
-
 ## Similar projects
 
 [wallix/awless](https://github.com/wallix/awless) is written in Go, and is an excellent substitute for awscli with
 support for many AWS services. It has human friendly commands for use on the command line or in templates. Unlike `aec` its ec2 create instance command doesn't allow you to specify the EBS volume size, or add tags.
 
 [achiku/jungle](https://github.com/achiku/jungle) is written in Python, and incorporates a smaller subset of ec2 commands and doesn't launch new instances. It does however have an ec2 ssh command. It also supports other AWS services like ELB, EMR, RDS.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) to get started and develop in this repo.

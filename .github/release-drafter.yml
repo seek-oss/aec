@@ -1,0 +1,67 @@
+# automatically label PRs based on the following title regexs
+autolabeler:
+  - label: 'breaking'
+    title:
+      - '/!/i'
+    body:
+      - '/breaking change/i'
+  - label: 'feature'
+    title:
+      - '/feat/i'
+  - label: 'bug'
+    title:
+      - '/fix/i'
+  - label: 'docs'
+    title:
+      - '/docs/i'
+  - label: 'build'
+    title:
+      - '/build/i'
+      - '/ci/i'
+  - label: 'maintenance'
+    title:
+      - '/chore/i'
+      - '/refactor/i'
+
+# release notes template
+template: |
+  $CHANGES
+
+  **Full Changelog**: https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION
+
+# $CHANGES are categorised by these PR labels
+categories:
+  - title: '❗ Breaking changes'
+    labels:
+      - 'breaking'
+  - title: '🚀 Features'
+    labels:
+      - 'feature'
+  - title: '🐛 Bug Fixes'
+    labels:
+      - 'bug'
+  - title: '📚 Documentation'
+    labels:
+      - 'docs'
+  - title: '🧹 Maintenance'
+    labels:
+      - 'build'
+      - 'chore'
+      - 'ci'
+      - 'refactor'
+
+# determine the draft release version from these PR labels
+version-resolver:
+  major:
+    labels:
+      - 'breaking'
+  minor:
+    labels:
+      - 'feature'
+  patch:
+    labels:
+      - 'bug'
+      - 'build'
+      - 'chore'
+      - 'docs'
+  default: patch
