@@ -25,7 +25,7 @@ repos:
       - id: docformatter
         name: docformatter
         entry: .venv/bin/docformatter
-        args: [--in-place, -e, 'build dist node_modules typings']
+        args: [--in-place]
         language: system
         types: [python]
       - id: ruff
