@@ -190,7 +190,7 @@ def test_describe_by_name(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
     launch(mock_aws_config, "alex", ami_id)
 
-    instances = describe(config=mock_aws_config, name="alice")
+    instances = describe(config=mock_aws_config, ident="alice")
 
     assert len(instances) == 1
     assert instances[0]["Name"] == "alice"
@@ -236,7 +236,7 @@ def test_describe_instance_id(mock_aws_config: Config):
     instances = launch(mock_aws_config, "alice", ami_id)
     instance_id = instances[0]["InstanceId"]
 
-    instances = describe(config=mock_aws_config, name=instance_id)
+    instances = describe(config=mock_aws_config, ident=instance_id)
     assert len(instances) == 1
     assert instances[0]["Name"] == "alice"
 
@@ -329,22 +329,22 @@ def test_tags_filter(mock_aws_config: Config):
 def test_stop_start(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
 
-    stop(mock_aws_config, name="alice")
+    stop(mock_aws_config, ident="alice")
 
-    start(mock_aws_config, name="alice")
+    start(mock_aws_config, ident="alice")
 
 
 def test_modify(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
 
-    instances = modify(name="alice", type="c5.2xlarge", config=mock_aws_config)
+    instances = modify(ident="alice", type="c5.2xlarge", config=mock_aws_config)
 
     instance = describe_instance0(mock_aws_config["region"], instances[0]["InstanceId"])
 
     assert instance["InstanceType"] == "c5.2xlarge"
     assert instance["EbsOptimized"] is True
 
-    instances = modify(name="alice", type="t2.medium", config=mock_aws_config)
+    instances = modify(ident="alice", type="t2.medium", config=mock_aws_config)
 
     instance = describe_instance0(mock_aws_config["region"], instances[0]["InstanceId"])
 
@@ -366,22 +366,22 @@ def test_status_match(mock_aws_config: Config):
     launch(mock_aws_config, "sam", ami_id)
 
     assert len(status(mock_aws_config)) == 2
-    assert len(status(mock_aws_config, name=instance_id)) == 1
-    assert len(status(mock_aws_config, name="alice")) == 1
+    assert len(status(mock_aws_config, ident=instance_id)) == 1
+    assert len(status(mock_aws_config, ident="alice")) == 1
     assert len(status(mock_aws_config, name_match="lic")) == 1
 
 
 def test_terminate(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
 
-    terminate(config=mock_aws_config, name="alice")
+    terminate(config=mock_aws_config, ident="alice")
 
 
 def test_terminate_empty_name_does_not_delete_all_instances(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
 
     with pytest.raises(ValueError) as exc_info:
-        terminate(config=mock_aws_config, name="")
+        terminate(config=mock_aws_config, ident="")
     print(exc_info.value.args[0])
     assert exc_info.value.args[0] == """Missing name or name_match"""
 
@@ -392,7 +392,7 @@ def test_terminate_empty_name_does_not_delete_all_instances(mock_aws_config: Con
 def test_logs(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
 
-    logs(config=mock_aws_config, name="alice")
+    logs(config=mock_aws_config, ident="alice")
 
 
 def test_ebs_encrypted_by_default(mock_aws_config: Config):
@@ -434,12 +434,12 @@ def test_user_data(mock_aws_config: Config):
         userdata=str(userdata),
     )
 
-    data = user_data(config=mock_aws_config, name="has_userdata")
+    data = user_data(config=mock_aws_config, ident="has_userdata")
     assert data == userdata.read_text()
 
 
 def test_user_data_missing(mock_aws_config: Config):
     launch(mock_aws_config, "no_userdata", ami_id)
 
-    data = user_data(config=mock_aws_config, name="no_userdata")
+    data = user_data(config=mock_aws_config, ident="no_userdata")
     assert not data
