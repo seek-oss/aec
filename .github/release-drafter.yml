@@ -5,22 +5,20 @@ autolabeler:
       - '/!/i'
     body:
       - '/breaking change/i'
-  - label: 'feature'
+  - label: 'enhancement'
     title:
       - '/feat/i'
   - label: 'bug'
     title:
       - '/fix/i'
-  - label: 'docs'
+  - label: 'documentation'
     title:
       - '/docs/i'
-  - label: 'build'
-    title:
-      - '/build/i'
-      - '/ci/i'
   - label: 'maintenance'
     title:
+      - '/build/i'
       - '/chore/i'
+      - '/ci/i'
       - '/refactor/i'
 
 # release notes template
@@ -36,19 +34,16 @@ categories:
       - 'breaking'
   - title: '🚀 Features'
     labels:
-      - 'feature'
+      - 'enhancement'
   - title: '🐛 Bug Fixes'
     labels:
       - 'bug'
   - title: '📚 Documentation'
     labels:
-      - 'docs'
+      - 'documentation'
   - title: '🧹 Maintenance'
     labels:
-      - 'build'
-      - 'chore'
-      - 'ci'
-      - 'refactor'
+      - 'maintenance'
 
 # determine the draft release version from these PR labels
 version-resolver:
@@ -57,11 +52,10 @@ version-resolver:
       - 'breaking'
   minor:
     labels:
-      - 'feature'
+      - 'enhancement'
   patch:
     labels:
       - 'bug'
-      - 'build'
-      - 'chore'
-      - 'docs'
+      - 'documentation'
+      - 'maintenance'
   default: patch

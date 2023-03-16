@@ -39,8 +39,8 @@ aec ami describe
 
   Name                                                              ImageId        CreationDate               RootDeviceName   Size  
  ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-20170727   ami-1e749f67   2023-01-20T01:51:34.000Z   /dev/sda1        15  
-  ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20170721   ami-785db401   2023-01-20T01:51:34.000Z   /dev/sda1        15
+  ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-20170727   ami-1e749f67   2023-03-15T23:25:13.000Z   /dev/sda1        15  
+  ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20170721   ami-785db401   2023-03-15T23:25:13.000Z   /dev/sda1        15
 ```
 <!-- [[[end]]] -->
 

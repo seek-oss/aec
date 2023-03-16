@@ -14,16 +14,15 @@ from aec.util.config import Config
 
 # fixtures
 mock_ec2().start()
-region = "ap-southeast-2"
+region = "us-east-1"
 mock_aws_config: Config = {
     "region": region,
     "key_name": "test_key",
     "vpc": {
         "name": "test vpc",
-        "subnet": next(ec2_backends[region].get_all_subnets()).id,
+        "subnet": ec2_backends["123456789012"]["us-east-1"].get_default_subnet("us-east-1a").id,
         "security_group": "default",
     },
-    "iam_instance_profile_arn": "test_profile",
 }
 ami_id = AMIS[0]["ami_id"]
 

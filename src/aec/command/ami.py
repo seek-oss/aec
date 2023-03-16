@@ -51,7 +51,7 @@ def fetch(config: Config, ami: str) -> Image:
     else:
         try:
             # lookup by ami id
-            ami_details = describe(config, id=ami)[0]
+            ami_details = describe(config, name=ami)[0]
         except IndexError:
             raise RuntimeError(f"Could not find {ami}") from None
     return ami_details
@@ -59,48 +59,51 @@ def fetch(config: Config, ami: str) -> Image:
 
 def _describe_images(
     config: Config,
-    id: Optional[str] = None,
+    name_or_id: Optional[str] = None,
     owner: Optional[str] = None,
     name_match: Optional[str] = None,
 ) -> DescribeImagesResultTypeDef:
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    if id:
-        response = ec2_client.describe_images(ImageIds=[id])
+    if name_or_id and name_or_id.startswith("ami-"):
+        return ec2_client.describe_images(ImageIds=[name_or_id])
+    if owner:
+        owners_filter = [owner]
     else:
-        if owner:
-            owners_filter = [owner]
+        describe_images_owners = config.get("describe_images_owners", None)
+
+        if not describe_images_owners:
+            owners_filter = ["self"]
+        elif isinstance(describe_images_owners, str):
+            owners_filter = [describe_images_owners]
         else:
-            describe_images_owners = config.get("describe_images_owners", None)
+            owners_filter: List[str] = describe_images_owners
 
-            if not describe_images_owners:
-                owners_filter = ["self"]
-            elif isinstance(describe_images_owners, str):
-                owners_filter = [describe_images_owners]
-            else:
-                owners_filter: List[str] = describe_images_owners
+    if name_match is None:
+        name_match = config.get("describe_images_name_match", None)
 
-        if name_match is None:
-            name_match = config.get("describe_images_name_match", None)
+    if name_match is None:
+        filters = [{"Name": "name", "Values": [f"{name_or_id}"]}] if name_or_id else []
+        match_desc = f" named {name_or_id}" if name_or_id else ""
+    else:
+        filters: List[FilterTypeDef] = [{"Name": "name", "Values": [f"*{name_match}*"]}]
+        match_desc = f" with name containing {name_match}"
 
-        filters: List[FilterTypeDef] = [] if name_match is None else [{"Name": "name", "Values": [f"*{name_match}*"]}]
+    print(f"Describing images owned by {owners_filter}{match_desc}")
 
-        print(f'Describing images owned by {owners_filter} with name matching {name_match or "*"}')
-
-        response = ec2_client.describe_images(Owners=owners_filter, Filters=filters)
-    return response
+    return ec2_client.describe_images(Owners=owners_filter, Filters=filters)
 
 
 def describe(
     config: Config,
-    id: Optional[str] = None,
+    name: Optional[str] = None,
     owner: Optional[str] = None,
     name_match: Optional[str] = None,
     show_snapshot_id: bool = False,
 ) -> List[Image]:
     """List AMIs."""
 
-    response = _describe_images(config, id, owner, name_match)
+    response = _describe_images(config, name, owner, name_match)
 
     images = []
     for i in response["Images"]:
@@ -120,14 +123,14 @@ def describe(
 
 def describe_tags(
     config: Config,
-    id: Optional[str] = None,
+    name: Optional[str] = None,
     owner: Optional[str] = None,
     name_match: Optional[str] = None,
     keys: Sequence[str] = [],
 ) -> List[Dict[str, Any]]:
     """List AMI images with their tags."""
 
-    response = _describe_images(config, id, owner, name_match)
+    response = _describe_images(config, name, owner, name_match)
 
     images = []
     for i in response["Images"]:
