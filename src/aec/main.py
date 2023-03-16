@@ -48,7 +48,7 @@ ec2_cli = [
     ]),
     Cmd(ec2.describe, [
         config_arg,
-        Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
+        Arg("ident", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
         Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
         Arg("-r", "--show-running-only", action='store_true', help="Show running or pending instances only"),
         Arg("-it", "--include-terminated", action='store_true', help="Include terminated instances"),
@@ -73,34 +73,34 @@ ec2_cli = [
     ]),
     Cmd(ec2.modify, [
         config_arg,
-        Arg("name", type=str, help="Name tag of instance or instance id"),
+        Arg("ident", type=str, help="Name tag of instance or instance id"),
         Arg("type", type=str, help="Type of instance")
     ]),
     Cmd(ec2.start, [
         config_arg,
-        Arg("name", type=str, help="Name tag of instance or instance id"),
+        Arg("ident", type=str, help="Name tag of instance or instance id"),
         Arg("-w", "--wait-ssm", action='store_true', help="Wait until the SSM agent is online before exiting"),
     ]),
     Cmd(ec2.stop, [
         config_arg,
-        Arg("name", type=str, help="Name tag of instance or instance id")
+        Arg("ident", type=str, help="Name tag of instance or instance id")
     ]),
     Cmd(ec2.tag, [
         config_arg,
         Arg("-t", "--tags", type=tag_arg_checker, nargs='+', metavar="TAG", help="Tags to create in key=value form", required = True),
-        Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
+        Arg("ident", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
         Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH.")
     ]),
     Cmd(ec2.describe_tags, [
         config_arg,
-        Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
+        Arg("ident", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
         Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
         Arg("-v", "--volumes", action='store_true', help="Show volumes"),
         Arg("-k", "--keys", type=str, nargs='*', metavar="KEY", help="Tags to display", default = []),
     ], name = "tags"),
     Cmd(ec2.status, [
         config_arg,
-        Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
+        Arg("ident", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
         Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
     ]),
     Cmd(ec2.templates, [
@@ -108,11 +108,11 @@ ec2_cli = [
     ]),
     Cmd(ec2.terminate, [
         config_arg,
-        Arg("name", type=str, help="Name tag of instance or instance id")
+        Arg("ident", type=str, help="Name tag of instance or instance id")
     ]),
     Cmd(ec2.user_data, [
         config_arg,
-        Arg("name", type=str, help="Name tag of instance or instance id"),
+        Arg("ident", type=str, help="Name tag of instance or instance id"),
     ]),
 ]
 
@@ -123,14 +123,14 @@ ami_cli = [
     ]),
     Cmd(ami.describe, [
         config_arg,
-        Arg("name", type=str, nargs='?', help="Filter to this AMI name or id"),
+        Arg("ident", type=str, nargs='?', help="Filter to this AMI name or id"),
         Arg("--owner", type=str, help="Filter to this owning account"),
         Arg("-q", type=str, dest='name_match', help="Filter to images with a name containing NAME_MATCH."),
         Arg("--show-snapshot-id", action='store_true', help="Show snapshot id")
     ]),
     Cmd(ami.describe_tags, [
         config_arg,
-        Arg("id", type=str, nargs='?', help="Filter to this AMI id"),
+        Arg("ident", type=str, nargs='?', help="Filter to this AMI id"),
         Arg("--owner", type=str, help="Filter to this owning account"),
         Arg("-q", type=str, dest='name_match', help="Filter to images with a name containing NAME_MATCH."),
         Arg("-k", "--keys", type=str, nargs='*', metavar="KEY", help="Tags to display", default = []),
@@ -151,14 +151,14 @@ compute_optimizer_cli = [
 ssm_cli = [
     Cmd(ssm.commands, [
         config_arg,
-        Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
+        Arg("ident", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
     ]),
     Cmd(ssm.compliance_summary, [
         config_arg
     ]),
     Cmd(ssm.describe, [
         config_arg,
-        Arg("name", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
+        Arg("ident", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
         Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
     ]),
     Cmd(ssm.invocations, [
@@ -174,7 +174,7 @@ ssm_cli = [
     Cmd(ssm.patch, [
         config_arg,
         Arg("operation", type=str, choices=["scan", "install"], help="Scan or install"),
-        Arg("names", type=str, nargs='+', help="Name tag of instance or instance id. Use 'all' for all running instances"),
+        Arg("idents", type=str, nargs='+', help="Name tag of instance or instance id. Use 'all' for all running instances"),
         Arg("-nr","--no-reboot", action='store_true', help="Do not reboot after install"),
     ]),
     Cmd(ssm.patch_summary, [
@@ -182,7 +182,7 @@ ssm_cli = [
     ]),
     Cmd(ssm.run, [
         config_arg,
-        Arg("names", type=str, nargs='+', help="Name tags of instance or instance ids. Use 'all' for all running instances.")
+        Arg("idents", type=str, nargs='+', help="Name tags of instance or instance ids. Use 'all' for all running instances.")
     ]),
 ]
 # fmt: on
