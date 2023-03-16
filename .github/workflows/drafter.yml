@@ -24,5 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: release-drafter/release-drafter@v5
+        with:
+          # attempt to fix https://github.com/release-drafter/release-drafter/issues/1125
+          commitish: refs/heads/master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
