@@ -7,7 +7,7 @@ on:
   # required only for autolabeler
   pull_request:
     types: [opened, reopened, synchronize]
-  required for autolabeler to support PRs from forks
+  # required for autolabeler to support PRs from forks
   # pull_request_target:
   #   types: [opened, reopened, synchronize]
 
