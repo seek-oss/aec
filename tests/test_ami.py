@@ -38,7 +38,7 @@ def test_describe_images_by_id(mock_aws_config: Config):
     # see https://github.com/spulec/moto/blob/master/moto/ec2/resources/amis.json
     canonical_account_id = "099720109477"
     mock_aws_config["describe_images_owners"] = canonical_account_id
-    images = describe(config=mock_aws_config, name="ami-1e749f67")
+    images = describe(config=mock_aws_config, ident="ami-1e749f67")
 
     assert len(images) == 1
 
@@ -48,7 +48,7 @@ def test_describe_images_by_name(mock_aws_config: Config):
     # see https://github.com/spulec/moto/blob/master/moto/ec2/resources/amis.json
     canonical_account_id = "099720109477"
     mock_aws_config["describe_images_owners"] = canonical_account_id
-    images = describe(config=mock_aws_config, name="ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-20170727")
+    images = describe(config=mock_aws_config, ident="ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-20170727")
 
     assert len(images) == 1
 

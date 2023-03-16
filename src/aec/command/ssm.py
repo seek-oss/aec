@@ -26,15 +26,15 @@ class Agent(TypedDict):
 
 def describe(
     config: Config,
-    name: Optional[str] = None,
+    ident: Optional[str] = None,
     name_match: Optional[str] = None,
 ) -> Iterator[Agent]:
     """List running instances with the SSM agent."""
 
     instances_names = describe_running_instances_names(config)
 
-    if name:
-        filters = name_filters([name])
+    if ident:
+        filters = name_filters([ident])
     elif name_match:
         # unlike ec2 describe_instances, ssm describe_instance_information doesn't
         # support a wildcard name filter. So do the name match here.
@@ -115,11 +115,11 @@ def compliance_summary(config: Config) -> List[Dict[str, Any]]:
 
 
 def patch(
-    config: Config, operation: Literal["scan", "install"], names: List[str], no_reboot: bool
+    config: Config, operation: Literal["scan", "install"], idents: List[str], no_reboot: bool
 ) -> List[Dict[str, Optional[str]]]:
     """Scan or install AWS patch baseline."""
 
-    instance_ids = fetch_instance_ids(config, names)
+    instance_ids = fetch_instance_ids(config, idents)
 
     client = boto3.client("ssm", region_name=config.get("region", None))
 
@@ -159,14 +159,14 @@ def patch(
     ]
 
 
-def run(config: Config, names: List[str]) -> List[Dict[str, Optional[str]]]:
+def run(config: Config, idents: List[str]) -> List[Dict[str, Optional[str]]]:
     """
     Run a shell script on instance(s).
 
     Script is read from stdin.
     """
 
-    instance_ids = fetch_instance_ids(config, names)
+    instance_ids = fetch_instance_ids(config, idents)
 
     client = boto3.client("ssm", region_name=config.get("region", None))
 
@@ -210,15 +210,15 @@ def first(xs: Optional[Sequence[E]]) -> Optional[E]:
         return None
 
 
-def commands(config: Config, name: Optional[str] = None) -> Iterator[Dict[str, Union[str, int, None]]]:
+def commands(config: Config, ident: Optional[str] = None) -> Iterator[Dict[str, Union[str, int, None]]]:
     """List commands by instance."""
 
     client = boto3.client("ssm", region_name=config.get("region", None))
 
     kwargs: Dict[str, Any] = {"MaxResults": 50}
 
-    if name:
-        kwargs["InstanceId"] = fetch_instance_id(config, name)
+    if ident:
+        kwargs["InstanceId"] = fetch_instance_id(config, ident)
 
     while True:
         response = client.list_commands(**kwargs)
@@ -310,27 +310,27 @@ def output(config: Config, command_id: str, instance_id: str, stderr: bool) -> N
     return None
 
 
-def fetch_instance_id(config: Config, name: str) -> str:
-    if name.startswith("i-"):
-        return name
+def fetch_instance_id(config: Config, ident: str) -> str:
+    if ident.startswith("i-"):
+        return ident
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
-    response = ec2_client.describe_instances(Filters=[{"Name": "tag:Name", "Values": [name]}])
+    response = ec2_client.describe_instances(Filters=[{"Name": "tag:Name", "Values": [ident]}])
 
     try:
         return response["Reservations"][0]["Instances"][0]["InstanceId"]
     except IndexError:
-        raise ValueError(f"No instance named {name}") from None
+        raise ValueError(f"No instance named {ident}") from None
 
 
-def fetch_instance_ids(config: Config, ids_or_names: List[str]) -> List[str]:
-    if ids_or_names == ["all"]:
+def fetch_instance_ids(config: Config, idents: List[str]) -> List[str]:
+    if idents == ["all"]:
         return [i["ID"] for i in describe(config)]
 
     ids: List[str] = []
     names: List[str] = []
 
-    for i in ids_or_names:
+    for i in idents:
         if i.startswith("i-"):
             ids.append(i)
         else:
@@ -349,10 +349,10 @@ def fetch_instance_ids(config: Config, ids_or_names: List[str]) -> List[str]:
     return ids
 
 
-def name_filters(names_or_ids: Optional[List[str]] = None) -> List[InstanceInformationStringFilterTypeDef]:
-    if names_or_ids and names_or_ids[0].startswith("i-"):
-        return [{"Key": "InstanceIds", "Values": names_or_ids}]
-    elif names_or_ids:
-        return [{"Key": "tag:Name", "Values": names_or_ids}]
+def name_filters(idents: Optional[List[str]] = None) -> List[InstanceInformationStringFilterTypeDef]:
+    if idents and idents[0].startswith("i-"):
+        return [{"Key": "InstanceIds", "Values": idents}]
+    elif idents:
+        return [{"Key": "tag:Name", "Values": idents}]
     else:
         return []

@@ -181,7 +181,7 @@ def launch(
 
     # the response from run_instances above always contains an empty string
     # for PublicDnsName, so we call describe to get it
-    return describe(config=config, name=instance_id)
+    return describe(config=config, ident=instance_id)
 
 
 def _wait_ssm_agent_online(config: Config, instance_ids: List[str]) -> None:
@@ -205,7 +205,7 @@ def _wait_ssm_agent_online(config: Config, instance_ids: List[str]) -> None:
 
 def describe(
     config: Config,
-    name: Optional[str] = None,
+    ident: Optional[str] = None,
     name_match: Optional[str] = None,
     include_terminated: bool = False,
     show_running_only: bool = False,
@@ -216,7 +216,7 @@ def describe(
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    filters = name_filters(name, name_match)
+    filters = to_filters(ident, name_match)
     if show_running_only:
         filters.append({"Name": "instance-state-name", "Values": ["pending", "running"]})
 
@@ -269,22 +269,22 @@ def describe(
 
 def describe_tags(
     config: Config,
-    name: Optional[str] = None,
+    ident: Optional[str] = None,
     name_match: Optional[str] = None,
     keys: Sequence[str] = [],
     volumes: bool = False,
 ) -> List[Dict[str, Any]]:
     """List EC2 instances or volumes with their tags."""
     if volumes:
-        return volume_tags(config, name, name_match, keys)
+        return volume_tags(config, ident, name_match, keys)
 
-    return instance_tags(config, name, name_match, keys)
+    return instance_tags(config, ident, name_match, keys)
 
 
 def tag(
     config: Config,
     tags: List[str],
-    name: Optional[str] = None,
+    ident: Optional[str] = None,
     name_match: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """Tag EC2 instance(s)."""
@@ -295,30 +295,30 @@ def tag(
         parts = t.split("=")
         tagdefs.append({"Key": parts[0], "Value": parts[1]})
 
-    if not name and not name_match:
+    if not ident and not name_match:
         # avoid tagging all instances when there's no name
-        raise NoInstancesError(name=name, name_match=name_match)
+        raise NoInstancesError(name=ident, name_match=name_match)
 
-    instances = describe(config, name, name_match)
+    instances = describe(config, ident, name_match)
 
     ids = [i["InstanceId"] for i in instances]
 
     if not ids:
-        raise NoInstancesError(name=name, name_match=name_match)
+        raise NoInstancesError(name=ident, name_match=name_match)
 
     ec2_client.create_tags(Resources=ids, Tags=tagdefs)
 
-    return describe_tags(config, name, name_match, keys=[d["Key"] for d in tagdefs])
+    return describe_tags(config, ident, name_match, keys=[d["Key"] for d in tagdefs])
 
 
 def instance_tags(
-    config: Config, name: Optional[str] = None, name_match: Optional[str] = None, keys: Sequence[str] = []
+    config: Config, ident: Optional[str] = None, name_match: Optional[str] = None, keys: Sequence[str] = []
 ) -> List[Dict[str, Any]]:
     """List EC2 instances with their tags."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    response = ec2_client.describe_instances(Filters=name_filters(name, name_match))
+    response = ec2_client.describe_instances(Filters=to_filters(ident, name_match))
 
     instances: List[Dict[str, Any]] = []
     for r in response["Reservations"]:
@@ -337,13 +337,13 @@ def instance_tags(
 
 
 def volume_tags(
-    config: Config, name: Optional[str] = None, name_match: Optional[str] = None, keys: Sequence[str] = []
+    config: Config, ident: Optional[str] = None, name_match: Optional[str] = None, keys: Sequence[str] = []
 ) -> List[Dict[str, Any]]:
     """List EC2 volumes with their tags."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    response = ec2_client.describe_volumes(Filters=name_filters(name, name_match))
+    response = ec2_client.describe_volumes(Filters=to_filters(ident, name_match))
 
     volumes: List[Dict[str, Any]] = []
     for v in response["Volumes"]:
@@ -361,23 +361,26 @@ def volume_tags(
 
 def start(
     config: Config,
-    name: str,
+    ident: str,
     wait_ssm: bool = False,
 ) -> List[Instance]:
     """Start EC2 instance."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    print(f"Starting instances with the name {name} ... ")
+    if ident.startswith("i-"):
+        print(f"Starting instance {ident} ... ")
+    else:
+        print(f"Starting instances named {ident} ... ")
 
-    if not name:
+    if not ident:
         # avoid starting all instances when there's no name
-        raise NoInstancesError(name=name)
+        raise NoInstancesError(name=ident)
 
-    instances = describe(config, name)
+    instances = describe(config, ident)
 
     if not instances:
-        raise NoInstancesError(name=name)
+        raise NoInstancesError(name=ident)
 
     instance_ids = [instance["InstanceId"] for instance in instances]
     ec2_client.start_instances(InstanceIds=instance_ids)
@@ -389,41 +392,41 @@ def start(
         print(f"Instance {', '.join(instance_ids)} running. Waiting for SSM agent to come online ...")
         _wait_ssm_agent_online(config, instance_ids)
 
-    return describe(config, name)
+    return describe(config, ident)
 
 
-def stop(config: Config, name: str) -> List[Dict[str, Any]]:
+def stop(config: Config, ident: str) -> List[Dict[str, Any]]:
     """Stop EC2 instance."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    if not name:
+    if not ident:
         # avoid stopping all instances when there's no name
-        raise NoInstancesError(name=name)
+        raise NoInstancesError(name=ident)
 
-    instances = describe(config, name)
+    instances = describe(config, ident)
 
     if not instances:
-        raise NoInstancesError(name=name)
+        raise NoInstancesError(name=ident)
 
     response = ec2_client.stop_instances(InstanceIds=[instance["InstanceId"] for instance in instances])
 
     return [{"State": i["CurrentState"]["Name"], "InstanceId": i["InstanceId"]} for i in response["StoppingInstances"]]
 
 
-def terminate(config: Config, name: str) -> List[Dict[str, Any]]:
+def terminate(config: Config, ident: str) -> List[Dict[str, Any]]:
     """Terminate EC2 instance."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    if not name:
+    if not ident:
         # avoid terminating all instances when there's no name
-        raise NoInstancesError(name=name)
+        raise NoInstancesError(name=ident)
 
-    instances = describe(config, name)
+    instances = describe(config, ident)
 
     if not instances:
-        raise NoInstancesError(name=name)
+        raise NoInstancesError(name=ident)
 
     response = ec2_client.terminate_instances(InstanceIds=[instance["InstanceId"] for instance in instances])
 
@@ -432,25 +435,25 @@ def terminate(config: Config, name: str) -> List[Dict[str, Any]]:
     ]
 
 
-def modify(config: Config, name: str, type: str) -> List[Instance]:
+def modify(config: Config, ident: str, type: str) -> List[Instance]:
     """Change an instance's type."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    if not name:
+    if not ident:
         # avoid modifying all instances when there's no name
-        raise NoInstancesError(name=name)
+        raise NoInstancesError(name=ident)
 
-    instances = describe(config, name)
+    instances = describe(config, ident)
 
     if not instances:
-        raise NoInstancesError(name=name)
+        raise NoInstancesError(name=ident)
 
     instance_id = instances[0]["InstanceId"]
     ec2_client.modify_instance_attribute(InstanceId=instance_id, InstanceType={"Value": type})
     ec2_client.modify_instance_attribute(InstanceId=instance_id, EbsOptimized={"Value": is_ebs_optimizable(type)})
 
-    return describe(config, name)
+    return describe(config, ident)
 
 
 def create_key_pair(config: Config, key_name: str, file_path: str) -> str:
@@ -467,19 +470,19 @@ def create_key_pair(config: Config, key_name: str, file_path: str) -> str:
     return f"Created key pair {key_name} and saved private key to {path}"
 
 
-def logs(config: Config, name: str) -> str:
+def logs(config: Config, ident: str) -> str:
     """Show the system logs."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    if not name:
+    if not ident:
         # avoid describing all instances when there's no name
-        raise NoInstancesError(name=name)
+        raise NoInstancesError(name=ident)
 
-    instances = describe(config, name)
+    instances = describe(config, ident)
 
     if not instances:
-        raise NoInstancesError(name=name)
+        raise NoInstancesError(name=ident)
 
     instance_id = instances[0]["InstanceId"]
     response = ec2_client.get_console_output(InstanceId=instance_id)
@@ -502,7 +505,7 @@ def templates(config: Config) -> List[Dict[str, Any]]:
 
 def status(
     config: Config,
-    name: Optional[str] = None,
+    ident: Optional[str] = None,
     name_match: Optional[str] = None,
 ) -> List[Dict[str, Any]]:
     """Describe instances status checks."""
@@ -516,11 +519,11 @@ def status(
 
     def match(instance_id: str, instance_name: Optional[str]) -> bool:
         # describe_instance_status doesn't support name filters in the request so match here
-        if not name and not name_match:
+        if not ident and not name_match:
             return True
 
-        if name is not None:
-            return (name.startswith("i-") and name == instance_id) or (name == instance_name)
+        if ident is not None:
+            return (ident.startswith("i-") and ident == instance_id) or (ident == instance_name)
 
         return not name_match or name_match in (instance_name or "")
 
@@ -560,18 +563,18 @@ def status_text(summary: InstanceStatusSummaryTypeDef, key: str = "reachability"
     )
 
 
-def user_data(config: Config, name: str) -> Optional[str]:
+def user_data(config: Config, ident: str) -> Optional[str]:
     """Describe user data for an instance."""
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    if not name:
+    if not ident:
         # avoid describing all instances when there's no name
-        raise NoInstancesError(name=name)
+        raise NoInstancesError(name=ident)
 
-    instances = describe(config, name)
+    instances = describe(config, ident)
 
     if not instances:
-        raise NoInstancesError(name=name)
+        raise NoInstancesError(name=ident)
 
     instance_id = instances[0]["InstanceId"]
     response = ec2_client.describe_instance_attribute(Attribute="userData", InstanceId=instance_id)
@@ -582,11 +585,11 @@ def user_data(config: Config, name: str) -> Optional[str]:
         return None
 
 
-def name_filters(name_or_id: Optional[str] = None, name_match: Optional[str] = None) -> List[FilterTypeDef]:
-    if name_or_id and name_or_id.startswith("i-"):
-        return [{"Name": "instance-id", "Values": [name_or_id]}]
-    elif name_or_id:
-        return [{"Name": "tag:Name", "Values": [name_or_id]}]
+def to_filters(ident: Optional[str] = None, name_match: Optional[str] = None) -> List[FilterTypeDef]:
+    if ident and ident.startswith("i-"):
+        return [{"Name": "instance-id", "Values": [ident]}]
+    elif ident:
+        return [{"Name": "tag:Name", "Values": [ident]}]
     elif name_match:
         return [{"Name": "tag:Name", "Values": [f"*{name_match}*"]}]
     else:
