@@ -13,7 +13,6 @@ repos:
     rev: v1.13.23
     hooks:
       - id: typos
-        stages: [push]
   # vscode & the cli uses these too so they has been installed into the virtualenv
   - repo: local
     hooks:
