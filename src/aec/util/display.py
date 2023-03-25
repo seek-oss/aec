@@ -54,10 +54,8 @@ def pretty_print(
         column_names = cast(List[str], rows[0])
         table = Table(box=box.SIMPLE)
         for c in column_names:
-            if c in ["CommandId"]:
-                table.add_column(c, no_wrap=True)
-            else:
-                table.add_column(c)
+            kwargs = dict(no_wrap=True) if c in ["CommandId"] else dict()
+            table.add_column("\n".join(c) if isinstance(c, list) else c, **kwargs)
 
         for r in rows[1:]:
             table.add_row(*r)
