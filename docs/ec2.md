@@ -114,7 +114,7 @@ aec ec2 describe -r -s LaunchTime
 Show a custom set of [columns](#columns)
 
 ```
-aec ec2 describe -c SubnetId,Name
+aec ec2 describe -c Name,SubnetId,Volumes
 ```
 
 Show instances and all their tags:
