@@ -177,15 +177,6 @@ def test_describe_instance_without_tags(mock_aws_config: Config):
     assert len(instances) == 1
 
 
-def test_tag(mock_aws_config: Config):
-    launch(mock_aws_config, "alice", ami_id)
-
-    instances = tag(mock_aws_config, ["Project=top secret"], "alice")
-
-    assert len(instances) == 1
-    assert instances[0]["Tag: Project"] == "top secret"
-
-
 def test_describe_by_name(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
     launch(mock_aws_config, "alex", ami_id)
@@ -260,7 +251,7 @@ def test_describe_columns(mock_aws_config: Config):
     del mock_aws_config["key_name"]
     launch(mock_aws_config, "alice", ami_id)
 
-    instances = describe(config=mock_aws_config, columns="SubnetId,Name,MissingKey")
+    instances = describe(config=mock_aws_config, columns="SubnetId,Name,MissingKey,Volumes")
     print(instances)
 
     assert len(instances) == 2
@@ -268,6 +259,8 @@ def test_describe_columns(mock_aws_config: Config):
     assert instances[1]["Name"] == "sam"
     assert "subnet" in instances[0]["SubnetId"]
     assert "subnet" in instances[1]["SubnetId"]
+    assert instances[0]["Volumes"] == ['Size=15 GiB']
+    assert instances[1]["Volumes"] == ['Size=15 GiB']
 
     # MissingKey will appear without values
     assert instances[0]["MissingKey"] is None  # type: ignore
@@ -278,6 +271,14 @@ def describe_instance0(region_name: str, instance_id: str):
     ec2_client = boto3.client("ec2", region_name=region_name)
     instances = ec2_client.describe_instances(InstanceIds=[instance_id])
     return instances["Reservations"][0]["Instances"][0]
+
+def test_tag(mock_aws_config: Config):
+    launch(mock_aws_config, "alice", ami_id)
+
+    instances = tag(mock_aws_config, ["Project=top secret"], "alice")
+
+    assert len(instances) == 1
+    assert instances[0]["Tag: Project"] == "top secret"
 
 
 def test_tags(mock_aws_config: Config):
