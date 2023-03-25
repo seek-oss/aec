@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import base64
-from collections import defaultdict
 import os
 import os.path
+from collections import defaultdict
 from time import sleep
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, cast
 
@@ -23,7 +23,6 @@ if TYPE_CHECKING:
         InstanceStatusSummaryTypeDef,
         TagSpecificationTypeDef,
         TagTypeDef,
-        VolumeTypeDef,
     )
 
 import aec.command.ami as ami_cmd
@@ -44,6 +43,7 @@ class Instance(TypedDict, total=False):
     DnsName: str
     SubnetId: str
     Volumes: List[str]
+
 
 def launch(
     config: Config,
@@ -261,9 +261,7 @@ def describe(
                         elif col == "Type":
                             desc[col] = i["InstanceType"]
                         elif col == "DnsName":
-                            desc[col] = (
-                                i["PublicDnsName"] or i["PrivateDnsName"]
-                            )
+                            desc[col] = i["PublicDnsName"] or i["PrivateDnsName"]
                         elif col == "Volumes":
                             desc[col] = volumes.get(i["InstanceId"], [])
                         else:
