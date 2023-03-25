@@ -196,10 +196,11 @@ aec ec2 describe -it i-02a840e0ca609c432 -c StateReason
 
 Columns special to aec:
 
-- `State` - state name
-- `Name` - Name tag
-- `Type` - instance type
 - `DnsName` - PublicDnsName if available otherwise PrivateDnsName
+- `Name` - Name tag
+- `State` - state name
+- `Type` - instance type
+- `Volumes` - volumes attached to the instance
 
 Columns returned by the EC2 API:
 
