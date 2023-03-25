@@ -259,8 +259,8 @@ def test_describe_columns(mock_aws_config: Config):
     assert instances[1]["Name"] == "sam"
     assert "subnet" in instances[0]["SubnetId"]
     assert "subnet" in instances[1]["SubnetId"]
-    assert instances[0]["Volumes"] == ['Size=15 GiB']
-    assert instances[1]["Volumes"] == ['Size=15 GiB']
+    assert instances[0]["Volumes"] == ["Size=15 GiB"]
+    assert instances[1]["Volumes"] == ["Size=15 GiB"]
 
     # MissingKey will appear without values
     assert instances[0]["MissingKey"] is None  # type: ignore
@@ -271,6 +271,7 @@ def describe_instance0(region_name: str, instance_id: str):
     ec2_client = boto3.client("ec2", region_name=region_name)
     instances = ec2_client.describe_instances(InstanceIds=[instance_id])
     return instances["Reservations"][0]["Instances"][0]
+
 
 def test_tag(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
