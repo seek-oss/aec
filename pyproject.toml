@@ -30,7 +30,7 @@ dev = [
     "pyfakefs~=5.1",
     "pytest~=7.2",
     "pytest-mock~=3.8",
-    "ruff~=0.0.254",
+    "ruff~=0.0.259",
     "twine~=4.0",
 ]
 
@@ -93,8 +93,6 @@ ignore = [
 ]
 # first-party imports for sorting
 src = ["src"]
-# pyupgrade target
-target-version = "py37"
 fix = true
 show-fixes = true
 
