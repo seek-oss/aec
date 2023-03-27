@@ -3,6 +3,7 @@ from __future__ import annotations
 import base64
 import os
 import os.path
+from collections import defaultdict
 from time import sleep
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, cast
 
@@ -17,6 +18,7 @@ if TYPE_CHECKING:
     from mypy_boto3_ec2.literals import InstanceTypeType
     from mypy_boto3_ec2.type_defs import (
         BlockDeviceMappingTypeDef,
+        DescribeVolumesResultTypeDef,
         FilterTypeDef,
         InstanceStatusSummaryTypeDef,
         TagSpecificationTypeDef,
@@ -40,6 +42,7 @@ class Instance(TypedDict, total=False):
     Type: str
     DnsName: str
     SubnetId: str
+    Volumes: List[str]
 
 
 def launch(
@@ -222,14 +225,26 @@ def describe(
 
     kwargs: Dict[str, Any] = {"MaxResults": 1000, "Filters": filters}
 
-    response = ec2_client.describe_instances(**kwargs)
-
-    # import json; print(json.dumps(response))
+    response_fut = executor.submit(ec2_client.describe_instances, **kwargs)
 
     cols = columns.split(",")
 
     # don't sort by cols we aren't showing
     sort_cols = [sc for sc in sort_by.split(",") if sc in cols]
+
+    if "Volumes" in columns:
+        # fetch volume info
+        volumes_response: DescribeVolumesResultTypeDef = executor.submit(ec2_client.describe_volumes).result()
+        volumes: Dict[str, List[str]] = defaultdict(list)
+        for v in volumes_response["Volumes"]:
+            for a in v["Attachments"]:
+                volumes[a["InstanceId"]].append(f'Size={v["Size"]} GiB')
+    else:
+        volumes = {}
+
+    response = response_fut.result()
+
+    # import json; print(json.dumps(response))
 
     instances: List[Instance] = []
     while True:
@@ -246,9 +261,9 @@ def describe(
                         elif col == "Type":
                             desc[col] = i["InstanceType"]
                         elif col == "DnsName":
-                            desc[col] = (
-                                i["PublicDnsName"] if i.get("PublicDnsName", None) != "" else i["PrivateDnsName"]
-                            )
+                            desc[col] = i["PublicDnsName"] or i["PrivateDnsName"]
+                        elif col == "Volumes":
+                            desc[col] = volumes.get(i["InstanceId"], [])
                         else:
                             desc[col] = i.get(col, None)
 

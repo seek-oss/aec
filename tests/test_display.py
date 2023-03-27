@@ -31,6 +31,16 @@ def test_as_table_with_datetime():
     ]
 
 
+def test_as_table_with_list():
+    assert as_table(
+        [{"a": 1, "b": ["x", "y"]}],
+        ["a", "b"],
+    ) == [
+        ["a", "b"],
+        ["1", "['x', 'y']"],
+    ]
+
+
 def test_as_table_with_none():
     assert as_table([{"a": 1, "b": None}]) == [["a", "b"], ["1", None]]
 
