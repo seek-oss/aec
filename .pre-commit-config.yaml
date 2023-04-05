@@ -22,13 +22,6 @@ repos:
         entry: .venv/bin/black
         language: system
         types: [python]
-      # use docformatter from the venv so that it reads from pyproject.toml
-      - id: docformatter
-        name: docformatter
-        entry: .venv/bin/docformatter
-        args: [--in-place]
-        language: system
-        types: [python]
       - id: ruff
         name: ruff
         entry: .venv/bin/ruff
