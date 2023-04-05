@@ -24,7 +24,6 @@ dev = [
     "boto3-stubs[ec2,compute-optimizer,ssm,s3]",
     "cogapp~=3.3",
     "darglint~=1.8",
-    "docformatter~=1.5",
     "moto[ec2]~=4.1",
     "pre-commit~=2.20",
     "pyfakefs~=5.1",
@@ -50,12 +49,6 @@ requires = ["setuptools", "setuptools_scm[toml]", "wheel"]
 
 [tool.black]
 line-length = 120
-
-[tool.docformatter]
-pre-summary-newline = true
-recursive = true
-wrap-descriptions = 120
-wrap-summaries = 120
 
 [tool.ruff]
 line-length = 120

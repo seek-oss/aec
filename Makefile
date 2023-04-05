@@ -31,7 +31,6 @@ install: $(venv) node_modules $(if $(value CI),,install-hooks)
 ## format all code
 format: $(venv)
 	$(venv)/bin/black .
-	$(venv)/bin/docformatter . --in-place -e build dist node_modules typings
 	$(venv)/bin/ruff .
 
 ## lint code and run static type check
