@@ -89,14 +89,14 @@ ec2_cli = [
         config_arg,
         Arg("ident", type=str, help="Filter to instances with this Name tag or instance id."),
         Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
-        Arg("-t", "--tags", type=tag_arg_checker, action="append", metavar="TAG", help="Tags to create in key=value form", required = True),
+        Arg("-t", "--tags", type=tag_arg_checker, action="append", metavar="TAG", help="Tags to create in key=value form. This flag can be repeated multiple times.", default = [], required = True),
     ]),
     Cmd(ec2.describe_tags, [
         config_arg,
         Arg("ident", type=str, help="Filter to instances with this Name tag or instance id."),
         Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
         Arg("-v", "--volumes", action='store_true', help="Show volumes"),
-        Arg("-k", "--keys", type=str, action="append", metavar="KEY", help="Tags to display", default = []),
+        Arg("-k", "--keys", type=str, action="append", metavar="KEY", help="Filter tags to display. This flag can be repeated multiple times.", default = []),
     ], name = "tags"),
     Cmd(ec2.status, [
         config_arg,
@@ -133,7 +133,7 @@ ami_cli = [
         Arg("ident", type=str, help="Filter to this AMI id"),
         Arg("--owner", type=str, help="Filter to this owning account"),
         Arg("-q", type=str, dest='name_match', help="Filter to images with a name containing NAME_MATCH."),
-        Arg("-k", "--keys", type=str, action="append", metavar="KEY", help="Tags to display", default = []),
+        Arg("-k", "--keys", type=str, action="append", metavar="KEY", help="Filter tags to display. This flag can be repeated multiple times.", default = []),
     ], name = "tags"),
     Cmd(ami.share, [
         config_arg,
