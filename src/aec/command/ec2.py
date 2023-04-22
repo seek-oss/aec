@@ -309,8 +309,6 @@ def tag(
 
     for t in tags:
         parts = t.split("=")
-        if len(parts) != 2:
-            raise ValueError(f"Invalid tag argument '{tag}'. Must be in key=value form.")
         tagdefs.append({"Key": parts[0], "Value": parts[1]})
 
     if not ident and not name_match:
