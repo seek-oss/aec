@@ -69,7 +69,7 @@ ec2_cli = [
     ]),
     Cmd(ec2.logs, [
         config_arg,
-        Arg("name", type=str, help="Name tag of instance or instance id")
+        Arg("ident", type=str, help="Name tag of instance or instance id")
     ]),
     Cmd(ec2.modify, [
         config_arg,
@@ -214,6 +214,7 @@ def main(args: List[str] = sys.argv[1:]) -> None:
         display.pretty_print(result, output_format)
     except ClientError as e:
         code = e.response["Error"]["Code"]
+
         if code == "UnauthorizedOperation":
             message = e.response["Error"]["Message"]
             print(f"{code}: {message}\n\nAuthenticate with the appropriate AWS role before retrying.", file=sys.stderr)
@@ -223,10 +224,18 @@ def main(args: List[str] = sys.argv[1:]) -> None:
             )
         else:
             traceback.print_exc(file=sys.stderr)
+
     except NoCredentialsError as e:
         print(
             f"NoCredentialsError: {e}.\n\nAuthenticate with the appropriate AWS role before retrying.", file=sys.stderr
         )
+
+    except RuntimeError as e:
+        if "Credentials were refreshed" in e.args[0]:
+            print(f"RuntimeError: {e.args[0]}", file=sys.stderr)
+        else:
+            traceback.print_exc(file=sys.stderr)
+
     except HandledError as e:
         print(e, file=sys.stderr)
 
