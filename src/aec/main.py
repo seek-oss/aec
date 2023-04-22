@@ -151,14 +151,14 @@ compute_optimizer_cli = [
 ssm_cli = [
     Cmd(ssm.commands, [
         config_arg,
-        Arg("ident", type=str, help="Filter to instances with this Name tag or instance id."),
+        Arg("ident", type=str, nargs="?", help="Filter to instances with this Name tag or instance id."),
     ]),
     Cmd(ssm.compliance_summary, [
         config_arg
     ]),
     Cmd(ssm.describe, [
         config_arg,
-        Arg("ident", type=str, help="Filter to instances with this Name tag or instance id."),
+        Arg("ident", type=str, nargs="?", help="Filter to instances with this Name tag or instance id."),
         Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
     ]),
     Cmd(ssm.invocations, [
@@ -174,7 +174,7 @@ ssm_cli = [
     Cmd(ssm.patch, [
         config_arg,
         Arg("operation", type=str, choices=["scan", "install"], help="Scan or install"),
-        Arg("idents", type=str, nargs='+', help="Name tag of instance or instance id. Use 'all' for all running instances"),
+        Arg("idents", type=str, nargs="+", help="Name tag of instance or instance id. Use 'all' for all running instances"),
         Arg("-nr","--no-reboot", action='store_true', help="Do not reboot after install"),
     ]),
     Cmd(ssm.patch_summary, [
@@ -182,7 +182,7 @@ ssm_cli = [
     ]),
     Cmd(ssm.run, [
         config_arg,
-        Arg("idents", type=str, nargs='+', help="Name tags of instance or instance ids. Use 'all' for all running instances.")
+        Arg("idents", type=str, nargs="+", help="Name tags of instance or instance ids. Use 'all' for all running instances.")
     ]),
 ]
 # fmt: on
