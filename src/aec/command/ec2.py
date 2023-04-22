@@ -298,16 +298,19 @@ def describe_tags(
 
 def tag(
     config: Config,
-    tags: List[str],
     ident: Optional[str] = None,
     name_match: Optional[str] = None,
+    tags: Sequence[str] = [],
 ) -> List[Dict[str, Any]]:
     """Tag EC2 instance(s)."""
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     tagdefs: List[TagTypeDef] = []
+
     for t in tags:
         parts = t.split("=")
+        if len(parts) != 2:
+            raise ValueError(f"Invalid tag argument '{tag}'. Must be in key=value form.")
         tagdefs.append({"Key": parts[0], "Value": parts[1]})
 
     if not ident and not name_match:

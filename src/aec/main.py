@@ -87,9 +87,9 @@ ec2_cli = [
     ]),
     Cmd(ec2.tag, [
         config_arg,
-        Arg("-t", "--tags", type=tag_arg_checker, nargs='+', metavar="TAG", help="Tags to create in key=value form", required = True),
         Arg("ident", type=str, nargs='?', help="Filter to instances with this Name tag or instance id."),
-        Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH.")
+        Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
+        Arg("-t", "--tags", type=tag_arg_checker, nargs='+', metavar="TAG", help="Tags to create in key=value form", required = True),
     ]),
     Cmd(ec2.describe_tags, [
         config_arg,
@@ -217,12 +217,10 @@ def main(args: List[str] = sys.argv[1:]) -> None:
         if code == "UnauthorizedOperation":
             message = e.response["Error"]["Message"]
             print(f"{code}: {message}\n\nAuthenticate with the appropriate AWS role before retrying.", file=sys.stderr)
-
         elif code == "RequestExpired":
             print(
                 f"{code}: AWS session token expired.\n\nRe-authenticate with the appropriate AWS role.", file=sys.stderr
             )
-
         else:
             traceback.print_exc(file=sys.stderr)
     except NoCredentialsError as e:
