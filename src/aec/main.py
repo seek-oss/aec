@@ -214,21 +214,28 @@ def main(args: List[str] = sys.argv[1:]) -> None:
         display.pretty_print(result, output_format)
     except ClientError as e:
         code = e.response["Error"]["Code"]
+
         if code == "UnauthorizedOperation":
             message = e.response["Error"]["Message"]
             print(f"{code}: {message}\n\nAuthenticate with the appropriate AWS role before retrying.", file=sys.stderr)
-
         elif code == "RequestExpired":
             print(
                 f"{code}: AWS session token expired.\n\nRe-authenticate with the appropriate AWS role.", file=sys.stderr
             )
-
         else:
             traceback.print_exc(file=sys.stderr)
+
     except NoCredentialsError as e:
         print(
             f"NoCredentialsError: {e}.\n\nAuthenticate with the appropriate AWS role before retrying.", file=sys.stderr
         )
+
+    except RuntimeError as e:
+        if "Credentials were refreshed" in e.args[0]:
+            print(f"RuntimeError: {e.args[0]}", file=sys.stderr)
+        else:
+            traceback.print_exc(file=sys.stderr)
+
     except HandledError as e:
         print(e, file=sys.stderr)
 
