@@ -69,7 +69,7 @@ ec2_cli = [
     ]),
     Cmd(ec2.logs, [
         config_arg,
-        Arg("name", type=str, help="Name tag of instance or instance id")
+        Arg("ident", type=str, help="Name tag of instance or instance id")
     ]),
     Cmd(ec2.modify, [
         config_arg,
