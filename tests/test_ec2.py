@@ -276,7 +276,7 @@ def describe_instance0(region_name: str, instance_id: str):
 def test_tag(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
 
-    instances = tag(mock_aws_config, ["Project=top secret"], "alice")
+    instances = tag(mock_aws_config, "alice", tags=["Project=top secret"])
 
     assert len(instances) == 1
     assert instances[0]["Tag: Project"] == "top secret"

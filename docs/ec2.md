@@ -14,7 +14,6 @@ Run `aec ec2 -h` for help:
 from aec.main import build_parser
 cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ec2'].format_help()}```")
 ]]] -->
-
 ```
 usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,tag,tags,status,templates,terminate,user-data} ...
 
@@ -37,7 +36,6 @@ subcommands:
     terminate           Terminate EC2 instance.
     user-data           Describe user data for an instance.
 ```
-
 <!-- [[[end]]] -->
 
 Launch an instance named `food baby` from the [ec2 launch template](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-launch-templates.html) named `yummy`:
@@ -75,16 +73,14 @@ List all instances in the region:
 <!-- [[[cog
 cog.out(f"```\n{docs('aec ec2 describe', ec2.describe(config))}\n```")
 ]]] -->
-
 ```
 aec ec2 describe
 
-  InstanceId            State     Name    Type       DnsName                                      LaunchTime                  ImageId
- ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  i-b5f2c2719ad4a4204   running   alice   t3.small   ec2-54-214-90-201.compute-1.amazonaws.com    2023-03-15 23:25:13+00:00   ami-03cf127a
-  i-17227103cbf97cb86   running   sam     t3.small   ec2-54-214-204-133.compute-1.amazonaws.com   2023-03-15 23:25:14+00:00   ami-03cf127a
+  InstanceId            State     Name    Type       DnsName                                     LaunchTime                  ImageId  
+ ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  i-684b60691ed6df821   running   alice   t3.small   ec2-54-214-97-187.compute-1.amazonaws.com   2023-04-22 03:23:51+00:00   ami-03cf127a  
+  i-5e2d7fc29698decd4   running   sam     t3.small   ec2-54-214-32-200.compute-1.amazonaws.com   2023-04-22 03:23:51+00:00   ami-03cf127a
 ```
-
 <!-- [[[end]]] -->
 
 List instances containing `gaga` in the name:
@@ -150,7 +146,7 @@ aec ec2 tags -v
 Tag an instance
 
 ```
-aec ec2 tag alice -t Project="top secret" keep=forever
+aec ec2 tag alice -t Project="top secret" -t keep=forever
 
   InstanceId            Name    Tag: Project   Tag: keep
  ──────────────────────────────────────────────────────────────────────
