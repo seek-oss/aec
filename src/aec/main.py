@@ -232,7 +232,7 @@ def main(args: List[str] = sys.argv[1:]) -> None:
 
     except RuntimeError as e:
         if "Credentials were refreshed" in e.args[0]:
-            print(f"RuntimeError: {e.args[0]}", file=sys.stderr)
+            print(f"RuntimeError: {e.args[0]}\n\nRe-authenticate with the appropriate AWS role.", file=sys.stderr)
         else:
             traceback.print_exc(file=sys.stderr)
 
