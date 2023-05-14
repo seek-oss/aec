@@ -4,13 +4,9 @@ on:
   push:
     branches: [master]
   pull_request:
-  release:
-    types: [published]
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Set up Python 3.7
@@ -35,15 +31,3 @@ jobs:
       run: make install
     - name: make hooks
       run: make hooks
-    - name: Make and test distribution
-      run: make dist test-dist
-      if: github.event.action == 'published'
-    - name: Publish to pypi
-      if: github.event.action == 'published'
-      env:
-        TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: make publish
-    # - name: Setup tmate session
-    #   if: ${{ failure() }}
-    #   uses: mxschmitt/action-tmate@v3
