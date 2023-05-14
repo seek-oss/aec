@@ -1,0 +1,46 @@
+name: release
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  wait:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for all ci checks to succeed
+        uses: lewagon/wait-on-check-action@v1.3.1
+        with:
+          ref: ${{ github.ref }}
+          running-workflow-name: ci
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 5
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: wait
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.7
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.7
+      - name: Cache virtualenv
+        id: cache-venv
+        uses: actions/cache@v3
+        with:
+          path: .venv
+          # same as used in the ci workflow for reuse across workflows
+          key: ${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-venv-${{ hashFiles('pyproject.toml') }}
+      - name: make install
+        if: steps.cache-venv.outputs.cache-hit != 'true'
+        run: make install
+      - name: Make and test distribution
+        run: make dist test-dist
+      - name: Publish to pypi
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+        run: make publish

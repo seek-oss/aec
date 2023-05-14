@@ -1,4 +1,4 @@
-name: CI
+name: ci
 
 on:
   push:
@@ -35,15 +35,3 @@ jobs:
       run: make install
     - name: make hooks
       run: make hooks
-    - name: Make and test distribution
-      run: make dist test-dist
-      if: github.event.action == 'published'
-    - name: Publish to pypi
-      if: github.event.action == 'published'
-      env:
-        TWINE_USERNAME: __token__
-        TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
-      run: make publish
-    # - name: Setup tmate session
-    #   if: ${{ failure() }}
-    #   uses: mxschmitt/action-tmate@v3
