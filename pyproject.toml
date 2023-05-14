@@ -51,6 +51,8 @@ requires = ["setuptools", "setuptools_scm[toml]", "wheel"]
 line-length = 120
 
 [tool.pyright]
+venvPath = "."
+venv = ".venv"
 include = ["src", "tests"]
 strictListInference = true
 strictDictionaryInference = true

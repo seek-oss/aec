@@ -46,8 +46,7 @@ node_modules: package.json
 
 ## pyright
 pyright: node_modules $(venv)
-# activate venv so pyright can find dependencies
-	PATH="$(venv)/bin:$$PATH" node_modules/.bin/pyright
+	node_modules/.bin/pyright
 
 ## run tests
 test: $(venv)
