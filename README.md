@@ -1,6 +1,7 @@
 # AWS EC2 CLI
 
-[![Build](https://github.com/seek-oss/aec/actions/workflows/pythonapp.yml/badge.svg)](https://github.com/seek-oss/aec/actions/workflows/pythonapp.yml)
+[![Build](https://github.com/seek-oss/aec/actions/workflows/ci.yml/badge.svg)](https://github.com/seek-oss/aec/actions/workflows/ci.yml)
+[![Release](https://github.com/seek-oss/aec/actions/workflows/release.yml/badge.svg)](https://github.com/seek-oss/aec/actions/workflows/release.yml)
 [![PyPI version](https://badge.fury.io/py/aec-cli.svg)](https://pypi.org/project/aec-cli/)
 
 _"Instead of using the console, use the cli!"_.
