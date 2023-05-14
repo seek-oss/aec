@@ -9,11 +9,11 @@ jobs:
   wait:
     runs-on: ubuntu-latest
     steps:
-      - name: Wait for all ci checks to succeed
+      - name: Wait for build checks to succeed
         uses: lewagon/wait-on-check-action@v1.3.1
         with:
           ref: ${{ github.ref }}
-          running-workflow-name: CI
+          check-name: build
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 5
 
