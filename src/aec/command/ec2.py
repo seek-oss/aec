@@ -35,15 +35,20 @@ def is_ebs_optimizable(instance_type: str) -> bool:
     return not instance_type.startswith("t2")
 
 
-class Instance(TypedDict, total=False):
-    InstanceId: str
-    State: str
-    Name: Optional[str]
-    Type: str
-    DnsName: str
-    SubnetId: str
-    Volumes: List[str]
-
+Instance = TypedDict(
+    "Instance",
+    {
+        "InstanceId": "str",
+        "State": "str",
+        "Name": "Optional[str]",
+        "Type": "str",
+        "DnsName": "str",
+        "SubnetId": "str",
+        "Volumes": "List[str]",
+        "Image.CreationDate": "str",
+    },
+    total=False,
+)
 
 def launch(
     config: Config,
@@ -248,6 +253,14 @@ def describe(
 
     instances: List[Instance] = []
     while True:
+        if "Image." in columns:
+            # fetch image info
+            images_ids = [i["ImageId"] for r in response["Reservations"] for i in r["Instances"]]
+            images_response = ec2_client.describe_images(ImageIds=images_ids)
+            images_by_id = {i["ImageId"]: i for i in images_response["Images"]}
+        else:
+            images_by_id = {}
+
         for r in response["Reservations"]:
             for i in r["Instances"]:
                 if include_terminated or i["State"]["Name"] != "terminated":
@@ -264,6 +277,9 @@ def describe(
                             desc[col] = i["PublicDnsName"] or i["PrivateDnsName"]
                         elif col == "Volumes":
                             desc[col] = volumes.get(i["InstanceId"], [])
+                        elif "Image." in col:
+                            key = col.split(".")[1]
+                            desc[col] = images_by_id[i["ImageId"]][key]
                         else:
                             desc[col] = i.get(col, None)
 
