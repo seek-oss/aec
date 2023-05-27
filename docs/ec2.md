@@ -109,7 +109,7 @@ aec ec2 describe -r -s LaunchTime
 
 Show a custom set of [columns](#columns):
 
-<!-- [[[cog 
+<!-- [[[cog
 cog.out(f"```\n{docs('aec ec2 describe -c Name,SubnetId,Volumes,Image.CreationDate', ec2.describe(config, columns='Name,SubnetId,Volumes,Image.CreationDate'))}\n```")
 ]]] -->
 ```

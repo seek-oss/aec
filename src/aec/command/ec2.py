@@ -280,7 +280,7 @@ def describe(
                             desc[col] = volumes.get(i["InstanceId"], [])
                         elif "Image." in col:
                             key = col.split(".")[1]
-                            desc[col] = images_by_id[i["ImageId"]][key]
+                            desc[col] = images_by_id[i["ImageId"]].get(key, None)
                         else:
                             desc[col] = i.get(col, None)
 
