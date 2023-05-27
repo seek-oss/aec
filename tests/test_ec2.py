@@ -250,7 +250,8 @@ def test_describe_sort_by(mock_aws_config: Config):
 def test_describe_columns(mock_aws_config: Config):
 
     def as_datetime(dstr: str) -> datetime:
-        return datetime.strptime(dstr, "%Y-%m-%dT%H:%M:%S.%fZ").replace(tzinfo=timezone.utc)
+        # Remove the "Z" character representing UTC, as it is not supported by fromisoformat()
+        return datetime.fromisoformat(dstr[:-1]).replace(tzinfo=timezone.utc)
 
     launch(mock_aws_config, "sam", ami_id)
 
