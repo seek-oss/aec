@@ -107,9 +107,9 @@ Show running instances sorted by date started (ie: LaunchTime), oldest first:
 aec ec2 describe -r -s LaunchTime
 ```
 
-Show a custom set of [columns](#columns)
+Show a custom set of [columns](#columns):
 
-<!-- [[[cog
+<!-- [[[cog 
 cog.out(f"```\n{docs('aec ec2 describe -c Name,SubnetId,Volumes,Image.CreationDate', ec2.describe(config, columns='Name,SubnetId,Volumes,Image.CreationDate'))}\n```")
 ]]] -->
 ```
@@ -208,7 +208,7 @@ Columns special to aec:
 - `Volumes` - volumes attached to the instance
 - `Image.X` - where `X` is a field from the Image, eg: `Image.CreationDate`. See more below.
 
-Instance columns [returned by the EC2 API](https://youtype.github.io/boto3_stubs_docs/mypy_boto3_ec2/type_defs/#instancetypedef) you can use:
+[Instance columns](https://youtype.github.io/boto3_stubs_docs/mypy_boto3_ec2/type_defs/#instancetypedef) returned by the EC2 API you can use:
 
 ```
 AmiLaunchIndex
@@ -254,7 +254,7 @@ VirtualizationType
 VpcId
 ```
 
-Image columns [returned by the EC2 API](https://youtype.github.io/boto3_stubs_docs/mypy_boto3_ec2/type_defs/#imagetypedef) you can use with the `Image.` suffix:
+[Image columns](https://youtype.github.io/boto3_stubs_docs/mypy_boto3_ec2/type_defs/#imagetypedef) returned by the EC2 API you can use with the `Image.` suffix:
 
 ```
 Architecture
