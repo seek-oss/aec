@@ -197,8 +197,9 @@ Columns special to aec:
 - `State` - state name
 - `Type` - instance type
 - `Volumes` - volumes attached to the instance
+- `Image.X` - where `X` is a field from the Image, eg: `Image.CreationDate`. See more below.
 
-Columns returned by the EC2 API:
+Instance columns [returned by the EC2 API](https://youtype.github.io/boto3_stubs_docs/mypy_boto3_ec2/type_defs/#instancetypedef) you can use:
 
 ```
 AmiLaunchIndex
@@ -242,4 +243,39 @@ UsageOperation
 UsageOperationUpdateTime
 VirtualizationType
 VpcId
+```
+
+Image columns [returned by the EC2 API](https://youtype.github.io/boto3_stubs_docs/mypy_boto3_ec2/type_defs/#imagetypedef) you can use with the `Image.` suffix:
+
+```
+Architecture
+CreationDate
+ImageId
+ImageLocation
+ImageType
+Public
+KernelId
+OwnerId
+Platform
+PlatformDetails
+UsageOperation
+ProductCodes
+RamdiskId
+State
+BlockDeviceMappings
+Description
+EnaSupport
+Hypervisor
+ImageOwnerAlias
+Name
+RootDeviceName
+RootDeviceType
+SriovNetSupport
+StateReason
+Tags
+VirtualizationType
+BootMode
+TpmSupport
+DeprecationTime
+ImdsSupport
 ```

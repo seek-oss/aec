@@ -50,6 +50,7 @@ Instance = TypedDict(
     total=False,
 )
 
+
 def launch(
     config: Config,
     name: str,

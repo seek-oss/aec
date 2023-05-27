@@ -1,11 +1,10 @@
-from datetime import datetime, timezone
 import os
 from pathlib import Path
 from typing import List
 
 import boto3
-from dirty_equals import IsDatetime, IsNow
 import pytest
+from dirty_equals import IsDatetime
 from moto import mock_ec2, mock_iam
 from moto.ec2 import ec2_backends
 from moto.ec2.models.amis import AMIS
@@ -248,7 +247,6 @@ def test_describe_sort_by(mock_aws_config: Config):
 
 
 def test_describe_columns(mock_aws_config: Config):
-
     launch(mock_aws_config, "sam", ami_id)
 
     del mock_aws_config["key_name"]
