@@ -9,4 +9,5 @@ def aws_credentials():
 
     # avoid stale creds causing
     # RuntimeError: Credentials were refreshed, but the refreshed credentials are still expired.
-    del os.environ["AWS_CREDENTIAL_EXPIRATION"]
+    if "AWS_CREDENTIAL_EXPIRATION" in os.environ:
+        del os.environ["AWS_CREDENTIAL_EXPIRATION"]
