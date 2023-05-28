@@ -4,6 +4,7 @@ from typing import List
 
 import boto3
 import pytest
+from dirty_equals import IsDatetime
 from moto import mock_ec2, mock_iam
 from moto.ec2 import ec2_backends
 from moto.ec2.models.amis import AMIS
@@ -251,7 +252,9 @@ def test_describe_columns(mock_aws_config: Config):
     del mock_aws_config["key_name"]
     launch(mock_aws_config, "alice", ami_id)
 
-    instances = describe(config=mock_aws_config, columns="SubnetId,Name,MissingKey,Volumes")
+    instances = describe(
+        config=mock_aws_config, columns="SubnetId,Name,MissingKey,Volumes,Image.CreationDate,Image.MissingKey"
+    )
     print(instances)
 
     assert len(instances) == 2
@@ -261,10 +264,15 @@ def test_describe_columns(mock_aws_config: Config):
     assert "subnet" in instances[1]["SubnetId"]
     assert instances[0]["Volumes"] == ["Size=15 GiB"]
     assert instances[1]["Volumes"] == ["Size=15 GiB"]
+    assert instances[0]["Image.CreationDate"] == IsDatetime(format_string="%Y-%m-%dT%H:%M:%S.%fZ")
+    assert instances[1]["Image.CreationDate"] == IsDatetime(format_string="%Y-%m-%dT%H:%M:%S.%fZ")
 
     # MissingKey will appear without values
     assert instances[0]["MissingKey"] is None  # type: ignore
     assert instances[1]["MissingKey"] is None  # type: ignore
+
+    assert instances[0]["Image.MissingKey"] is None  # type: ignore
+    assert instances[1]["Image.MissingKey"] is None  # type: ignore
 
 
 def describe_instance0(region_name: str, instance_id: str):

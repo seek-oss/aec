@@ -76,10 +76,10 @@ cog.out(f"```\n{docs('aec ec2 describe', ec2.describe(config))}\n```")
 ```
 aec ec2 describe
 
-  InstanceId            State     Name    Type       DnsName                                     LaunchTime                  ImageId  
- ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  i-684b60691ed6df821   running   alice   t3.small   ec2-54-214-97-187.compute-1.amazonaws.com   2023-04-22 03:23:51+00:00   ami-03cf127a  
-  i-5e2d7fc29698decd4   running   sam     t3.small   ec2-54-214-32-200.compute-1.amazonaws.com   2023-04-22 03:23:51+00:00   ami-03cf127a
+  InstanceId            State     Name    Type       DnsName                                      LaunchTime                  ImageId  
+ ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  i-cf1d572b090e417ef   running   alice   t3.small   ec2-54-214-212-170.compute-1.amazonaws.com   2023-05-27 03:17:09+00:00   ami-03cf127a  
+  i-0cbc08830d8779f3d   running   sam     t3.small   ec2-54-214-129-94.compute-1.amazonaws.com    2023-05-27 03:17:10+00:00   ami-03cf127a
 ```
 <!-- [[[end]]] -->
 
@@ -107,11 +107,20 @@ Show running instances sorted by date started (ie: LaunchTime), oldest first:
 aec ec2 describe -r -s LaunchTime
 ```
 
-Show a custom set of [columns](#columns)
+Show a custom set of [columns](#columns):
 
+<!-- [[[cog
+cog.out(f"```\n{docs('aec ec2 describe -c Name,SubnetId,Volumes,Image.CreationDate', ec2.describe(config, columns='Name,SubnetId,Volumes,Image.CreationDate'))}\n```")
+]]] -->
 ```
-aec ec2 describe -c Name,SubnetId,Volumes
+aec ec2 describe -c Name,SubnetId,Volumes,Image.CreationDate
+
+  Name    SubnetId          Volumes           Image.CreationDate  
+ ──────────────────────────────────────────────────────────────────────
+  alice   subnet-3f674ae5   ['Size=15 GiB']   2023-05-27T03:17:09.000Z  
+  sam     subnet-3f674ae5   ['Size=15 GiB']   2023-05-27T03:17:09.000Z
 ```
+<!-- [[[end]]] -->
 
 Show instances and all their tags:
 
@@ -197,8 +206,9 @@ Columns special to aec:
 - `State` - state name
 - `Type` - instance type
 - `Volumes` - volumes attached to the instance
+- `Image.X` - where `X` is a field from the Image, eg: `Image.CreationDate`. See more below.
 
-Columns returned by the EC2 API:
+[Instance columns](https://youtype.github.io/boto3_stubs_docs/mypy_boto3_ec2/type_defs/#instancetypedef) returned by the EC2 API you can use:
 
 ```
 AmiLaunchIndex
@@ -242,4 +252,39 @@ UsageOperation
 UsageOperationUpdateTime
 VirtualizationType
 VpcId
+```
+
+[Image columns](https://youtype.github.io/boto3_stubs_docs/mypy_boto3_ec2/type_defs/#imagetypedef) returned by the EC2 API you can use with the `Image.` suffix:
+
+```
+Architecture
+CreationDate
+ImageId
+ImageLocation
+ImageType
+Public
+KernelId
+OwnerId
+Platform
+PlatformDetails
+UsageOperation
+ProductCodes
+RamdiskId
+State
+BlockDeviceMappings
+Description
+EnaSupport
+Hypervisor
+ImageOwnerAlias
+Name
+RootDeviceName
+RootDeviceType
+SriovNetSupport
+StateReason
+Tags
+VirtualizationType
+BootMode
+TpmSupport
+DeprecationTime
+ImdsSupport
 ```
