@@ -3,7 +3,7 @@ from __future__ import annotations
 import codecs
 import sys
 import uuid
-from typing import IO, TYPE_CHECKING, Any, Dict, Iterator, List, Optional, Sequence, TypeVar, Union, cast
+from typing import IO, TYPE_CHECKING, Any, Iterator, Sequence, TypeVar, cast
 
 import boto3
 from botocore.exceptions import ClientError
@@ -18,16 +18,16 @@ if TYPE_CHECKING:
 
 class Agent(TypedDict):
     ID: str
-    Name: Optional[str]
+    Name: str | None
     PingStatus: str
     Platform: str
-    AgentVersion: Optional[str]
+    AgentVersion: str | None
 
 
 def describe(
     config: Config,
-    ident: Optional[str] = None,
-    name_match: Optional[str] = None,
+    ident: str | None = None,
+    name_match: str | None = None,
 ) -> Iterator[Agent]:
     """List running instances with the SSM agent."""
 
@@ -45,7 +45,7 @@ def describe(
     else:
         filters = []
 
-    kwargs: Dict[str, Any] = {"MaxResults": 50, "Filters": filters}
+    kwargs: dict[str, Any] = {"MaxResults": 50, "Filters": filters}
     client = boto3.client("ssm", region_name=config.get("region", None))
     while True:
         response = client.describe_instance_information(**kwargs)
@@ -67,7 +67,7 @@ def describe(
             break
 
 
-def patch_summary(config: Config) -> Iterator[Dict[str, Any]]:
+def patch_summary(config: Config) -> Iterator[dict[str, Any]]:
     """Patch summary for all instances that have run the patch baseline."""
     instances_names = describe_instances_names(config)
     instance_ids = list(instances_names.keys())
@@ -92,7 +92,7 @@ def patch_summary(config: Config) -> Iterator[Dict[str, Any]]:
             }
 
 
-def compliance_summary(config: Config) -> List[Dict[str, Any]]:
+def compliance_summary(config: Config) -> list[dict[str, Any]]:
     """Compliance summary for running instances that have run the patch baseline."""
     instances_names = describe_instances_names(config)
 
@@ -115,15 +115,15 @@ def compliance_summary(config: Config) -> List[Dict[str, Any]]:
 
 
 def patch(
-    config: Config, operation: Literal["scan", "install"], idents: List[str], no_reboot: bool
-) -> List[Dict[str, Optional[str]]]:
+    config: Config, operation: Literal["scan", "install"], idents: list[str], no_reboot: bool
+) -> list[dict[str, str | None]]:
     """Scan or install AWS patch baseline."""
 
     instance_ids = fetch_instance_ids(config, idents)
 
     client = boto3.client("ssm", region_name=config.get("region", None))
 
-    kwargs: Dict[str, Any] = {
+    kwargs: dict[str, Any] = {
         "DocumentName": "AWS-RunPatchBaseline",
         "InstanceIds": instance_ids,
     }
@@ -159,7 +159,7 @@ def patch(
     ]
 
 
-def run(config: Config, idents: List[str]) -> List[Dict[str, Optional[str]]]:
+def run(config: Config, idents: list[str]) -> list[dict[str, str | None]]:
     """
     Run a shell script on instance(s).
 
@@ -172,7 +172,7 @@ def run(config: Config, idents: List[str]) -> List[Dict[str, Optional[str]]]:
 
     script = sys.stdin.readlines()
 
-    kwargs: Dict[str, Any] = {
+    kwargs: dict[str, Any] = {
         "DocumentName": "AWS-RunShellScript",
         "InstanceIds": instance_ids,
         "Parameters": {"commands": script},
@@ -203,19 +203,19 @@ def run(config: Config, idents: List[str]) -> List[Dict[str, Optional[str]]]:
 E = TypeVar("E")
 
 
-def first(xs: Optional[Sequence[E]]) -> Optional[E]:
+def first(xs: Sequence[E] | None) -> E | None:
     if xs:
         return xs[0]
     else:
         return None
 
 
-def commands(config: Config, ident: Optional[str] = None) -> Iterator[Dict[str, Union[str, int, None]]]:
+def commands(config: Config, ident: str | None = None) -> Iterator[dict[str, str | int | None]]:
     """List commands by instance."""
 
     client = boto3.client("ssm", region_name=config.get("region", None))
 
-    kwargs: Dict[str, Any] = {"MaxResults": 50}
+    kwargs: dict[str, Any] = {"MaxResults": 50}
 
     if ident:
         kwargs["InstanceId"] = fetch_instance_id(config, ident)
@@ -243,7 +243,7 @@ def commands(config: Config, ident: Optional[str] = None) -> Iterator[Dict[str, 
             break
 
 
-def invocations(config: Config, command_id: str) -> List[Dict[str, Any]]:
+def invocations(config: Config, command_id: str) -> list[dict[str, Any]]:
     """List invocations of a command across instances."""
 
     client = boto3.client("ssm", region_name=config.get("region", None))
@@ -323,12 +323,12 @@ def fetch_instance_id(config: Config, ident: str) -> str:
         raise ValueError(f"No instance named {ident}") from None
 
 
-def fetch_instance_ids(config: Config, idents: List[str]) -> List[str]:
+def fetch_instance_ids(config: Config, idents: list[str]) -> list[str]:
     if idents == ["all"]:
         return [i["ID"] for i in describe(config)]
 
-    ids: List[str] = []
-    names: List[str] = []
+    ids: list[str] = []
+    names: list[str] = []
 
     for i in idents:
         if i.startswith("i-"):
@@ -349,7 +349,7 @@ def fetch_instance_ids(config: Config, idents: List[str]) -> List[str]:
     return ids
 
 
-def name_filters(idents: Optional[List[str]] = None) -> List[InstanceInformationStringFilterTypeDef]:
+def name_filters(idents: list[str] | None = None) -> list[InstanceInformationStringFilterTypeDef]:
     if idents and idents[0].startswith("i-"):
         return [{"Key": "InstanceIds", "Values": idents}]
     elif idents:

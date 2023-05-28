@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Dict, List
+from typing import TYPE_CHECKING, Any
 
 import boto3
 import pytz
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 from aec.util.config import Config
 
 
-def over_provisioned(config: Config) -> List[Dict[str, Any]]:
+def over_provisioned(config: Config) -> list[dict[str, Any]]:
     """Show recommendations for over-provisioned EC2 instances."""
 
     def util(metric: UtilizationMetricTypeDef) -> str:
@@ -40,7 +40,7 @@ def over_provisioned(config: Config) -> List[Dict[str, Any]]:
     return recs
 
 
-def describe_instances_uptime(config: Config) -> Dict[str, str]:
+def describe_instances_uptime(config: Config) -> dict[str, str]:
     """List EC2 instance uptimes in the region."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
