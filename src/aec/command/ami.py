@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, List, NamedTuple, Optional, Sequence
+from typing import TYPE_CHECKING, Any, NamedTuple, Sequence
 
 import boto3
 
@@ -14,11 +14,11 @@ from aec.util.config import Config
 
 
 class Image(TypedDict):
-    Name: Optional[str]
+    Name: str | None
     ImageId: str
     CreationDate: str
-    RootDeviceName: Optional[str]
-    Size: Optional[int]
+    RootDeviceName: str | None
+    Size: int | None
     SnapshotId: NotRequired[str]
 
 
@@ -59,9 +59,9 @@ def fetch(config: Config, ami: str) -> Image:
 
 def _describe_images(
     config: Config,
-    ident: Optional[str] = None,
-    owner: Optional[str] = None,
-    name_match: Optional[str] = None,
+    ident: str | None = None,
+    owner: str | None = None,
+    name_match: str | None = None,
 ) -> DescribeImagesResultTypeDef:
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
@@ -77,7 +77,7 @@ def _describe_images(
         elif isinstance(describe_images_owners, str):
             owners_filter = [describe_images_owners]
         else:
-            owners_filter: List[str] = describe_images_owners
+            owners_filter: list[str] = describe_images_owners
 
     if name_match is None:
         name_match = config.get("describe_images_name_match", None)
@@ -86,7 +86,7 @@ def _describe_images(
         filters = [{"Name": "name", "Values": [f"{ident}"]}] if ident else []
         match_desc = f" named {ident}" if ident else ""
     else:
-        filters: List[FilterTypeDef] = [{"Name": "name", "Values": [f"*{name_match}*"]}]
+        filters: list[FilterTypeDef] = [{"Name": "name", "Values": [f"*{name_match}*"]}]
         match_desc = f" with name containing {name_match}"
 
     print(f"Describing images owned by {owners_filter}{match_desc}")
@@ -96,11 +96,11 @@ def _describe_images(
 
 def describe(
     config: Config,
-    ident: Optional[str] = None,
-    owner: Optional[str] = None,
-    name_match: Optional[str] = None,
+    ident: str | None = None,
+    owner: str | None = None,
+    name_match: str | None = None,
     show_snapshot_id: bool = False,
-) -> List[Image]:
+) -> list[Image]:
     """List AMIs."""
 
     response = _describe_images(config, ident, owner, name_match)
@@ -123,11 +123,11 @@ def describe(
 
 def describe_tags(
     config: Config,
-    ident: Optional[str] = None,
-    owner: Optional[str] = None,
-    name_match: Optional[str] = None,
+    ident: str | None = None,
+    owner: str | None = None,
+    name_match: str | None = None,
     keys: Sequence[str] = [],
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """List AMI images with their tags."""
 
     response = _describe_images(config, ident, owner, name_match)

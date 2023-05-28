@@ -5,7 +5,7 @@ import os
 import os.path
 from collections import defaultdict
 from time import sleep
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, cast
+from typing import TYPE_CHECKING, Any, Sequence, cast
 
 import boto3
 from typing_extensions import TypedDict
@@ -38,25 +38,25 @@ def is_ebs_optimizable(instance_type: str) -> bool:
 class Instance(TypedDict, total=False):
     InstanceId: str
     State: str
-    Name: Optional[str]
+    Name: str | None
     Type: str
     DnsName: str
     SubnetId: str
-    Volumes: List[str]
+    Volumes: list[str]
 
 
 def launch(
     config: Config,
     name: str,
-    ami: Optional[str] = None,
-    template: Optional[str] = None,
-    volume_size: Optional[int] = None,
+    ami: str | None = None,
+    template: str | None = None,
+    volume_size: int | None = None,
     encrypted: bool = True,
-    instance_type: Optional[str] = None,
-    key_name: Optional[str] = None,
-    userdata: Optional[str] = None,
+    instance_type: str | None = None,
+    key_name: str | None = None,
+    userdata: str | None = None,
     wait_ssm: bool = False,
-) -> List[Instance]:
+) -> list[Instance]:
     """Launch a tagged EC2 instance with an EBS volume."""
 
     template = template or config.get("launch_template", None)
@@ -122,7 +122,7 @@ def launch(
         runargs["InstanceType"] = cast("InstanceTypeType", instance_type)
         runargs["EbsOptimized"] = is_ebs_optimizable(instance_type)
 
-    tags: List[TagTypeDef] = [{"Key": "Name", "Value": name}]
+    tags: list[TagTypeDef] = [{"Key": "Name", "Value": name}]
     additional_tags = config.get("additional_tags", {})
     if additional_tags:
         tags.extend([{"Key": k, "Value": v} for k, v in additional_tags.items()])
@@ -187,7 +187,7 @@ def launch(
     return describe(config=config, ident=instance_id)
 
 
-def _wait_ssm_agent_online(config: Config, instance_ids: List[str]) -> None:
+def _wait_ssm_agent_online(config: Config, instance_ids: list[str]) -> None:
     """
     Wait for ssm to come online.
 
@@ -208,13 +208,13 @@ def _wait_ssm_agent_online(config: Config, instance_ids: List[str]) -> None:
 
 def describe(
     config: Config,
-    ident: Optional[str] = None,
-    name_match: Optional[str] = None,
+    ident: str | None = None,
+    name_match: str | None = None,
     include_terminated: bool = False,
     show_running_only: bool = False,
     sort_by: str = "State,Name",
     columns: str = "InstanceId,State,Name,Type,DnsName,LaunchTime,ImageId",
-) -> List[Instance]:
+) -> list[Instance]:
     """List EC2 instances in the region."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -223,7 +223,7 @@ def describe(
     if show_running_only:
         filters.append({"Name": "instance-state-name", "Values": ["pending", "running"]})
 
-    kwargs: Dict[str, Any] = {"MaxResults": 1000, "Filters": filters}
+    kwargs: dict[str, Any] = {"MaxResults": 1000, "Filters": filters}
 
     response_fut = executor.submit(ec2_client.describe_instances, **kwargs)
 
@@ -235,7 +235,7 @@ def describe(
     if "Volumes" in columns:
         # fetch volume info
         volumes_response: DescribeVolumesResultTypeDef = executor.submit(ec2_client.describe_volumes).result()
-        volumes: Dict[str, List[str]] = defaultdict(list)
+        volumes: dict[str, list[str]] = defaultdict(list)
         for v in volumes_response["Volumes"]:
             for a in v["Attachments"]:
                 volumes[a["InstanceId"]].append(f'Size={v["Size"]} GiB')
@@ -246,7 +246,7 @@ def describe(
 
     # import json; print(json.dumps(response))
 
-    instances: List[Instance] = []
+    instances: list[Instance] = []
     while True:
         for r in response["Reservations"]:
             for i in r["Instances"]:
@@ -284,11 +284,11 @@ def describe(
 
 def describe_tags(
     config: Config,
-    ident: Optional[str] = None,
-    name_match: Optional[str] = None,
+    ident: str | None = None,
+    name_match: str | None = None,
     keys: Sequence[str] = [],
     volumes: bool = False,
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """List EC2 instances or volumes with their tags."""
     if volumes:
         return volume_tags(config, ident, name_match, keys)
@@ -298,14 +298,14 @@ def describe_tags(
 
 def tag(
     config: Config,
-    ident: Optional[str] = None,
-    name_match: Optional[str] = None,
+    ident: str | None = None,
+    name_match: str | None = None,
     tags: Sequence[str] = [],
-) -> List[Dict[str, Any]]:
+) -> list[dict[str, Any]]:
     """Tag EC2 instance(s)."""
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    tagdefs: List[TagTypeDef] = []
+    tagdefs: list[TagTypeDef] = []
 
     for t in tags:
         parts = t.split("=")
@@ -328,15 +328,15 @@ def tag(
 
 
 def instance_tags(
-    config: Config, ident: Optional[str] = None, name_match: Optional[str] = None, keys: Sequence[str] = []
-) -> List[Dict[str, Any]]:
+    config: Config, ident: str | None = None, name_match: str | None = None, keys: Sequence[str] = []
+) -> list[dict[str, Any]]:
     """List EC2 instances with their tags."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     response = ec2_client.describe_instances(Filters=to_filters(ident, name_match))
 
-    instances: List[Dict[str, Any]] = []
+    instances: list[dict[str, Any]] = []
     for r in response["Reservations"]:
         for i in r["Instances"]:
             if i["State"]["Name"] != "terminated":
@@ -353,15 +353,15 @@ def instance_tags(
 
 
 def volume_tags(
-    config: Config, ident: Optional[str] = None, name_match: Optional[str] = None, keys: Sequence[str] = []
-) -> List[Dict[str, Any]]:
+    config: Config, ident: str | None = None, name_match: str | None = None, keys: Sequence[str] = []
+) -> list[dict[str, Any]]:
     """List EC2 volumes with their tags."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     response = ec2_client.describe_volumes(Filters=to_filters(ident, name_match))
 
-    volumes: List[Dict[str, Any]] = []
+    volumes: list[dict[str, Any]] = []
     for v in response["Volumes"]:
         vol = {"VolumeId": v["VolumeId"], "Name": util_tags.get_value(v, "Name")}
         if not keys:
@@ -379,7 +379,7 @@ def start(
     config: Config,
     ident: str,
     wait_ssm: bool = False,
-) -> List[Instance]:
+) -> list[Instance]:
     """Start EC2 instance."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -411,7 +411,7 @@ def start(
     return describe(config, ident)
 
 
-def stop(config: Config, ident: str) -> List[Dict[str, Any]]:
+def stop(config: Config, ident: str) -> list[dict[str, Any]]:
     """Stop EC2 instance."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -430,7 +430,7 @@ def stop(config: Config, ident: str) -> List[Dict[str, Any]]:
     return [{"State": i["CurrentState"]["Name"], "InstanceId": i["InstanceId"]} for i in response["StoppingInstances"]]
 
 
-def terminate(config: Config, ident: str) -> List[Dict[str, Any]]:
+def terminate(config: Config, ident: str) -> list[dict[str, Any]]:
     """Terminate EC2 instance."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -451,7 +451,7 @@ def terminate(config: Config, ident: str) -> List[Dict[str, Any]]:
     ]
 
 
-def modify(config: Config, ident: str, type: str) -> List[Instance]:
+def modify(config: Config, ident: str, type: str) -> list[Instance]:
     """Change an instance's type."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -506,7 +506,7 @@ def logs(config: Config, ident: str) -> str:
     return response.get("Output", "No logs yet 😔")
 
 
-def templates(config: Config) -> List[Dict[str, Any]]:
+def templates(config: Config) -> list[dict[str, Any]]:
     """Describe launch templates."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -521,19 +521,19 @@ def templates(config: Config) -> List[Dict[str, Any]]:
 
 def status(
     config: Config,
-    ident: Optional[str] = None,
-    name_match: Optional[str] = None,
-) -> List[Dict[str, Any]]:
+    ident: str | None = None,
+    name_match: str | None = None,
+) -> list[dict[str, Any]]:
     """Describe instances status checks."""
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    kwargs: Dict[str, Any] = {"MaxResults": 1000}
+    kwargs: dict[str, Any] = {"MaxResults": 1000}
 
     response_fut = executor.submit(ec2_client.describe_instance_status, **kwargs)
     instances = executor.submit(describe_running_instances_names, config).result()
     response = response_fut.result()
 
-    def match(instance_id: str, instance_name: Optional[str]) -> bool:
+    def match(instance_id: str, instance_name: str | None) -> bool:
         # describe_instance_status doesn't support name filters in the request so match here
         if not ident and not name_match:
             return True
@@ -579,7 +579,7 @@ def status_text(summary: InstanceStatusSummaryTypeDef, key: str = "reachability"
     )
 
 
-def user_data(config: Config, ident: str) -> Optional[str]:
+def user_data(config: Config, ident: str) -> str | None:
     """Describe user data for an instance."""
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
@@ -601,7 +601,7 @@ def user_data(config: Config, ident: str) -> Optional[str]:
         return None
 
 
-def to_filters(ident: Optional[str] = None, name_match: Optional[str] = None) -> List[FilterTypeDef]:
+def to_filters(ident: str | None = None, name_match: str | None = None) -> list[FilterTypeDef]:
     if ident and ident.startswith("i-"):
         return [{"Name": "instance-id", "Values": [ident]}]
     elif ident:

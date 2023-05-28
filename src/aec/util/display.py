@@ -4,7 +4,7 @@ import csv
 import enum
 import json
 import sys
-from typing import Any, Dict, Iterable, Iterator, List, Optional, Sequence, cast
+from typing import Any, Iterable, Iterator, List, Sequence, cast
 
 from rich import box
 from rich.console import Console
@@ -17,7 +17,7 @@ class OutputFormat(enum.Enum):
     csv = "csv"
 
 
-def as_table(dicts: Sequence[Dict[str, Any]], keys: Optional[List[str]] = None) -> List[List[Optional[str]]]:
+def as_table(dicts: Sequence[dict[str, Any]], keys: list[str] | None = None) -> list[list[str | None]]:
     """
     Converts a list of dictionaries to a list of lists (table), ordered by specified keys.
 
@@ -33,12 +33,12 @@ def as_table(dicts: Sequence[Dict[str, Any]], keys: Optional[List[str]] = None) 
     return [keys] + [[str(d.get(f, "")) if d.get(f, "") else None for f in keys] for d in dicts]  # type: ignore
 
 
-def as_strings(values: Iterable[Any]) -> List[str]:
+def as_strings(values: Iterable[Any]) -> list[str]:
     return [str(v) if v else "" for v in values]
 
 
 def pretty_print(
-    result: List[Dict[str, Any]] | Iterator[Dict[str, Any]] | Dict | str | None,
+    result: list[dict[str, Any]] | Iterator[dict[str, Any]] | dict | str | None,
     output_format: OutputFormat = OutputFormat.table,
 ) -> None:
     """print results as table/csv/json."""

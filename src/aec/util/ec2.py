@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Dict, Optional, Sequence
+from typing import Sequence
 
 import boto3
 
@@ -9,14 +9,12 @@ from aec.util.config import Config
 from aec.util.ec2_types import DescribeArgs
 
 
-def describe_running_instances_names(config: Config) -> Dict[str, Optional[str]]:
+def describe_running_instances_names(config: Config) -> dict[str, str | None]:
     # 2x speed up (8 -> 4 secs) compared to listing all names
     return describe_instances_names(config, {"instance-state-name": ["running"]})
 
 
-def describe_instances_names(
-    config: Config, filters: Optional[Dict[str, Sequence[str]]] = None
-) -> Dict[str, Optional[str]]:
+def describe_instances_names(config: Config, filters: dict[str, Sequence[str]] | None = None) -> dict[str, str | None]:
     """Map of EC2 instance ids to names in the region."""
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
@@ -24,7 +22,7 @@ def describe_instances_names(
     if filters:
         kwargs["Filters"] = [{"Name": k, "Values": v} for k, v in filters.items()]
 
-    instances: Dict[str, Optional[str]] = {}
+    instances: dict[str, str | None] = {}
 
     while True:
         response = ec2_client.describe_instances(**kwargs)
