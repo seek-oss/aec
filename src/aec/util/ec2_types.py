@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, Sequence
+from typing import TYPE_CHECKING, Sequence
 
 if TYPE_CHECKING:
     from mypy_boto3_ec2.literals import InstanceTypeType, ShutdownBehaviorType
@@ -35,18 +35,18 @@ class _RequiredRunArgs(TypedDict, total=True):
 
 
 class RunArgs(_RequiredRunArgs, total=False):
-    BlockDeviceMappings: List[BlockDeviceMappingTypeDef]
+    BlockDeviceMappings: list[BlockDeviceMappingTypeDef]
     ImageId: str
     InstanceType: InstanceTypeType
     Ipv6AddressCount: int
-    Ipv6Addresses: List[InstanceIpv6AddressTypeDef]
+    Ipv6Addresses: list[InstanceIpv6AddressTypeDef]
     KernelId: str
     KeyName: str
     Monitoring: RunInstancesMonitoringEnabledTypeDef
     Placement: PlacementTypeDef
     RamdiskId: str
-    SecurityGroupIds: List[str]
-    SecurityGroups: List[str]
+    SecurityGroupIds: list[str]
+    SecurityGroups: list[str]
     SubnetId: str
     UserData: str
     AdditionalInfo: str
@@ -56,18 +56,18 @@ class RunArgs(_RequiredRunArgs, total=False):
     EbsOptimized: bool
     IamInstanceProfile: IamInstanceProfileSpecificationTypeDef
     InstanceInitiatedShutdownBehavior: ShutdownBehaviorType
-    NetworkInterfaces: List[InstanceNetworkInterfaceSpecificationTypeDef]
+    NetworkInterfaces: list[InstanceNetworkInterfaceSpecificationTypeDef]
     PrivateIpAddress: str
-    ElasticGpuSpecification: List[ElasticGpuSpecificationTypeDef]
-    ElasticInferenceAccelerators: List[ElasticInferenceAcceleratorTypeDef]
-    TagSpecifications: List[TagSpecificationTypeDef]
+    ElasticGpuSpecification: list[ElasticGpuSpecificationTypeDef]
+    ElasticInferenceAccelerators: list[ElasticInferenceAcceleratorTypeDef]
+    TagSpecifications: list[TagSpecificationTypeDef]
     LaunchTemplate: LaunchTemplateSpecificationTypeDef
     InstanceMarketOptions: InstanceMarketOptionsRequestTypeDef
     CreditSpecification: CreditSpecificationRequestTypeDef
     CpuOptions: CpuOptionsRequestTypeDef
     CapacityReservationSpecification: CapacityReservationSpecificationTypeDef
     HibernationOptions: HibernationOptionsRequestTypeDef
-    LicenseSpecifications: List[LicenseConfigurationRequestTypeDef]
+    LicenseSpecifications: list[LicenseConfigurationRequestTypeDef]
     MetadataOptions: InstanceMetadataOptionsRequestTypeDef
     EnclaveOptions: EnclaveOptionsRequestTypeDef
 
