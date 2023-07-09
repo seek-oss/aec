@@ -10,11 +10,11 @@ repos:
       - id: end-of-file-fixer
         stages: [push]
   - repo: https://github.com/crate-ci/typos
-    rev: v1.13.23
+    rev: v1.15.5
     hooks:
       - id: typos
         stages: [push]
-  # vscode & the cli uses these too so they has been installed into the virtualenv
+  # vscode & the cli uses these too so they have been installed into the virtualenv
   - repo: local
     hooks:
       - id: black
@@ -27,16 +27,16 @@ repos:
         entry: .venv/bin/ruff
         language: system
         types: [python]
-  # these hooks require the project's virtualenv
-  - repo: local
-    hooks:
       - id: pyright
         name: pyright
-        entry: make pyright
-        # run on all files
+        entry: node_modules/.bin/pyright
+        # run on all files to catch type errors that affect unchanged files
         pass_filenames: false
         language: system
         types: [python]
+  # these hooks require the project's virtualenv
+  - repo: local
+    hooks:
       - id: test
         name: test
         entry: make test
