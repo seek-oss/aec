@@ -341,9 +341,7 @@ def fetch_instance_ids(config: Config, idents: list[str]) -> list[str]:
         response = ec2_client.describe_instances(Filters=[{"Name": "tag:Name", "Values": names}])
 
         try:
-            for r in response["Reservations"]:
-                for i in r["Instances"]:
-                    ids.append(i["InstanceId"])
+            ids.extend(i["InstanceId"] for r in response["Reservations"] for i in r["Instances"])
         except IndexError:
             raise ValueError(f"No instances with ids or names {','.join(names)}") from None
     return ids

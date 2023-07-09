@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import os
 from pathlib import Path
-from typing import List
 
 import boto3
 import pytest
@@ -309,7 +310,7 @@ def test_tags(mock_aws_config: Config):
 def test_tags_volume(mock_aws_config: Config):
     ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
 
-    tags: List[TagTypeDef] = [{"Key": "Name", "Value": "Mr Snuffleupagus"}, {"Key": "Best Friend", "Value": "Big Bird"}]
+    tags: list[TagTypeDef] = [{"Key": "Name", "Value": "Mr Snuffleupagus"}, {"Key": "Best Friend", "Value": "Big Bird"}]
     ec2_client.create_volume(
         AvailabilityZone="us-east-1a", Size=10, TagSpecifications=[{"ResourceType": "volume", "Tags": tags}]
     )

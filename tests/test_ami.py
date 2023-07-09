@@ -1,4 +1,4 @@
-from typing import List
+from __future__ import annotations
 
 import boto3
 import pytest
@@ -70,7 +70,7 @@ def test_tags_image(mock_aws_config: Config):
     response = ec2_client.run_instances(MaxCount=1, MinCount=1)
     instance_id = response["Instances"][0]["InstanceId"]
 
-    tags: List[TagTypeDef] = [{"Key": "Team", "Value": "Engineering"}, {"Key": "Source AMI", "Value": "ami-12345"}]
+    tags: list[TagTypeDef] = [{"Key": "Team", "Value": "Engineering"}, {"Key": "Source AMI", "Value": "ami-12345"}]
 
     ec2_client.create_image(
         InstanceId=instance_id, Name="Beautiful Image", TagSpecifications=[{"ResourceType": "image", "Tags": tags}]
