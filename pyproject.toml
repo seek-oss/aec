@@ -29,7 +29,7 @@ dev = [
     "pyfakefs~=5.1",
     "pytest~=7.4",
     "pytest-mock~=3.11",
-    "ruff~=0.0.277",
+    "ruff~=0.0.270",
     "twine~=4.0",
 ]
 
