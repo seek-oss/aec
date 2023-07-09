@@ -32,7 +32,6 @@ tasks:
     dependencies:
       - install
     input_paths:
-      - .darglint
       - pyrightconfig.json
       - tests/
     environment:
