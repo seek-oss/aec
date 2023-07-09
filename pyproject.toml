@@ -29,7 +29,7 @@ dev = [
     "pyfakefs~=5.1",
     "pytest~=7.4",
     "pytest-mock~=3.11",
-    "ruff~=0.0.270",
+    "ruff~=0.0.277",
     "twine~=4.0",
 ]
 
@@ -83,6 +83,10 @@ select = [
     "UP",
     # flake8-self
     "SLF",
+    # flake8-future-annotations (for python 3.7/8/9)
+    "FA",
+    # perflint
+    "PERF",
     # ruff-specific
     "RUF",
 ]
