@@ -1,1 +1,0 @@
-recursive-include src/aec/config-example *.toml *.yaml
