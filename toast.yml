@@ -19,11 +19,12 @@ tasks:
       - install-node
     input_paths:
       - Makefile
-      - setup.py
       - pyproject.toml
       - README.md
       - package.json
       - src/
+      # needed for setuptools_scm and pre-commit
+      - .git/
     environment:
       CI: true
     command:
@@ -32,9 +33,9 @@ tasks:
     dependencies:
       - install
     input_paths:
-      - pyrightconfig.json
+      - .pre-commit-config.yaml
       - tests/
     environment:
       CI: true
     command:
-      make check test
+      make hooks
