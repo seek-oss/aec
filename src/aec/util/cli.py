@@ -1,8 +1,9 @@
 """Helper functions for describing and building a CLI with command groups, which contain many subcommands."""
+from __future__ import annotations
 
 import inspect
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace, _SubParsersAction
-from typing import Any, Callable, Dict, List, Optional, Tuple
+from typing import Any, Callable
 
 from aec.util.display import OutputFormat
 
@@ -17,9 +18,9 @@ class Cmd:
     def __init__(
         self,
         call_me: Callable[..., Any],
-        args: Optional[List[Arg]] = None,
-        name: Optional[str] = None,
-        help: Optional[str] = None,
+        args: list[Arg] | None = None,
+        name: str | None = None,
+        help: str | None = None,
     ):
         # dispatch() will call this function
         self.call_me = call_me
@@ -52,8 +53,8 @@ def add_command_group(
     parent: _SubParsersAction,
     name: str,
     help: str,
-    cmds: List[Cmd],
-    args_pre_processor: Optional[Callable[[Namespace], None]] = None,
+    cmds: list[Cmd],
+    args_pre_processor: Callable[[Namespace], None] | None = None,
 ) -> None:
     group = parent.add_parser(name, help=help)
     # show help if no args provided to the command group
@@ -77,7 +78,7 @@ def add_command_group(
         )
 
 
-def dispatch(parser: ArgumentParser, args: List[str]) -> Tuple[Any, OutputFormat]:
+def dispatch(parser: ArgumentParser, args: list[str]) -> tuple[Any, OutputFormat]:
     pargs = parser.parse_args(args)
 
     if "args_pre_processor" in pargs:
@@ -103,7 +104,7 @@ def dispatch(parser: ArgumentParser, args: List[str]) -> Tuple[Any, OutputFormat
     return (call_me(**vars(pargs)), output_format)
 
 
-def parameter_defaults(func: Callable) -> Dict[str, Any]:
+def parameter_defaults(func: Callable) -> dict[str, Any]:
     """
     Get a function's parameter defaults.
 
