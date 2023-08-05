@@ -20,10 +20,6 @@ For examples see:
 ## Prerequisites
 
 - python 3.7+
-  - Ubuntu 20.04: `sudo apt install python3 python3-pip python3-dev python3-venv`
-- automake:
-  - Ubuntu: `sudo apt install automake`
-  - macOS: `brew install automake`
 
 ## Install
 
