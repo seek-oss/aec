@@ -590,7 +590,7 @@ def status(
 
 
 def status_text(summary: InstanceStatusSummaryTypeDef, key: str = "reachability") -> str:
-    status = [d for d in summary["Details"] if d["Name"] == key][0]
+    status = next(d for d in summary["Details"] if d["Name"] == key)
     return f"{status['Name']} {status['Status']}" + (
         f" since {status['ImpairedSince']}" if status.get("ImpairedSince", None) else ""
     )

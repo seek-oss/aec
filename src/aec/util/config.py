@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import os.path
 from argparse import Namespace
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable
 
 import pytoml as toml
 from typing_extensions import TypedDict
@@ -14,7 +16,7 @@ class SsmConfig(TypedDict, total=False):
 class VpcConfig(TypedDict, total=False):
     name: str
     subnet: str
-    security_group: Union[str, List[str]]
+    security_group: str | list[str]
     associate_public_ip_address: bool
 
 
@@ -24,10 +26,10 @@ class Config(TypedDict, total=False):
     key_name: str
     # the following fields are optional
     region: str
-    additional_tags: Dict[str, str]
+    additional_tags: dict[str, str]
     iam_instance_profile_arn: str
     kms_key_id: str
-    describe_images_owners: Union[List[str], str]
+    describe_images_owners: list[str] | str
     describe_images_name_match: str
     launch_template: str
     volume_size: int
@@ -45,7 +47,7 @@ def inject_config(config_file: str) -> Callable[[Namespace], None]:
 
 
 # TODO add tests for this
-def load_config(config_file: str, profile_override: Optional[str] = None) -> Config:
+def load_config(config_file: str, profile_override: str | None = None) -> Config:
     """
     Load profile from the config file.
 
@@ -74,7 +76,7 @@ def load_config(config_file: str, profile_override: Optional[str] = None) -> Con
         raise Exception(f"Missing profile {profile_override} in {config_filepath}") from None
 
 
-def load_user_config_file(config_filepath: str) -> Dict[str, Any]:
+def load_user_config_file(config_filepath: str) -> dict[str, Any]:
     if not os.path.isfile(config_filepath):
         raise Exception(f"No config file {config_filepath}")
 

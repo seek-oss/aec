@@ -1,7 +1,8 @@
+from __future__ import annotations
+
 import argparse
 import sys
 import traceback
-from typing import List
 
 from botocore.exceptions import ClientError, NoCredentialsError
 
@@ -208,7 +209,7 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def main(args: List[str] = sys.argv[1:]) -> None:
+def main(args: list[str] = sys.argv[1:]) -> None:
     try:
         result, output_format = cli.dispatch(build_parser(), args)
         display.pretty_print(result, output_format)
