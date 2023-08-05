@@ -87,6 +87,7 @@ hooks: node_modules $(venv)
 	$(venv)/bin/pre-commit run --show-diff-on-failure --color=always --all-files --hook-stage push
 
 install-hooks: .git/hooks/pre-commit .git/hooks/pre-push
+	$(venv)/bin/pre-commit install-hooks
 
 .git/hooks/pre-commit: $(venv)
 	$(venv)/bin/pre-commit install -t pre-commit
