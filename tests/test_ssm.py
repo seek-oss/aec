@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 import io
-from typing import Optional
 
 import boto3
 import pytest
@@ -25,7 +26,7 @@ def mock_aws_config():
     }
 
 
-def run_instances(client: EC2Client, name: Optional[str] = None) -> str:
+def run_instances(client: EC2Client, name: str | None = None) -> str:
     if not name:
         return client.run_instances(ImageId=AMIS[0]["ami_id"], MinCount=1, MaxCount=1)["Instances"][0]["InstanceId"]
     return client.run_instances(

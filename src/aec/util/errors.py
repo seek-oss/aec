@@ -1,5 +1,6 @@
+from __future__ import annotations
+
 # HandledErrors are caught and their message printed without a stack trace
-from typing import Optional
 
 
 class HandledError(Exception):
@@ -7,7 +8,7 @@ class HandledError(Exception):
 
 
 class NoInstancesError(HandledError):
-    def __init__(self, name: Optional[str] = None, name_match: Optional[str] = None):
+    def __init__(self, name: str | None = None, name_match: str | None = None):
         if name:
             pretty_name = "instance id {name}" if name.startswith("i-") else f"name {name}"
             msg = f"No instances with {pretty_name}"
