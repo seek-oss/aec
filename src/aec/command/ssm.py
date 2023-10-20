@@ -261,7 +261,7 @@ def invocations(config: Config, command_id: str) -> list[dict[str, Any]]:
             "StatusDetails": i["StatusDetails"],
             "DocumentName": i["DocumentName"],
             "Operation": ",".join(command["Parameters"]["Operation"]),
-            "ConsoleLink": f"https://{region}.console.aws.amazon.com/systems-manager/run-command/{command_id}/{i['InstanceId']}?region={region}",  # noqa: E501
+            "ConsoleLink": f"https://{region}.console.aws.amazon.com/systems-manager/run-command/{command_id}/{i['InstanceId']}?region={region}",
         }
         for i in invocations["CommandInvocations"]
     ]

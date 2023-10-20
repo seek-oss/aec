@@ -29,7 +29,7 @@ dev = [
     "pyfakefs~=5.1",
     "pytest~=7.4",
     "pytest-mock~=3.11",
-    "ruff~=0.0.282",
+    "ruff~=0.1.1",
     "twine~=4.0",
 ]
 
@@ -64,31 +64,19 @@ line-length = 120
 
 # rules to enable/ignore
 select = [
-    # pyflakes
-    "F",
-    # pycodestyle
-    "E",
-    "W",
-    # type annotations
-    "ANN",
-    # pep8-naming
-    "N",
-    # bugbear
-    "B",
-    # isort
-    "I",
-    # flake8-unused-arguments
-    "ARG",
-    # pyupgrade
-    "UP",
-    # flake8-self
-    "SLF",
-    # flake8-future-annotations (for python 3.7/8/9)
-    "FA",
-    # perflint
-    "PERF",
-    # ruff-specific
-    "RUF",
+    "F",    # pyflakes
+    "E",    # pycodestyle
+    "W",    # pycodestyle
+    "ANN",  # type annotations
+    "N",    # pep8-naming
+    "B",    # bugbear
+    "I",    # isort
+    "ARG",  # flake8-unused-arguments
+    "SLF",  # flake8-self
+    "UP",   # pyupgrade
+    "FA",   # flake8-future-annotations (for python 3.7/8/9)
+    "PERF", # perflint
+    "RUF",  # ruff-specific
 ]
 ignore = [
     # allow untyped self and cls args, and no return type from dunder methods
