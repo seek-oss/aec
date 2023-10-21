@@ -33,12 +33,13 @@ format: $(venv)
 	$(venv)/bin/black .
 	$(venv)/bin/ruff .
 
-## lint code and run static type check
-check: lint pyright
+## lint, format and type check
+check: export SKIP=test
+check: hooks
 
-## lint and format code
-lint: $(venv)
-	SKIP=pyright,test $(venv)/bin/pre-commit run --show-diff-on-failure --color=always --all-files --hook-stage push
+## lint and format
+lint: export SKIP=pyright,test
+lint: hooks
 
 node_modules: package.json
 	npm install --no-save
