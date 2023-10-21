@@ -28,11 +28,6 @@ clean:
 ## create venv and install this package and hooks
 install: $(venv) node_modules $(if $(value CI),,install-hooks)
 
-## format all code
-format: $(venv)
-	$(venv)/bin/black .
-	$(venv)/bin/ruff .
-
 ## lint, format and type check
 check: export SKIP=test
 check: hooks

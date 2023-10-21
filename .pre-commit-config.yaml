@@ -14,19 +14,16 @@ repos:
     hooks:
       - id: typos
         stages: [push]
-  # vscode & the cli uses these too so they have been installed into the virtualenv
-  - repo: local
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 23.3.0
     hooks:
       - id: black
-        name: black
-        entry: .venv/bin/black
-        language: system
-        types: [python]
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.1
+    hooks:
       - id: ruff
-        name: ruff
-        entry: .venv/bin/ruff
-        language: system
-        types: [python]
+  - repo: local
+    hooks:
       - id: pyright
         name: pyright
         entry: node_modules/.bin/pyright
@@ -34,9 +31,6 @@ repos:
         pass_filenames: false
         language: system
         types: [python]
-  # these hooks require the project's virtualenv
-  - repo: local
-    hooks:
       - id: test
         name: test
         entry: make test
