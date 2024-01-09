@@ -86,6 +86,11 @@ ec2_cli = [
         config_arg,
         Arg("ident", type=str, help="Name tag of instance or instance id")
     ]),
+    Cmd(ec2.rename, [
+        config_arg,
+        Arg("ident", type=str, help="Name tag of instance or instance id"),
+        Arg("new_name", type=str, help="New name"),
+    ]),
     Cmd(ec2.tag, [
         config_arg,
         Arg("ident", type=str, nargs="?", help="Filter to instances with this Name tag or instance id."),
