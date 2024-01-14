@@ -6,7 +6,7 @@ readme = "README.md"
 license = { file = "LICENSE" }
 keywords = ["AWS", "EC2", "command line", "cli"]
 classifiers = ["License :: OSI Approved :: MIT License"]
-requires-python = ">=3.8"
+requires-python = ">=3.7"
 dependencies = [
     "boto3==1.28.1",
     "importlib_resources==5.12.0",
