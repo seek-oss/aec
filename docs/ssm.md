@@ -16,7 +16,7 @@ optional arguments:
 subcommands:
   {commands,compliance-summary,describe,invocations,output,patch,patch-summary,run}
     commands            List commands by instance.
-    compliance-summary  Compliance summary for running instances that have run the patch baseline.
+    compliance-summary  Compliance summary for instances that have run the patch baseline.
     describe            List running instances with the SSM agent.
     invocations         List invocations of a command across instances.
     output              Fetch output of a command from S3.

@@ -15,13 +15,13 @@ from aec.main import build_parser
 cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ec2'].format_help()}```")
 ]]] -->
 ```
-usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,tag,tags,status,templates,terminate,user-data} ...
+usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,rename,tag,tags,status,templates,terminate,user-data} ...
 
 optional arguments:
   -h, --help            show this help message and exit
 
 subcommands:
-  {create-key-pair,describe,launch,logs,modify,start,stop,tag,tags,status,templates,terminate,user-data}
+  {create-key-pair,describe,launch,logs,modify,start,stop,rename,tag,tags,status,templates,terminate,user-data}
     create-key-pair     Create a key pair.
     describe            List EC2 instances in the region.
     launch              Launch a tagged EC2 instance with an EBS volume.
@@ -29,6 +29,7 @@ subcommands:
     modify              Change an instance's type.
     start               Start EC2 instance.
     stop                Stop EC2 instance.
+    rename              Rename EC2 instance(s).
     tag                 Tag EC2 instance(s).
     tags                List EC2 instances or volumes with their tags.
     status              Describe instances status checks.
@@ -76,10 +77,10 @@ cog.out(f"```\n{docs('aec ec2 describe', ec2.describe(config))}\n```")
 ```
 aec ec2 describe
 
-  InstanceId            State     Name    Type       DnsName                                      LaunchTime                  ImageId  
- ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  i-cf1d572b090e417ef   running   alice   t3.small   ec2-54-214-212-170.compute-1.amazonaws.com   2023-05-27 03:17:09+00:00   ami-03cf127a  
-  i-0cbc08830d8779f3d   running   sam     t3.small   ec2-54-214-129-94.compute-1.amazonaws.com    2023-05-27 03:17:10+00:00   ami-03cf127a
+  InstanceId            State     Name    Type       DnsName                                     LaunchTime                  ImageId  
+ ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  i-f5e6d94c9e2c3afc2   running   alice   t3.small   ec2-54-214-149-72.compute-1.amazonaws.com   2024-01-09 03:17:41+00:00   ami-03cf127a  
+  i-94b729fbf6d605870   running   sam     t3.small   ec2-54-214-85-61.compute-1.amazonaws.com    2024-01-09 03:17:41+00:00   ami-03cf127a
 ```
 <!-- [[[end]]] -->
 
@@ -117,8 +118,8 @@ aec ec2 describe -c Name,SubnetId,Volumes,Image.CreationDate
 
   Name    SubnetId          Volumes           Image.CreationDate  
  ──────────────────────────────────────────────────────────────────────
-  alice   subnet-3f674ae5   ['Size=15 GiB']   2023-05-27T03:17:09.000Z  
-  sam     subnet-3f674ae5   ['Size=15 GiB']   2023-05-27T03:17:09.000Z
+  alice   subnet-35665c57   ['Size=15 GiB']   2024-01-09T03:17:41.000Z  
+  sam     subnet-35665c57   ['Size=15 GiB']   2024-01-09T03:17:41.000Z
 ```
 <!-- [[[end]]] -->
 
@@ -160,6 +161,12 @@ aec ec2 tag alice -t Project="top secret" -t keep=forever
   InstanceId            Name    Tag: Project   Tag: keep
  ──────────────────────────────────────────────────────────────────────
   i-0f7f6a072d985fd2d   alice   top secret     forever
+```
+
+Rename an instance
+
+```
+aec ec2 rename alice alice2
 ```
 
 Show output as csv instead of a table (works with any command)

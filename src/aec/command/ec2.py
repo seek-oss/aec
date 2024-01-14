@@ -313,6 +313,26 @@ def describe_tags(
     return instance_tags(config, ident, name_match, keys)
 
 
+def rename(
+    config: Config,
+    ident: str,
+    new_name: str,
+) -> list[Instance]:
+    """Rename EC2 instance(s)."""
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
+
+    instances = describe(config, ident, include_terminated=True)
+
+    ids = [i["InstanceId"] for i in instances]
+
+    if not ids:
+        raise NoInstancesError(name=ident)
+
+    ec2_client.create_tags(Resources=ids, Tags=[{"Key": "Name", "Value": new_name}])
+
+    return describe(config, new_name, include_terminated=True)
+
+
 def tag(
     config: Config,
     ident: str | None = None,

@@ -19,6 +19,7 @@ from aec.command.ec2 import (
     launch,
     logs,
     modify,
+    rename,
     start,
     status,
     stop,
@@ -280,6 +281,15 @@ def describe_instance0(region_name: str, instance_id: str):
     ec2_client = boto3.client("ec2", region_name=region_name)
     instances = ec2_client.describe_instances(InstanceIds=[instance_id])
     return instances["Reservations"][0]["Instances"][0]
+
+
+def test_rename(mock_aws_config: Config):
+    launch(mock_aws_config, "alice", ami_id)
+
+    instances = rename(mock_aws_config, "alice", "alice2")
+
+    assert len(instances) == 1
+    assert instances[0]["Name"] == "alice2"
 
 
 def test_tag(mock_aws_config: Config):

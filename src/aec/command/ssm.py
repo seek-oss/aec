@@ -93,7 +93,7 @@ def patch_summary(config: Config) -> Iterator[dict[str, Any]]:
 
 
 def compliance_summary(config: Config) -> list[dict[str, Any]]:
-    """Compliance summary for running instances that have run the patch baseline."""
+    """Compliance summary for instances that have run the patch baseline."""
     instances_names = describe_instances_names(config)
 
     client = boto3.client("ssm", region_name=config.get("region", None))
