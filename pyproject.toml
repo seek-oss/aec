@@ -6,7 +6,7 @@ readme = "README.md"
 license = { file = "LICENSE" }
 keywords = ["AWS", "EC2", "command line", "cli"]
 classifiers = ["License :: OSI Approved :: MIT License"]
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = [
     "boto3==1.28.1",
     "importlib_resources==5.12.0",
@@ -23,7 +23,7 @@ dev = [
     "boto3-stubs[ec2,compute-optimizer,ssm,s3]",
     "cogapp~=3.3",
     "dirty-equals~=0.6",
-    "moto[ec2]~=4.1",
+    "moto[ec2]~=4.1.15",
     "pre-commit~=2.20",
     "pyfakefs~=5.1",
     "pytest~=7.4",
