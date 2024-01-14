@@ -7,7 +7,7 @@ import boto3
 import pytest
 from dirty_equals import IsDatetime
 from moto import mock_ec2, mock_iam
-from moto.ec2 import ec2_backends
+from moto.ec2.models import ec2_backends
 from moto.ec2.models.amis import AMIS
 from mypy_boto3_ec2.type_defs import TagTypeDef
 from pytest_mock import MockFixture

@@ -5,7 +5,7 @@ from contextlib import redirect_stdout
 from typing import Any, Iterator
 
 from moto import mock_ec2
-from moto.ec2 import ec2_backends
+from moto.ec2.models import ec2_backends
 from moto.ec2.models.amis import AMIS
 
 import aec.command.ec2 as ec2
