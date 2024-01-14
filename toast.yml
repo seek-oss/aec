@@ -1,4 +1,4 @@
-image: python:3.7-slim
+image: python:3.8-slim
 command_prefix: set -euo pipefail
 tasks:
   install-packages:
