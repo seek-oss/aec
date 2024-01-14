@@ -163,6 +163,12 @@ aec ec2 tag alice -t Project="top secret" -t keep=forever
   i-0f7f6a072d985fd2d   alice   top secret     forever
 ```
 
+Rename an instance
+
+```
+aec ec2 rename alice alice2
+```
+
 Show output as csv instead of a table (works with any command)
 
 ```
