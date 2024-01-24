@@ -64,7 +64,7 @@ ec2_cli = [
         Arg("--volume-size", type=int, help="EBS volume size (GB). Defaults to AMI volume size."),
         Arg("--encrypted", type=bool, help="Whether the EBS volume is encrypted", default=True),
         Arg("--instance-type", type=str, help="Instance type"),
-        Arg("--key-name", type=str, help="Key name"),
+        Arg("-k", "--key-name", type=str, help="Key name"),
         Arg("--userdata", type=str, help="User data file path or http URL"),
         Arg("-w", "--wait-ssm", action='store_true', help="Wait until the SSM agent is online before exiting"),
     ]),
