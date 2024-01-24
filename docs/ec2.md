@@ -15,13 +15,13 @@ from aec.main import build_parser
 cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ec2'].format_help()}```")
 ]]] -->
 ```
-usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,rename,tag,tags,status,templates,terminate,user-data} ...
+usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,subnets,rename,tag,tags,status,templates,terminate,user-data} ...
 
 optional arguments:
   -h, --help            show this help message and exit
 
 subcommands:
-  {create-key-pair,describe,launch,logs,modify,start,stop,rename,tag,tags,status,templates,terminate,user-data}
+  {create-key-pair,describe,launch,logs,modify,start,stop,subnets,rename,tag,tags,status,templates,terminate,user-data}
     create-key-pair     Create a key pair.
     describe            List EC2 instances in the region.
     launch              Launch a tagged EC2 instance with an EBS volume.
@@ -29,6 +29,7 @@ subcommands:
     modify              Change an instance's type.
     start               Start EC2 instance.
     stop                Stop EC2 instance.
+    subnets             Describe subnets.
     rename              Rename EC2 instance(s).
     tag                 Tag EC2 instance(s).
     tags                List EC2 instances or volumes with their tags.
@@ -79,8 +80,8 @@ aec ec2 describe
 
   InstanceId            State     Name    Type       DnsName                                      LaunchTime                  ImageId  
  ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  i-787bfc64b53337dbb   running   alice   t3.small   ec2-54-214-45-74.compute-1.amazonaws.com     2024-01-24 09:43:25+00:00   ami-03cf127a  
-  i-f9f09548c218a73a5   running   sam     t3.small   ec2-54-214-132-201.compute-1.amazonaws.com   2024-01-24 09:43:26+00:00   ami-03cf127a
+  i-f5f2696b9bfbc3a9a   running   alice   t3.small   ec2-54-214-109-174.compute-1.amazonaws.com   2024-01-24 10:47:17+00:00   ami-03cf127a  
+  i-0f351848e07d84178   running   sam     t3.small   ec2-54-214-123-102.compute-1.amazonaws.com   2024-01-24 10:47:17+00:00   ami-03cf127a
 ```
 <!-- [[[end]]] -->
 
@@ -118,8 +119,8 @@ aec ec2 describe -c Name,SubnetId,Volumes,Image.CreationDate
 
   Name    SubnetId          Volumes           Image.CreationDate  
  ──────────────────────────────────────────────────────────────────────
-  alice   subnet-338b9497   ['Size=15 GiB']   2024-01-24T09:43:25.000Z  
-  sam     subnet-338b9497   ['Size=15 GiB']   2024-01-24T09:43:25.000Z
+  alice   subnet-b3184a8b   ['Size=15 GiB']   2024-01-24T10:47:16.000Z  
+  sam     subnet-b3184a8b   ['Size=15 GiB']   2024-01-24T10:47:16.000Z
 ```
 <!-- [[[end]]] -->
 
