@@ -80,8 +80,8 @@ aec ec2 describe
 
   InstanceId            State     Name    Type       DnsName                                      LaunchTime                  ImageId  
  ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  i-f5f2696b9bfbc3a9a   running   alice   t3.small   ec2-54-214-109-174.compute-1.amazonaws.com   2024-01-24 10:47:17+00:00   ami-03cf127a  
-  i-0f351848e07d84178   running   sam     t3.small   ec2-54-214-123-102.compute-1.amazonaws.com   2024-01-24 10:47:17+00:00   ami-03cf127a
+  i-b39b1ea60119e503e   running   alice   t3.small   ec2-54-214-187-100.compute-1.amazonaws.com   2024-01-24 10:50:11+00:00   ami-03cf127a  
+  i-52d4b17a9a8586a31   running   sam     t3.small   ec2-54-214-105-52.compute-1.amazonaws.com    2024-01-24 10:50:11+00:00   ami-03cf127a
 ```
 <!-- [[[end]]] -->
 
@@ -119,8 +119,8 @@ aec ec2 describe -c Name,SubnetId,Volumes,Image.CreationDate
 
   Name    SubnetId          Volumes           Image.CreationDate  
  ──────────────────────────────────────────────────────────────────────
-  alice   subnet-b3184a8b   ['Size=15 GiB']   2024-01-24T10:47:16.000Z  
-  sam     subnet-b3184a8b   ['Size=15 GiB']   2024-01-24T10:47:16.000Z
+  alice   subnet-8ffb733b   ['Size=15 GiB']   2024-01-24T10:50:11.000Z  
+  sam     subnet-8ffb733b   ['Size=15 GiB']   2024-01-24T10:50:11.000Z
 ```
 <!-- [[[end]]] -->
 
@@ -204,6 +204,25 @@ aec ec2 describe -it i-02a840e0ca609c432 -c StateReason
  ─────────────────────────────────────────────────────────────────────────────────────────────
   {'Code': 'Client.InternalError', 'Message': 'Client.InternalError: Client error on launch'}
 ```
+
+Describe subnets:
+
+<!-- [[[cog
+cog.out(f"```\n{docs('aec ec2 subnets', ec2.subnets(config))}\n```")
+]]] -->
+```
+aec ec2 subnets
+
+  SubnetId          VpcId          AvailabilityZone   CidrBlock        Name  
+ ───────────────────────────────────────────────────────────────────────────
+  subnet-8ffb733b   vpc-df045ae9   us-east-1a         172.31.0.0/20  
+  subnet-50f11bb4   vpc-df045ae9   us-east-1b         172.31.16.0/20  
+  subnet-93811557   vpc-df045ae9   us-east-1c         172.31.32.0/20  
+  subnet-f17e6261   vpc-df045ae9   us-east-1d         172.31.48.0/20  
+  subnet-1a5d6685   vpc-df045ae9   us-east-1e         172.31.64.0/20  
+  subnet-b12557cf   vpc-df045ae9   us-east-1f         172.31.80.0/20
+```
+<!-- [[[end]]] -->
 
 ## Columns
 
