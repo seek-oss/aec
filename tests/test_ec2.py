@@ -355,9 +355,11 @@ def test_stop_start(mock_aws_config: Config):
 
     start(mock_aws_config, ident="alice")
 
+
 def test_subnets(mock_aws_config: Config):
     assert len(subnets(mock_aws_config)) == 6
     assert len(subnets(mock_aws_config, vpc_id="foobar")) == 0
+
 
 def test_modify(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
