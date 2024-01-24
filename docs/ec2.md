@@ -77,10 +77,10 @@ cog.out(f"```\n{docs('aec ec2 describe', ec2.describe(config))}\n```")
 ```
 aec ec2 describe
 
-  InstanceId            State     Name    Type       DnsName                                     LaunchTime                  ImageId  
- ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  i-f5e6d94c9e2c3afc2   running   alice   t3.small   ec2-54-214-149-72.compute-1.amazonaws.com   2024-01-09 03:17:41+00:00   ami-03cf127a  
-  i-94b729fbf6d605870   running   sam     t3.small   ec2-54-214-85-61.compute-1.amazonaws.com    2024-01-09 03:17:41+00:00   ami-03cf127a
+  InstanceId            State     Name    Type       DnsName                                      LaunchTime                  ImageId  
+ ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  i-787bfc64b53337dbb   running   alice   t3.small   ec2-54-214-45-74.compute-1.amazonaws.com     2024-01-24 09:43:25+00:00   ami-03cf127a  
+  i-f9f09548c218a73a5   running   sam     t3.small   ec2-54-214-132-201.compute-1.amazonaws.com   2024-01-24 09:43:26+00:00   ami-03cf127a
 ```
 <!-- [[[end]]] -->
 
@@ -118,8 +118,8 @@ aec ec2 describe -c Name,SubnetId,Volumes,Image.CreationDate
 
   Name    SubnetId          Volumes           Image.CreationDate  
  ──────────────────────────────────────────────────────────────────────
-  alice   subnet-35665c57   ['Size=15 GiB']   2024-01-09T03:17:41.000Z  
-  sam     subnet-35665c57   ['Size=15 GiB']   2024-01-09T03:17:41.000Z
+  alice   subnet-338b9497   ['Size=15 GiB']   2024-01-24T09:43:25.000Z  
+  sam     subnet-338b9497   ['Size=15 GiB']   2024-01-24T09:43:25.000Z
 ```
 <!-- [[[end]]] -->
 

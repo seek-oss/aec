@@ -35,6 +35,7 @@ ami_keywords = {
     "ubuntu1604": AmiMatcher(canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64"),
     "ubuntu1804": AmiMatcher(canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64"),
     "ubuntu2004": AmiMatcher(canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64"),
+    "ubuntu2204": AmiMatcher(canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64"),
 }
 
 
