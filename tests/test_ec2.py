@@ -23,6 +23,7 @@ from aec.command.ec2 import (
     start,
     status,
     stop,
+    subnets,
     tag,
     terminate,
     user_data,
@@ -353,6 +354,11 @@ def test_stop_start(mock_aws_config: Config):
     stop(mock_aws_config, ident="alice")
 
     start(mock_aws_config, ident="alice")
+
+
+def test_subnets(mock_aws_config: Config):
+    assert len(subnets(mock_aws_config)) == 6
+    assert len(subnets(mock_aws_config, vpc_id="foobar")) == 0
 
 
 def test_modify(mock_aws_config: Config):

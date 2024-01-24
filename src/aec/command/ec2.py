@@ -616,6 +616,28 @@ def status_text(summary: InstanceStatusSummaryTypeDef, key: str = "reachability"
     )
 
 
+def subnets(config: Config, vpc_id: str | None = None) -> list[dict[str, Any]]:
+    """Describe subnets."""
+
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
+
+    response = ec2_client.describe_subnets(Filters=[{"Name": "vpc-id", "Values": [vpc_id]}] if vpc_id else [])
+
+    return sorted(
+        [
+            {
+                "SubnetId": subnet["SubnetId"],
+                "VpcId": subnet["VpcId"],
+                "AvailabilityZone": subnet["AvailabilityZone"],
+                "CidrBlock": subnet["CidrBlock"],
+                "Name": util_tags.get_value(subnet, "Name"),
+            }
+            for subnet in response["Subnets"]
+        ],
+        key=lambda s: s["VpcId"] + s["AvailabilityZone"] + (s["Name"] or ""),
+    )
+
+
 def user_data(config: Config, ident: str) -> str | None:
     """Describe user data for an instance."""
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))

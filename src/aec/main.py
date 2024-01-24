@@ -86,6 +86,10 @@ ec2_cli = [
         config_arg,
         Arg("ident", type=str, help="Name tag of instance or instance id")
     ]),
+    Cmd(ec2.subnets, [
+        config_arg,
+        Arg("-v", "--vpc-id", help="Filter to these VPCs"),
+    ]),
     Cmd(ec2.rename, [
         config_arg,
         Arg("ident", type=str, help="Name tag of instance or instance id"),
