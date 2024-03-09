@@ -26,7 +26,7 @@ dev = [
     "moto[ec2]~=4.2.13",
     "pre-commit~=3.5",
     "pyfakefs~=5.1",
-    "pytest~=7.4",
+    "pytest>=7.4,<9.0",
     "pytest-mock~=3.11",
     "twine~=4.0",
 ]
