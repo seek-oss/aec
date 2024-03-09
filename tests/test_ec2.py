@@ -6,7 +6,7 @@ from pathlib import Path
 import boto3
 import pytest
 from dirty_equals import IsDatetime
-from moto import mock_ec2, mock_iam
+from moto.core.models import DEFAULT_ACCOUNT_ID
 from moto.ec2.models import ec2_backends
 from moto.ec2.models.amis import AMIS
 from mypy_boto3_ec2.type_defs import TagTypeDef
@@ -33,9 +33,7 @@ from aec.util.config import Config
 
 
 @pytest.fixture
-def mock_aws_config() -> Config:
-    mock = mock_ec2()
-    mock.start()
+def mock_aws_config(_mock_ec2: None) -> Config:
     region = "us-east-1"
 
     return {
@@ -43,7 +41,7 @@ def mock_aws_config() -> Config:
         "key_name": "test_key",
         "vpc": {
             "name": "test vpc",
-            "subnet": ec2_backends["123456789012"]["us-east-1"].get_default_subnet("us-east-1a").id,
+            "subnet": ec2_backends[DEFAULT_ACCOUNT_ID][region].get_default_subnet("us-east-1a").id,
             "security_group": "default",
         },
     }
@@ -96,7 +94,6 @@ def test_launch_multiple_security_groups(mock_aws_config: Config):
     print(launch(mock_aws_config, "alice", ami_id))
 
 
-@mock_iam
 def test_launch_with_instance_profile(mock_aws_config: Config):
     iam = boto3.client("iam", "us-east-1")
 
