@@ -8,13 +8,13 @@ keywords = ["AWS", "EC2", "command line", "cli"]
 classifiers = ["License :: OSI Approved :: MIT License"]
 requires-python = ">=3.8"
 dependencies = [
-    "boto3==1.34.19",
-    "importlib_resources==6.1.1",
+    "boto3==1.34.59",
+    "importlib_resources==6.1.3",
     "pytoml==0.1.21",
-    "pytz==2023.3.post1",
+    "pytz==2024.1",
     "requests==2.31.0",
-    "rich==13.7.0",
-    "typing_extensions==4.9.0",
+    "rich==13.7.1",
+    "typing_extensions==4.10.0",
 ]
 
 [project.optional-dependencies]
@@ -23,12 +23,12 @@ dev = [
     "boto3-stubs[ec2,compute-optimizer,ssm,s3]",
     "cogapp~=3.3",
     "dirty-equals~=0.6",
-    "moto[ec2]~=4.2.13",
+    "moto[ec2]~=5.0.2",
     "pre-commit~=3.5",
     "pyfakefs~=5.1",
-    "pytest~=7.4",
+    "pytest~=8.0",
     "pytest-mock~=3.11",
-    "twine~=4.0",
+    "twine~=5.0",
 ]
 
 [project.scripts]

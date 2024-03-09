@@ -4,7 +4,6 @@ import io
 
 import boto3
 import pytest
-from moto import mock_ec2, mock_ssm
 from moto.ec2.models.amis import AMIS
 from mypy_boto3_ec2 import EC2Client
 from pytest import MonkeyPatch
@@ -17,10 +16,7 @@ from aec.util.config import Config
 
 
 @pytest.fixture
-def mock_aws_config():
-    mock_ec2().start()
-    mock_ssm().start()
-
+def mock_aws_config(_mock_ec2: None, _mock_ssm: None):
     return {
         "region": "ap-southeast-2",
     }

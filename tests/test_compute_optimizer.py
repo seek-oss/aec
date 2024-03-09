@@ -1,5 +1,5 @@
 import pytest
-from moto import mock_ec2
+from moto.core.models import DEFAULT_ACCOUNT_ID
 from moto.ec2.models import ec2_backends
 from moto.ec2.models.amis import AMIS
 
@@ -9,9 +9,7 @@ from aec.util.config import Config
 
 
 @pytest.fixture
-def mock_aws_config():
-    mock = mock_ec2()
-    mock.start()
+def mock_aws_config(_mock_ec2: None) -> Config:
     region = "us-east-1"
 
     return {
@@ -20,7 +18,7 @@ def mock_aws_config():
         "key_name": "test_key",
         "vpc": {
             "name": "test vpc",
-            "subnet": ec2_backends["123456789012"]["us-east-1"].get_default_subnet("us-east-1a").id,
+            "subnet": ec2_backends[DEFAULT_ACCOUNT_ID][region].get_default_subnet("us-east-1a").id,
             "security_group": "default",
         },
     }

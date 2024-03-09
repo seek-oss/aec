@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import boto3
 import pytest
-from moto import mock_ec2
 from moto.ec2.models.amis import AMIS
 from mypy_boto3_ec2 import EC2Client
 from mypy_boto3_ec2.type_defs import TagTypeDef
@@ -12,10 +11,7 @@ from aec.util.config import Config
 
 
 @pytest.fixture
-def mock_aws_config() -> Config:
-    mock = mock_ec2()
-    mock.start()
-
+def mock_aws_config(_mock_ec2: None) -> Config:
     return {
         "region": "ap-southeast-2",
     }

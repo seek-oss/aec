@@ -4,7 +4,7 @@ import io
 from contextlib import redirect_stdout
 from typing import Any, Iterator
 
-from moto import mock_ec2
+from moto import mock_aws
 from moto.ec2.models import ec2_backends
 from moto.ec2.models.amis import AMIS
 
@@ -13,7 +13,7 @@ import aec.util.display as display
 from aec.util.config import Config
 
 # fixtures
-mock_ec2().start()
+mock_aws().start()
 region = "us-east-1"
 mock_aws_config: Config = {
     "region": region,
