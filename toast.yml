@@ -19,8 +19,6 @@ tasks:
       - package.json
       - .pre-commit-config.yaml
     command: |
-      # a git repo is needed during pip install by setuptools_scm and later by pre-commit
-      git init . --initial-branch=main
       # needed so the editable package (.pth) we install points at src
       mkdir src
       make install
@@ -34,6 +32,7 @@ tasks:
       - src/
       - tests/
     command: |
-      # needed for pre-commit to see files
+      # needed for pre-commit to work and see files
+      git init . --initial-branch=main
       git add src tests
       make hooks

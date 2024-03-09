@@ -42,6 +42,7 @@ requires = ["setuptools", "setuptools_scm[toml]", "wheel"]
 
 # enable setuptools_scm to set the version based on git tags
 [tool.setuptools_scm]
+fallback_version = "0.0.0"
 
 # use PyCharm default line length of 120
 
@@ -72,9 +73,9 @@ select = [
     "ARG",  # flake8-unused-arguments
     "SLF",  # flake8-self
     "UP",   # pyupgrade
-    "FA",   # flake8-future-annotations (for python 3.7/8/9)
     "PERF", # perflint
     "RUF",  # ruff-specific
+    "FA",   # flake8-future-annotations (for python 3.7/8/9)
 ]
 ignore = [
     # allow untyped self and cls args, and no return type from dunder methods
