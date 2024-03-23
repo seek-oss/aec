@@ -15,8 +15,3 @@ updates:
   directory: "/"
   schedule:
     interval: "monthly"
-  groups:
-    pyright:
-      applies-to: version-updates
-      patterns:
-        - "*"
