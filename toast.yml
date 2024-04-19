@@ -18,6 +18,9 @@ tasks:
       - pyproject.toml
       - package.json
       - .pre-commit-config.yaml
+    environment:
+      # don't install hooks
+      CI: true
     command: |
       # needed so the editable package (.pth) we install points at src
       mkdir src
