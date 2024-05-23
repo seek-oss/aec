@@ -4,7 +4,7 @@ import argparse
 import sys
 import traceback
 
-from botocore.exceptions import ClientError, NoCredentialsError
+import botocore.exceptions
 
 import aec.command.ami as ami
 import aec.command.compute_optimizer as compute_optimizer
@@ -222,7 +222,7 @@ def main(args: list[str] = sys.argv[1:]) -> None:
     try:
         result, output_format = cli.dispatch(build_parser(), args)
         display.pretty_print(result, output_format)
-    except ClientError as e:
+    except botocore.exceptions.ClientError as e:
         code = e.response["Error"]["Code"]
 
         if code == "UnauthorizedOperation":
@@ -235,10 +235,12 @@ def main(args: list[str] = sys.argv[1:]) -> None:
         else:
             traceback.print_exc(file=sys.stderr)
 
-    except NoCredentialsError as e:
+    except botocore.exceptions.NoCredentialsError as e:
         print(
             f"NoCredentialsError: {e}.\n\nAuthenticate with the appropriate AWS role before retrying.", file=sys.stderr
         )
+    except botocore.exceptions.NoRegionError as e:
+        print(f"NoRegionError: {e}.\n\nAuthenticate with the appropriate AWS role before retrying.", file=sys.stderr)
 
     except RuntimeError as e:
         if "Credentials were refreshed" in e.args[0]:
