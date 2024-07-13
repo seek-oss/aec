@@ -15,12 +15,11 @@ tasks:
       - install-node
     input_paths:
       - Makefile
+      - Makefile-common.mk
       - pyproject.toml
       - package.json
       - .pre-commit-config.yaml
-    environment:
-      # don't install hooks
-      CI: true
+      - .python-version
     command: |
       # needed so the editable package (.pth) we install points at src
       mkdir src

@@ -1,29 +1,25 @@
 # unless otherwise specified, hooks run on push only
 default_stages: [push]
 repos:
-  - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v3.2.0
-    hooks:
-      - id: trailing-whitespace
-        args: [--markdown-linebreak-ext=md]
-        stages: [push]
-      - id: end-of-file-fixer
-        stages: [push]
   - repo: https://github.com/crate-ci/typos
-    rev: v1.15.5
+    rev: v1.19.0
     hooks:
       - id: typos
-        stages: [push]
-  - repo: https://github.com/psf/black-pre-commit-mirror
-    rev: 23.3.0
-    hooks:
-      - id: black
-  - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.1.1
-    hooks:
-      - id: ruff
+  # formatters and linters are available in the virtualenv so they can be run from the makefile & vscode
   - repo: local
     hooks:
+      - id: ruff
+        name: ruff
+        entry: .venv/bin/ruff check --force-exclude
+        language: system
+        types: [python]
+        require_serial: true
+      - id: ruff-format
+        name: ruff-format
+        entry: .venv/bin/ruff format
+        language: system
+        types: [python]
+        require_serial: true
       - id: pyright
         name: pyright
         entry: node_modules/.bin/pyright
@@ -33,7 +29,7 @@ repos:
         types: [python]
       - id: test
         name: test
-        entry: make test
+        entry: .venv/bin/pytest
         # run on all files
         pass_filenames: false
         language: system
