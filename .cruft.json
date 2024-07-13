@@ -1,0 +1,15 @@
+{
+  "template": "git@github.com:tekumara/python-typed-template.git",
+  "commit": "518252bdc6eaa21043b929e074a03c1da6126db2",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "repo_name": "aec",
+      "package_name": "aec",
+      "project_name": "aec-cli",
+      "description": "AWS EC2 CLI",
+      "_template": "git@github.com:tekumara/python-typed-template.git"
+    }
+  },
+  "directory": null
+}
