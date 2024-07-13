@@ -79,7 +79,7 @@ def pretty_print(
             return
 
         table = Table(box=box.SIMPLE)
-        for c in first.keys():
+        for c in first:
             table.add_column(c)
 
         table.add_row(*as_strings(first.values()))

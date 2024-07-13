@@ -23,6 +23,8 @@ tasks:
     command: |
       # needed so the editable package (.pth) we install points at src
       mkdir src
+      # needed to install hooks
+      git init . --initial-branch=main
       make install
   hooks:
     description: make hooks
@@ -35,6 +37,5 @@ tasks:
       - tests/
     command: |
       # needed for pre-commit to work and see files
-      git init . --initial-branch=main
       git add src tests
       make hooks

@@ -679,6 +679,6 @@ def read_file(filepath: str) -> str:
 def read_url(url: str) -> str:
     import requests
 
-    r = requests.get(url)
+    r = requests.get(url, timeout=5)
     r.raise_for_status()
     return r.text

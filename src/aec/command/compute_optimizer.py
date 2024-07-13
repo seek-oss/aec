@@ -68,7 +68,7 @@ def difference_in_words(date1: datetime, date2: datetime) -> str:
     if difference.hours > 0:
         words += f"{difference.hours} hours "
     if words == "":
-        if difference.minutes != 0:
+        if difference.minutes != 0:  # noqa: SIM108
             words = f"{difference.minutes} minutes"
         else:
             words = f"{difference.seconds} seconds"

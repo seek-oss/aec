@@ -21,7 +21,7 @@ config_arg = Arg("--config", help="Section of the config file to use")
 
 
 def ami_arg_checker(s: str) -> str:
-    if not (s.startswith("ami-") or s in ami.ami_keywords.keys()):
+    if not (s.startswith("ami-") or s in ami.ami_keywords):
         raise argparse.ArgumentTypeError(f"must begin with 'ami-' or be one of {list(ami.ami_keywords.keys())}")
 
     return s
@@ -59,7 +59,7 @@ ec2_cli = [
     Cmd(ec2.launch, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance"),
-        Arg("-a", "--ami", type=ami_arg_checker, help=f"AMI id or a keyword to lookup the latest ami: {[k for k in ami.ami_keywords.keys()]}"),
+        Arg("-a", "--ami", type=ami_arg_checker, help=f"AMI id or a keyword to lookup the latest ami: {list(ami.ami_keywords.keys())}"),
         Arg("-t", "--template", type=str, help="Launch template name"),
         Arg("--volume-size", type=int, help="EBS volume size (GB). Defaults to AMI volume size."),
         Arg("--encrypted", type=bool, help="Whether the EBS volume is encrypted", default=True),

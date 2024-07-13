@@ -40,7 +40,7 @@ ami_keywords = {
 
 
 def fetch(config: Config, ami: str) -> Image:
-    ami_matcher = ami_keywords.get(ami, None)
+    ami_matcher = ami_keywords.get(ami)
     if ami_matcher:
         try:
             # lookup the latest ami by name match
@@ -112,7 +112,7 @@ def describe(
             "Name": i.get("Name", None),
             "ImageId": i["ImageId"],
             "CreationDate": i["CreationDate"],
-            "RootDeviceName": i["RootDeviceName"] if "RootDeviceName" in i else None,
+            "RootDeviceName": i.get("RootDeviceName", None),
             "Size": i["BlockDeviceMappings"][0]["Ebs"]["VolumeSize"] if i["BlockDeviceMappings"] else None,
         }
         if show_snapshot_id:

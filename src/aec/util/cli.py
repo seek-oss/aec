@@ -1,4 +1,5 @@
 """Helper functions for describing and building a CLI with command groups, which contain many subcommands."""
+
 from __future__ import annotations
 
 import inspect
