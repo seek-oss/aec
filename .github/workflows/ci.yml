@@ -27,7 +27,7 @@ jobs:
     - name: make install
       if: steps.cache-venv.outputs.cache-hit != 'true'
       run: |
-        time curl -LsSf https://astral.sh/uv/install.sh | sh
+        curl -LsSf https://astral.sh/uv/install.sh | sh
         make install
     - name: make hooks
       run: make hooks
