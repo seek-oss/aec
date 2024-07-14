@@ -26,6 +26,8 @@ jobs:
         key: ${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
     - name: make install
       if: steps.cache-venv.outputs.cache-hit != 'true'
-      run: make install
+      run: |
+        time curl -LsSf https://astral.sh/uv/install.sh | sh
+        make install
     - name: make hooks
       run: make hooks
