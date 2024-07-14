@@ -16,7 +16,7 @@ pip = $(shell command -v uv >/dev/null && echo "uv pip" || echo "$(venv)/bin/pip
 $(python): $(if $(value CI),|,) .python-version
 # create venv using system python even when another venv is active
 	PATH=$${PATH#$${VIRTUAL_ENV}/bin:} python3 -m venv --clear $(venv)
-	$(venv)/bin/python --version
+	$(python) --version
 
 $(venv): $(if $(value CI),|,) pyproject.toml $(python)
 	$(pip) install -e '.[dev]'
