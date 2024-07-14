@@ -10,7 +10,7 @@ help:
 venv ?= .venv
 # this is a symlink so we set the --check-symlink-times makeflag above
 python := $(venv)/bin/python
-# use uv if present
+# use uv if present, else fall back to pip
 pip = $(shell command -v uv >/dev/null && echo "uv pip" || echo "$(venv)/bin/pip")
 
 $(python): $(if $(value CI),|,) .python-version
