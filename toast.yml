@@ -2,8 +2,9 @@ image: python:3.8-slim
 command_prefix: set -euo pipefail
 tasks:
   install-packages:
-    command:
+    command: |
       apt-get update && apt-get install -y curl git make
+      curl -LsSf https://astral.sh/uv/install.sh | sh
   install-node:
     dependencies:
       - install-packages
@@ -21,6 +22,8 @@ tasks:
       - .pre-commit-config.yaml
       - .python-version
     command: |
+      # add uv to path
+      export PATH="/root/.cargo/bin/:$PATH"
       # needed so the editable package (.pth) we install points at src
       mkdir src
       # needed to install hooks
