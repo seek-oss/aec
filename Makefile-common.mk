@@ -1,4 +1,4 @@
-MAKEFLAGS += --warn-undefined-variables
+MAKEFLAGS += --warn-undefined-variables --check-symlink-times
 SHELL = /bin/bash -o pipefail
 .DEFAULT_GOAL := help
 .PHONY: help clean install format check pyright test dist hooks install-hooks
@@ -8,15 +8,17 @@ help:
 	@awk '/^##.*$$/,/^[~\/\.0-9a-zA-Z_-]+:/' $(MAKEFILE_LIST) | awk '!(NR%2){print $$0p}{p=$$0}' | awk 'BEGIN {FS = ":.*?##"}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' | sort
 
 venv ?= .venv
-pip := $(venv)/bin/pip
+# this is a symlink so we set the --check-symlink-times makeflag above
+python := $(venv)/bin/python
+# use uv if present, else fall back to pip
+pip = $(shell command -v uv >/dev/null && echo "uv pip" || echo "$(venv)/bin/pip")
 
-$(pip): $(if $(value CI),|,) .python-version
+$(python): $(if $(value CI),|,) .python-version
 # create venv using system python even when another venv is active
 	PATH=$${PATH#$${VIRTUAL_ENV}/bin:} python3 -m venv --clear $(venv)
-	$(venv)/bin/python --version
-	$(pip) install --upgrade pip~=24.0
+	$(python) --version
 
-$(venv): $(if $(value CI),|,) pyproject.toml $(pip)
+$(venv): $(if $(value CI),|,) pyproject.toml $(python)
 	$(pip) install -e '.[dev]'
 	touch $(venv)
 
