@@ -240,7 +240,7 @@ def main(args: list[str] = sys.argv[1:]) -> None:
             f"NoCredentialsError: {e}.\n\nAuthenticate with the appropriate AWS role before retrying.", file=sys.stderr
         )
     except botocore.exceptions.NoRegionError as e:
-        print(f"NoRegionError: {e}.\n\nAuthenticate with the appropriate AWS role before retrying.", file=sys.stderr)
+        print(f"NoRegionError: {e}\n\nAuthenticate with the appropriate AWS role before retrying.", file=sys.stderr)
 
     except RuntimeError as e:
         if "Credentials were refreshed" in e.args[0]:
