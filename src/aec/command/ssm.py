@@ -92,26 +92,30 @@ def patch_summary(config: Config) -> Iterator[dict[str, Any]]:
             }
 
 
-def compliance_summary(config: Config) -> list[dict[str, Any]]:
+def compliance_summary(config: Config) -> Iterator[dict[str, Any]]:
     """Compliance summary for instances that have run the patch baseline."""
     instances_names = describe_instances_names(config)
 
+    kwargs: dict[str, Any] = {"Filters": [{"Key": "ComplianceType", "Values": ["Patch"], "Type": "EQUAL"}]}
     client = boto3.client("ssm", region_name=config.get("region", None))
 
-    response = client.list_resource_compliance_summaries(
-        Filters=[{"Key": "ComplianceType", "Values": ["Patch"], "Type": "EQUAL"}]
-    )
+    while True:
+        response = client.list_resource_compliance_summaries(**kwargs)
 
-    return [
-        {
-            "InstanceId": i["ResourceId"],
-            "Name": instances_names.get(i["ResourceId"], None),
-            "Status": i["Status"],
-            "NonCompliantCount": i["NonCompliantSummary"]["NonCompliantCount"],
-            "Last operation time": i["ExecutionSummary"]["ExecutionTime"],
-        }
-        for i in response["ResourceComplianceSummaryItems"]
-    ]
+        for i in response["ResourceComplianceSummaryItems"]:
+            yield {
+                "InstanceId": i["ResourceId"],
+                "Name": instances_names.get(i["ResourceId"], None),
+                "Status": i["Status"],
+                "NonCompliantCount": i["NonCompliantSummary"]["NonCompliantCount"],
+                "Last operation time": i["ExecutionSummary"]["ExecutionTime"],
+            }
+
+        next_token = response.get("NextToken", None)
+        if next_token:
+            kwargs["NextToken"] = next_token
+        else:
+            break
 
 
 def patch(
