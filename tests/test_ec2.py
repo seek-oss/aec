@@ -20,6 +20,7 @@ from aec.command.ec2 import (
     logs,
     modify,
     rename,
+    restart,
     start,
     status,
     stop,
@@ -351,6 +352,30 @@ def test_stop_start(mock_aws_config: Config):
     stop(mock_aws_config, ident="alice")
 
     start(mock_aws_config, ident="alice")
+
+
+def test_restart_new_type(mock_aws_config: Config):
+    launch(mock_aws_config, "alice", ami_id)
+
+    result = restart(mock_aws_config, ident="alice", type="new_type")
+
+    assert result[0]["Name"] == "alice"
+    assert result[0]["Type"] == "new_type"
+    assert result[0]["State"] == "running"
+
+    assert len(result) == 1
+
+
+def test_restart_same_type(mock_aws_config: Config):
+    launch(mock_aws_config, "alice", ami_id)
+
+    result = restart(mock_aws_config, ident="alice")
+
+    assert result[0]["Name"] == "alice"
+    assert result[0]["Type"] == "t3.small"
+    assert result[0]["State"] == "running"
+
+    assert len(result) == 1
 
 
 def test_subnets(mock_aws_config: Config):

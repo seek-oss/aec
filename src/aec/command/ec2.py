@@ -244,7 +244,7 @@ def describe(
         volumes: dict[str, list[str]] = defaultdict(list)
         for v in volumes_response["Volumes"]:
             for a in v["Attachments"]:
-                volumes[a["InstanceId"]].append(f'Size={v["Size"]} GiB')
+                volumes[a["InstanceId"]].append(f"Size={v['Size']} GiB")
     else:
         volumes = {}
 
@@ -507,6 +507,24 @@ def modify(config: Config, ident: str, type: str) -> list[Instance]:
     ec2_client.modify_instance_attribute(InstanceId=instance_id, EbsOptimized={"Value": is_ebs_optimizable(type)})
 
     return describe(config, ident)
+
+
+def restart(config: Config, ident: str, type: str | None = None) -> list[Instance]:
+    """Restart EC2 instance, optionally changing the instance type."""
+    print(f"Stopping instance {ident}")
+    stop(config, ident)
+
+    instance_status = describe(config, ident)[0]["State"]
+    while instance_status != "stopped":
+        print(f"Waiting for instance {ident} to stop ...")
+        sleep(5)
+        instance_status = describe(config, ident)[0]["State"]
+
+    if type:
+        print(f"Changing instance type to {type}")
+        modify(config, ident, type)
+
+    return start(config, ident)
 
 
 def create_key_pair(config: Config, key_name: str, file_path: str) -> str:
