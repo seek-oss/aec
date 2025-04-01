@@ -27,6 +27,13 @@ repos:
         pass_filenames: false
         language: system
         types: [python]
+      - id: docs
+        name: docs
+        entry: make docs
+        # run on all files
+        pass_filenames: false
+        language: system
+        types: [python]
       - id: test
         name: test
         entry: .venv/bin/pytest

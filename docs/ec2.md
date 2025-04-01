@@ -77,11 +77,11 @@ cog.out(f"```\n{docs('aec ec2 describe', ec2.describe(config))}\n```")
 ]]] -->
 ```
 aec ec2 describe
-
-  InstanceId            State     Name    Type       DnsName                                      LaunchTime                  ImageId  
- ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-  i-b39b1ea60119e503e   running   alice   t3.small   ec2-54-214-187-100.compute-1.amazonaws.com   2024-01-24 10:50:11+00:00   ami-03cf127a  
-  i-52d4b17a9a8586a31   running   sam     t3.small   ec2-54-214-105-52.compute-1.amazonaws.com    2024-01-24 10:50:11+00:00   ami-03cf127a
+                                                                                                                                            
+  InstanceId            State     Name    Type       DnsName                                      LaunchTime                  ImageId       
+ ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
+  i-ca6d44d15f26770da   running   alice   t3.small   ec2-54-214-231-148.compute-1.amazonaws.com   2025-04-01 09:35:07+00:00   ami-03cf127a  
+  i-0557a8be4dd76e330   running   sam     t3.small   ec2-54-214-64-69.compute-1.amazonaws.com     2025-04-01 09:35:07+00:00   ami-03cf127a
 ```
 <!-- [[[end]]] -->
 
@@ -116,11 +116,11 @@ cog.out(f"```\n{docs('aec ec2 describe -c Name,SubnetId,Volumes,Image.CreationDa
 ]]] -->
 ```
 aec ec2 describe -c Name,SubnetId,Volumes,Image.CreationDate
-
-  Name    SubnetId          Volumes           Image.CreationDate  
- ──────────────────────────────────────────────────────────────────────
-  alice   subnet-8ffb733b   ['Size=15 GiB']   2024-01-24T10:50:11.000Z  
-  sam     subnet-8ffb733b   ['Size=15 GiB']   2024-01-24T10:50:11.000Z
+                                                                                 
+  Name    SubnetId                   Volumes           Image.CreationDate        
+ ─────────────────────────────────────────────────────────────────────────────── 
+  alice   subnet-83b0f21c5622bfe94   ['Size=15 GiB']   2025-04-01T09:35:07.000Z  
+  sam     subnet-83b0f21c5622bfe94   ['Size=15 GiB']   2025-04-01T09:35:07.000Z
 ```
 <!-- [[[end]]] -->
 
@@ -212,15 +212,15 @@ cog.out(f"```\n{docs('aec ec2 subnets', ec2.subnets(config))}\n```")
 ]]] -->
 ```
 aec ec2 subnets
-
-  SubnetId          VpcId          AvailabilityZone   CidrBlock        Name  
- ───────────────────────────────────────────────────────────────────────────
-  subnet-8ffb733b   vpc-df045ae9   us-east-1a         172.31.0.0/20  
-  subnet-50f11bb4   vpc-df045ae9   us-east-1b         172.31.16.0/20  
-  subnet-93811557   vpc-df045ae9   us-east-1c         172.31.32.0/20  
-  subnet-f17e6261   vpc-df045ae9   us-east-1d         172.31.48.0/20  
-  subnet-1a5d6685   vpc-df045ae9   us-east-1e         172.31.64.0/20  
-  subnet-b12557cf   vpc-df045ae9   us-east-1f         172.31.80.0/20
+                                                                                               
+  SubnetId                   VpcId                   AvailabilityZone   CidrBlock        Name  
+ ───────────────────────────────────────────────────────────────────────────────────────────── 
+  subnet-83b0f21c5622bfe94   vpc-280883450bcbd1610   us-east-1a         172.31.0.0/20          
+  subnet-afc778b279c1ef5f5   vpc-280883450bcbd1610   us-east-1b         172.31.16.0/20         
+  subnet-a4fc39401c8808f5a   vpc-280883450bcbd1610   us-east-1c         172.31.32.0/20         
+  subnet-5e91d699fdb23b201   vpc-280883450bcbd1610   us-east-1d         172.31.48.0/20         
+  subnet-6cf22b793d0cb0bc4   vpc-280883450bcbd1610   us-east-1e         172.31.64.0/20         
+  subnet-18b8b2973eb2c4ca2   vpc-280883450bcbd1610   us-east-1f         172.31.80.0/20
 ```
 <!-- [[[end]]] -->
 
