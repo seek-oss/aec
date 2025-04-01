@@ -17,7 +17,7 @@ def over_provisioned(config: Config) -> list[dict[str, Any]]:
     """Show recommendations for over-provisioned EC2 instances."""
 
     def util(metric: UtilizationMetricTypeDef) -> str:
-        return f'{metric["name"]} {metric["statistic"][:3]} {metric["value"]}'
+        return f"{metric['name']} {metric['statistic'][:3]} {metric['value']}"
 
     instances_uptime = describe_instances_uptime(config)
 

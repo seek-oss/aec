@@ -55,7 +55,7 @@ def describe(
                 "ID": i["InstanceId"],
                 "Name": instances_names.get(i["InstanceId"], None),
                 "PingStatus": i["PingStatus"],
-                "Platform": f'{i["PlatformName"]} {i["PlatformVersion"]}',
+                "Platform": f"{i['PlatformName']} {i['PlatformVersion']}",
                 "AgentVersion": i["AgentVersion"],
             }
             yield a
