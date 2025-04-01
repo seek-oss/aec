@@ -4,8 +4,9 @@ import base64
 import os
 import os.path
 from collections import defaultdict
+from collections.abc import Sequence
 from time import sleep
-from typing import TYPE_CHECKING, Any, Sequence, cast
+from typing import TYPE_CHECKING, Any, cast
 
 import boto3
 from typing_extensions import TypedDict
@@ -244,7 +245,7 @@ def describe(
         volumes: dict[str, list[str]] = defaultdict(list)
         for v in volumes_response["Volumes"]:
             for a in v["Attachments"]:
-                volumes[a["InstanceId"]].append(f'Size={v["Size"]} GiB')
+                volumes[a["InstanceId"]].append(f"Size={v['Size']} GiB")
     else:
         volumes = {}
 
