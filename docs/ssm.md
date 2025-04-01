@@ -8,21 +8,71 @@ from aec.main import build_parser
 cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ssm'].format_help()}```")
 ]]] -->
 ```
-usage: aec ssm [-h] {commands,compliance-summary,describe,invocations,output,patch,patch-summary,run} ...
+usage: aec ssm
+       [-h]
+       {commands,compliance-summary,describe,invocations,output,patch,patch-summary,run}
+       ...
 
 optional arguments:
-  -h, --help            show this help message and exit
+  -h, --help
+    show this
+    help
+    message and
+    exit
 
 subcommands:
   {commands,compliance-summary,describe,invocations,output,patch,patch-summary,run}
-    commands            List commands by instance.
-    compliance-summary  Compliance summary for instances that have run the patch baseline.
-    describe            List running instances with the SSM agent.
-    invocations         List invocations of a command across instances.
-    output              Fetch output of a command from S3.
-    patch               Scan or install AWS patch baseline.
-    patch-summary       Patch summary for all instances that have run the patch baseline.
-    run                 Run a shell script on instance(s). Script is read from stdin.
+    commands
+    List
+    commands by
+    instance.
+    compliance-summary
+    Compliance
+    summary for
+    instances
+    that have
+    run the
+    patch
+    baseline.
+    describe
+    List
+    running
+    instances
+    with the
+    SSM agent.
+    invocations
+    List
+    invocations
+    of a
+    command
+    across
+    instances.
+    output
+    Fetch
+    output of a
+    command
+    from S3.
+    patch
+    Scan or
+    install AWS
+    patch
+    baseline.
+    patch-summary
+    Patch
+    summary for
+    all
+    instances
+    that have
+    run the
+    patch
+    baseline.
+    run
+    Run a shell
+    script on i
+    nstance(s).
+    Script is
+    read from
+    stdin.
 ```
 <!-- [[[end]]] -->
 

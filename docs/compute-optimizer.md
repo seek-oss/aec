@@ -8,14 +8,27 @@ from aec.main import build_parser
 cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['co'].format_help()}```")
 ]]] -->
 ```
-usage: aec co [-h] {over-provisioned} ...
+usage: aec co
+       [-h]
+       {over-provisioned}
+       ...
 
 optional arguments:
-  -h, --help          show this help message and exit
+  -h, --help
+    show this
+    help
+    message and
+    exit
 
 subcommands:
   {over-provisioned}
-    over-provisioned  Show recommendations for over-provisioned EC2 instances.
+    over-provisioned
+    Show recomm
+    endations
+    for over-
+    provisioned
+    EC2
+    instances.
 ```
 <!-- [[[end]]] -->
 
