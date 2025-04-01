@@ -469,6 +469,7 @@ def test_user_data_missing(mock_aws_config: Config):
     data = user_data(config=mock_aws_config, ident="no_userdata")
     assert not data
 
+
 def test_sec_groups_no_filter(mock_aws_config: Config):
     """Test retrieving security groups without filters."""
     # Default VPC should have a default security group

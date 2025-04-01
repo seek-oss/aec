@@ -1,10 +1,11 @@
 include *.mk
 
 ## generate docs
-docs: $(venv)
+docs: $(venv) src/aec/main.py
 	$(venv)/bin/cog -r docs/*.md
 # trim trailing whitespace so hooks are happy
 	$(venv)/bin/pre-commit run --files docs/* --hook-stage push trailing-whitespace > /dev/null || true
+	touch docs
 
 
 ## test the wheel is correctly packaged
