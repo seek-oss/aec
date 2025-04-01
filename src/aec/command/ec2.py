@@ -509,7 +509,7 @@ def modify(config: Config, ident: str, type: str) -> list[Instance]:
     return describe(config, ident)
 
 
-def restart(config: Config, ident: str, type: str | None = None) -> list[Instance]:
+def restart(config: Config, ident: str, type: str | None = None, wait_ssm: bool = False) -> list[Instance]:
     """Restart EC2 instance, optionally changing the instance type."""
     print(f"Stopping instance {ident}")
     stop(config, ident)
@@ -524,7 +524,7 @@ def restart(config: Config, ident: str, type: str | None = None) -> list[Instanc
         print(f"Changing instance type to {type}")
         modify(config, ident, type)
 
-    return start(config, ident)
+    return start(config, ident, wait_ssm=wait_ssm)
 
 
 def create_key_pair(config: Config, key_name: str, file_path: str) -> str:
