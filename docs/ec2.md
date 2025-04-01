@@ -79,11 +79,11 @@ cog.out(f"```\n{docs('aec ec2 describe', ec2.describe(config))}\n```")
 ]]] -->
 ```
 aec ec2 describe
-                                                                                                                                           
-  InstanceId            State     Name    Type       DnsName                                     LaunchTime                  ImageId       
- ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
-  i-33aeb759f6a40ac3d   running   alice   t3.small   ec2-54-214-46-203.compute-1.amazonaws.com   2025-04-01 09:37:21+00:00   ami-03cf127a  
-  i-8fcd6b61916ac098f   running   sam     t3.small   ec2-54-214-55-167.compute-1.amazonaws.com   2025-04-01 09:37:21+00:00   ami-03cf127a
+                                                                                                                                            
+  InstanceId            State     Name    Type       DnsName                                      LaunchTime                  ImageId       
+ ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
+  i-d11c784672f583196   running   alice   t3.small   ec2-54-214-8-190.compute-1.amazonaws.com     2025-04-01 09:46:15+00:00   ami-03cf127a  
+  i-919d8e2adf1445b8d   running   sam     t3.small   ec2-54-214-106-199.compute-1.amazonaws.com   2025-04-01 09:46:16+00:00   ami-03cf127a
 ```
 <!-- [[[end]]] -->
 
@@ -121,8 +121,8 @@ aec ec2 describe -c Name,SubnetId,Volumes,Image.CreationDate
                                                                                  
   Name    SubnetId                   Volumes           Image.CreationDate        
  ─────────────────────────────────────────────────────────────────────────────── 
-  alice   subnet-11d733ec58d18bad5   ['Size=15 GiB']   2025-04-01T09:37:20.000Z  
-  sam     subnet-11d733ec58d18bad5   ['Size=15 GiB']   2025-04-01T09:37:20.000Z
+  alice   subnet-3c34502dfd1bc971e   ['Size=15 GiB']   2025-04-01T09:46:15.000Z  
+  sam     subnet-3c34502dfd1bc971e   ['Size=15 GiB']   2025-04-01T09:46:15.000Z
 ```
 <!-- [[[end]]] -->
 
@@ -217,12 +217,27 @@ aec ec2 subnets
                                                                                                
   SubnetId                   VpcId                   AvailabilityZone   CidrBlock        Name  
  ───────────────────────────────────────────────────────────────────────────────────────────── 
-  subnet-11d733ec58d18bad5   vpc-fb11b419444fd845f   us-east-1a         172.31.0.0/20          
-  subnet-b054b8f9bbf6e9692   vpc-fb11b419444fd845f   us-east-1b         172.31.16.0/20         
-  subnet-9194551da656bf978   vpc-fb11b419444fd845f   us-east-1c         172.31.32.0/20         
-  subnet-fe579b6e5a0e3747a   vpc-fb11b419444fd845f   us-east-1d         172.31.48.0/20         
-  subnet-17d614f027c7e3e2d   vpc-fb11b419444fd845f   us-east-1e         172.31.64.0/20         
-  subnet-5aa6639f390973237   vpc-fb11b419444fd845f   us-east-1f         172.31.80.0/20
+  subnet-3c34502dfd1bc971e   vpc-b1f00f09091896c57   us-east-1a         172.31.0.0/20          
+  subnet-569837d96526af096   vpc-b1f00f09091896c57   us-east-1b         172.31.16.0/20         
+  subnet-8a3b095072e46bf09   vpc-b1f00f09091896c57   us-east-1c         172.31.32.0/20         
+  subnet-c3e0557e8334ec7b5   vpc-b1f00f09091896c57   us-east-1d         172.31.48.0/20         
+  subnet-67ffe1d070fd23148   vpc-b1f00f09091896c57   us-east-1e         172.31.64.0/20         
+  subnet-fbfe5e577853e5221   vpc-b1f00f09091896c57   us-east-1f         172.31.80.0/20
+```
+<!-- [[[end]]] -->
+
+Describe security groups:
+
+<!-- [[[cog
+cog.out(f"```\n{docs('aec ec2 sec-groups', ec2.sec_groups(config))}\n```")
+]]] -->
+```
+aec ec2 sec-groups
+                                                                                         
+  GroupId                GroupName   Description                  VpcId                  
+ ─────────────────────────────────────────────────────────────────────────────────────── 
+  sg-25d2fabfa34eaa065   default     default VPC security group   vpc-b1f00f09091896c57  
+  default                default     default                      vpc-b1f00f09091896c57
 ```
 <!-- [[[end]]] -->
 
