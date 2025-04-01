@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import io
+from collections.abc import Iterator
 from contextlib import redirect_stdout
-from typing import Any, Iterator
+from typing import Any
 
 from moto import mock_aws
 from moto.ec2.models import ec2_backends

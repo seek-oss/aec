@@ -3,7 +3,8 @@ from __future__ import annotations
 import codecs
 import sys
 import uuid
-from typing import IO, TYPE_CHECKING, Any, Iterator, Sequence, TypeVar, cast
+from collections.abc import Iterator, Sequence
+from typing import IO, TYPE_CHECKING, Any, TypeVar, cast
 
 import boto3
 from botocore.exceptions import ClientError

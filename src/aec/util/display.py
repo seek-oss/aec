@@ -4,7 +4,8 @@ import csv
 import enum
 import json
 import sys
-from typing import Any, Iterable, Iterator, List, Sequence, cast
+from collections.abc import Iterable, Iterator, Sequence
+from typing import Any, cast
 
 from rich import box
 from rich.console import Console
@@ -51,7 +52,7 @@ def pretty_print(
 
     elif isinstance(result, list) and output_format == OutputFormat.table:
         rows = as_table(result)
-        column_names = cast(List[str], rows[0])
+        column_names = cast(list[str], rows[0])
         table = Table(box=box.SIMPLE)
         for c in column_names:
             if c in ["CommandId"]:
