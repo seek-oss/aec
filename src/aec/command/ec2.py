@@ -617,6 +617,38 @@ def status_text(summary: InstanceStatusSummaryTypeDef, key: str = "reachability"
     )
 
 
+def sec_groups(config: Config, vpc_id: str | None = None) -> list[dict[str, str | None]]:
+    """
+    Describe security groups in the region, optionally filtered by VPC ID.
+    """
+
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
+
+    # Prepare filters
+    filters: list[FilterTypeDef] = []
+    if vpc_id:
+        filters.append({"Name": "vpc-id", "Values": [vpc_id]})
+
+    paginator = ec2_client.get_paginator("describe_security_groups")
+    pages = paginator.paginate(Filters=filters)
+
+    groups_info: list[dict[str, str | None]] = []
+
+    for page in pages:
+        groups_info.extend(
+            {
+                "GroupId": sg["GroupId"],
+                "GroupName": sg.get("GroupName"),
+                "Description": sg.get("Description"),
+                "VpcId": sg.get("VpcId"),
+            }
+            for sg in page["SecurityGroups"]
+        )
+
+    # Sort the results, e.g., by VpcId then GroupName
+    return sorted(groups_info, key=lambda g: (g["VpcId"], g["GroupName"]))
+
+
 def subnets(config: Config, vpc_id: str | None = None) -> list[dict[str, Any]]:
     """Describe subnets."""
 

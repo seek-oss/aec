@@ -20,6 +20,7 @@ from aec.command.ec2 import (
     logs,
     modify,
     rename,
+    sec_groups,
     start,
     status,
     stop,
@@ -467,3 +468,43 @@ def test_user_data_missing(mock_aws_config: Config):
 
     data = user_data(config=mock_aws_config, ident="no_userdata")
     assert not data
+
+
+def test_sec_groups_no_filter(mock_aws_config: Config):
+    """Test retrieving security groups without filters."""
+    # Default VPC should have a default security group
+    groups = sec_groups(mock_aws_config)
+
+    assert len(groups) >= 1
+
+    group = groups[0]
+    assert "GroupId" in group
+    assert "GroupName" in group
+    assert "Description" in group
+    assert "VpcId" in group
+
+
+def test_sec_groups_with_vpc_filter(mock_aws_config: Config):
+    """Test retrieving security groups with VPC filter."""
+    ec2_client = boto3.client("ec2", region_name=mock_aws_config["region"])
+
+    # Create a new VPC in addition to the default VPC
+    # Will come with a default security group
+    vpc_response = ec2_client.create_vpc(CidrBlock="10.0.0.0/16")
+    vpc_id = vpc_response["Vpc"]["VpcId"]
+
+    try:
+        # Get all security groups
+        all_groups = sec_groups(mock_aws_config)
+
+        # Get security groups for the specific VPC
+        vpc_groups = sec_groups(mock_aws_config, vpc_id=vpc_id)
+
+        # Verify filtering works
+        assert len(vpc_groups) >= 1
+        assert all(group["VpcId"] == vpc_id for group in vpc_groups)
+
+        # Verify total count is higher (includes the default VPC's groups)
+        assert len(all_groups) > len(vpc_groups)
+    finally:
+        ec2_client.delete_vpc(VpcId=vpc_id)

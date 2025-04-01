@@ -1,6 +1,7 @@
 include *.mk
 
 ## generate docs
+.PHONY: docs
 docs: $(venv)
 	$(venv)/bin/cog -r docs/*.md
 # trim trailing whitespace so hooks are happy
