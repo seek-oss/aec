@@ -19,7 +19,7 @@ For examples see:
 
 ## Prerequisites
 
-- python 3.8+
+- python 3.9+
 
 ## Install
 
