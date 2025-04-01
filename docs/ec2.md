@@ -15,14 +15,13 @@ from aec.main import build_parser
 cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ec2'].format_help()}```")
 ]]] -->
 ```
-usage: aec ec2 [-h]
-               {create-key-pair,describe,launch,logs,modify,start,stop,sec-groups,subnets,rename,tag,tags,status,templates,terminate,user-data} ...
+usage: aec ec2 [-h] {create-key-pair,describe,launch,logs,modify,start,stop,restart,sec-groups,subnets,rename,tag,tags,status,templates,terminate,user-data} ...
 
 optional arguments:
   -h, --help            show this help message and exit
 
 subcommands:
-  {create-key-pair,describe,launch,logs,modify,start,stop,sec-groups,subnets,rename,tag,tags,status,templates,terminate,user-data}
+  {create-key-pair,describe,launch,logs,modify,start,stop,restart,sec-groups,subnets,rename,tag,tags,status,templates,terminate,user-data}
     create-key-pair     Create a key pair.
     describe            List EC2 instances in the region.
     launch              Launch a tagged EC2 instance with an EBS volume.
@@ -30,6 +29,7 @@ subcommands:
     modify              Change an instance's type.
     start               Start EC2 instance.
     stop                Stop EC2 instance.
+    restart             Restart EC2 instance, optionally changing the instance type.
     sec-groups          Describe security groups in the region, optionally filtered by VPC ID.
     subnets             Describe subnets.
     rename              Rename EC2 instance(s).
@@ -72,6 +72,11 @@ Start a stopped instance, and wait for the SSM agent to come online (at which po
 aec ec2 start "lady gaga" -w
 ```
 
+Restart an instance and change the instance type:
+```
+aec ec2 restart "lady gaga" -t m5.large
+```
+
 List all instances in the region:
 
 <!-- [[[cog
@@ -82,8 +87,8 @@ aec ec2 describe
                                                                                                                                             
   InstanceId            State     Name    Type       DnsName                                      LaunchTime                  ImageId       
  ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
-  i-d11c784672f583196   running   alice   t3.small   ec2-54-214-8-190.compute-1.amazonaws.com     2025-04-01 09:46:15+00:00   ami-03cf127a  
-  i-919d8e2adf1445b8d   running   sam     t3.small   ec2-54-214-106-199.compute-1.amazonaws.com   2025-04-01 09:46:16+00:00   ami-03cf127a
+  i-a6c907a7659c657ec   running   alice   t3.small   ec2-54-214-143-173.compute-1.amazonaws.com   2025-04-01 22:53:13+00:00   ami-03cf127a  
+  i-10775ea95215edd19   running   sam     t3.small   ec2-54-214-92-78.compute-1.amazonaws.com     2025-04-01 22:53:13+00:00   ami-03cf127a
 ```
 <!-- [[[end]]] -->
 
@@ -121,8 +126,8 @@ aec ec2 describe -c Name,SubnetId,Volumes,Image.CreationDate
                                                                                  
   Name    SubnetId                   Volumes           Image.CreationDate        
  ─────────────────────────────────────────────────────────────────────────────── 
-  alice   subnet-3c34502dfd1bc971e   ['Size=15 GiB']   2025-04-01T09:46:15.000Z  
-  sam     subnet-3c34502dfd1bc971e   ['Size=15 GiB']   2025-04-01T09:46:15.000Z
+  alice   subnet-7c7eebe4933bd527a   ['Size=15 GiB']   2025-04-01T22:53:13.000Z  
+  sam     subnet-7c7eebe4933bd527a   ['Size=15 GiB']   2025-04-01T22:53:13.000Z
 ```
 <!-- [[[end]]] -->
 
@@ -217,12 +222,12 @@ aec ec2 subnets
                                                                                                
   SubnetId                   VpcId                   AvailabilityZone   CidrBlock        Name  
  ───────────────────────────────────────────────────────────────────────────────────────────── 
-  subnet-3c34502dfd1bc971e   vpc-b1f00f09091896c57   us-east-1a         172.31.0.0/20          
-  subnet-569837d96526af096   vpc-b1f00f09091896c57   us-east-1b         172.31.16.0/20         
-  subnet-8a3b095072e46bf09   vpc-b1f00f09091896c57   us-east-1c         172.31.32.0/20         
-  subnet-c3e0557e8334ec7b5   vpc-b1f00f09091896c57   us-east-1d         172.31.48.0/20         
-  subnet-67ffe1d070fd23148   vpc-b1f00f09091896c57   us-east-1e         172.31.64.0/20         
-  subnet-fbfe5e577853e5221   vpc-b1f00f09091896c57   us-east-1f         172.31.80.0/20
+  subnet-7c7eebe4933bd527a   vpc-2d040ead29eee6cf8   us-east-1a         172.31.0.0/20          
+  subnet-3961372401467a0d6   vpc-2d040ead29eee6cf8   us-east-1b         172.31.16.0/20         
+  subnet-c174b5405eaf42d81   vpc-2d040ead29eee6cf8   us-east-1c         172.31.32.0/20         
+  subnet-4d930d9329f0bcd9b   vpc-2d040ead29eee6cf8   us-east-1d         172.31.48.0/20         
+  subnet-6029fe0fac51d968a   vpc-2d040ead29eee6cf8   us-east-1e         172.31.64.0/20         
+  subnet-1dd87fc3fe137e5aa   vpc-2d040ead29eee6cf8   us-east-1f         172.31.80.0/20
 ```
 <!-- [[[end]]] -->
 
@@ -236,8 +241,8 @@ aec ec2 sec-groups
                                                                                          
   GroupId                GroupName   Description                  VpcId                  
  ─────────────────────────────────────────────────────────────────────────────────────── 
-  sg-25d2fabfa34eaa065   default     default VPC security group   vpc-b1f00f09091896c57  
-  default                default     default                      vpc-b1f00f09091896c57
+  sg-af760af3a4fc243fe   default     default VPC security group   vpc-2d040ead29eee6cf8  
+  default                default     default                      vpc-2d040ead29eee6cf8
 ```
 <!-- [[[end]]] -->
 

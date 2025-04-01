@@ -89,7 +89,7 @@ ec2_cli = [
     Cmd(ec2.restart, [
         config_arg,
         Arg("ident", type=str, help="Name tag of instance or instance id"),
-        Arg("-m", "--modify", dest="type", type=str, help="Modify the instance to the given type"),
+        Arg("-t", "--type", type=str, help="Modify the instance to the given type"),
         Arg("-w", "--wait-ssm", action='store_true', help="Wait until the SSM agent is online before exiting"),
     ]),
     Cmd(ec2.sec_groups, [
