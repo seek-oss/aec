@@ -15,90 +15,30 @@ from aec.main import build_parser
 cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ec2'].format_help()}```")
 ]]] -->
 ```
-usage: aec ec2
-       [-h]
-       {create-key-pair,describe,launch,logs,modify,start,stop,sec-groups,subnets,rename,tag,tags,status,templates,terminate,user-data}
-       ...
+usage: aec ec2 [-h]
+               {create-key-pair,describe,launch,logs,modify,start,stop,sec-groups,subnets,rename,tag,tags,status,templates,terminate,user-data} ...
 
 optional arguments:
-  -h, --help
-    show this
-    help
-    message and
-    exit
+  -h, --help            show this help message and exit
 
 subcommands:
   {create-key-pair,describe,launch,logs,modify,start,stop,sec-groups,subnets,rename,tag,tags,status,templates,terminate,user-data}
-    create-key-pair
-    Create a
-    key pair.
-    describe
-    List EC2
-    instances
-    in the
-    region.
-    launch
-    Launch a
-    tagged EC2
-    instance
-    with an EBS
-    volume.
-    logs
-    Show the
-    system
-    logs.
-    modify
-    Change an
-    instance's
-    type.
-    start
-    Start EC2
-    instance.
-    stop
-    Stop EC2
-    instance.
-    sec-groups
-    Describe
-    security
-    groups in
-    the region,
-    optionally
-    filtered by
-    VPC ID.
-    subnets
-    Describe
-    subnets.
-    rename
-    Rename EC2 
-    instance(s)
-    .
-    tag
-    Tag EC2 ins
-    tance(s).
-    tags
-    List EC2
-    instances
-    or volumes
-    with their
-    tags.
-    status
-    Describe
-    instances
-    status
-    checks.
-    templates
-    Describe
-    launch
-    templates.
-    terminate
-    Terminate
-    EC2
-    instance.
-    user-data
-    Describe
-    user data
-    for an
-    instance.
+    create-key-pair     Create a key pair.
+    describe            List EC2 instances in the region.
+    launch              Launch a tagged EC2 instance with an EBS volume.
+    logs                Show the system logs.
+    modify              Change an instance's type.
+    start               Start EC2 instance.
+    stop                Stop EC2 instance.
+    sec-groups          Describe security groups in the region, optionally filtered by VPC ID.
+    subnets             Describe subnets.
+    rename              Rename EC2 instance(s).
+    tag                 Tag EC2 instance(s).
+    tags                List EC2 instances or volumes with their tags.
+    status              Describe instances status checks.
+    templates           Describe launch templates.
+    terminate           Terminate EC2 instance.
+    user-data           Describe user data for an instance.
 ```
 <!-- [[[end]]] -->
 
@@ -139,13 +79,11 @@ cog.out(f"```\n{docs('aec ec2 describe', ec2.describe(config))}\n```")
 ]]] -->
 ```
 aec ec2 describe
-                                                                                
-  InstanceId   State     Name    Type       DnsName     LaunchTime   ImageId    
- ────────────────────────────────────────────────────────────────────────────── 
-  i-98861b5…   running   alice   t3.small   ec2-54-2…   2025-04-01   ami-03cf…  
-                                                        09:32:41+…              
-  i-9c6deb9…   running   sam     t3.small   ec2-54-2…   2025-04-01   ami-03cf…  
-                                                        09:32:41+…
+                                                                                                                                           
+  InstanceId            State     Name    Type       DnsName                                     LaunchTime                  ImageId       
+ ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
+  i-33aeb759f6a40ac3d   running   alice   t3.small   ec2-54-214-46-203.compute-1.amazonaws.com   2025-04-01 09:37:21+00:00   ami-03cf127a  
+  i-8fcd6b61916ac098f   running   sam     t3.small   ec2-54-214-55-167.compute-1.amazonaws.com   2025-04-01 09:37:21+00:00   ami-03cf127a
 ```
 <!-- [[[end]]] -->
 
@@ -180,11 +118,11 @@ cog.out(f"```\n{docs('aec ec2 describe -c Name,SubnetId,Volumes,Image.CreationDa
 ]]] -->
 ```
 aec ec2 describe -c Name,SubnetId,Volumes,Image.CreationDate
-                                                                                
-  Name    SubnetId                   Volumes           Image.CreationDate       
- ────────────────────────────────────────────────────────────────────────────── 
-  alice   subnet-5151fcc4fb0d7a4ef   ['Size=15 GiB']   2025-04-01T09:32:41.00…  
-  sam     subnet-5151fcc4fb0d7a4ef   ['Size=15 GiB']   2025-04-01T09:32:41.00…
+                                                                                 
+  Name    SubnetId                   Volumes           Image.CreationDate        
+ ─────────────────────────────────────────────────────────────────────────────── 
+  alice   subnet-11d733ec58d18bad5   ['Size=15 GiB']   2025-04-01T09:37:20.000Z  
+  sam     subnet-11d733ec58d18bad5   ['Size=15 GiB']   2025-04-01T09:37:20.000Z
 ```
 <!-- [[[end]]] -->
 
@@ -276,15 +214,15 @@ cog.out(f"```\n{docs('aec ec2 subnets', ec2.subnets(config))}\n```")
 ]]] -->
 ```
 aec ec2 subnets
-                                                                                
-  SubnetId          VpcId              AvailabilityZo…   CidrBlock        Name  
- ────────────────────────────────────────────────────────────────────────────── 
-  subnet-5151fcc…   vpc-688e07015a2…   us-east-1a        172.31.0.0/20          
-  subnet-e3de48f…   vpc-688e07015a2…   us-east-1b        172.31.16.0/20         
-  subnet-b56927a…   vpc-688e07015a2…   us-east-1c        172.31.32.0/20         
-  subnet-64ac69a…   vpc-688e07015a2…   us-east-1d        172.31.48.0/20         
-  subnet-0b897a2…   vpc-688e07015a2…   us-east-1e        172.31.64.0/20         
-  subnet-4864dc9…   vpc-688e07015a2…   us-east-1f        172.31.80.0/20
+                                                                                               
+  SubnetId                   VpcId                   AvailabilityZone   CidrBlock        Name  
+ ───────────────────────────────────────────────────────────────────────────────────────────── 
+  subnet-11d733ec58d18bad5   vpc-fb11b419444fd845f   us-east-1a         172.31.0.0/20          
+  subnet-b054b8f9bbf6e9692   vpc-fb11b419444fd845f   us-east-1b         172.31.16.0/20         
+  subnet-9194551da656bf978   vpc-fb11b419444fd845f   us-east-1c         172.31.32.0/20         
+  subnet-fe579b6e5a0e3747a   vpc-fb11b419444fd845f   us-east-1d         172.31.48.0/20         
+  subnet-17d614f027c7e3e2d   vpc-fb11b419444fd845f   us-east-1e         172.31.64.0/20         
+  subnet-5aa6639f390973237   vpc-fb11b419444fd845f   us-east-1f         172.31.80.0/20
 ```
 <!-- [[[end]]] -->
 

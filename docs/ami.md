@@ -15,36 +15,17 @@ from aec.main import build_parser
 cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ami'].format_help()}```")
 ]]] -->
 ```
-usage: aec ami
-       [-h]
-       {delete,describe,tags,share}
-       ...
+usage: aec ami [-h] {delete,describe,tags,share} ...
 
 optional arguments:
-  -h, --help
-    show this
-    help
-    message and
-    exit
+  -h, --help            show this help message and exit
 
 subcommands:
   {delete,describe,tags,share}
-    delete
-    Deregister
-    an AMI and
-    delete its
-    snapshot.
-    describe
-    List AMIs.
-    tags
-    List AMI
-    images with
-    their tags.
-    share
-    Share an
-    AMI with
-    another
-    account.
+    delete              Deregister an AMI and delete its snapshot.
+    describe            List AMIs.
+    tags                List AMI images with their tags.
+    share               Share an AMI with another account.
 ```
 <!-- [[[end]]] -->
 
@@ -55,11 +36,11 @@ cog.out(f"```\n{docs('aec ami describe', ami.describe(config, owner='09972010947
 ]]] -->
 ```
 aec ami describe
-                                                                                
-  Name                ImageId        CreationDate        RootDeviceName   Size  
- ────────────────────────────────────────────────────────────────────────────── 
-  ubuntu/images/hv…   ami-1e749f67   2025-04-01T09:32…   /dev/sda1        15    
-  ubuntu/images/hv…   ami-785db401   2025-04-01T09:32…   /dev/sda1        15
+                                                                                                                                     
+  Name                                                              ImageId        CreationDate               RootDeviceName   Size  
+ ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
+  ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-20170727   ami-1e749f67   2025-04-01T09:37:20.000Z   /dev/sda1        15    
+  ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20170721   ami-785db401   2025-04-01T09:37:20.000Z   /dev/sda1        15
 ```
 <!-- [[[end]]] -->
 
