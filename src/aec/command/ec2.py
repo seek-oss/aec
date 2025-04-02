@@ -510,6 +510,24 @@ def modify(config: Config, ident: str, type: str) -> list[Instance]:
     return describe(config, ident)
 
 
+def restart(config: Config, ident: str, type: str | None = None, wait_ssm: bool = False) -> list[Instance]:
+    """Restart EC2 instance, optionally changing the instance type."""
+    print(f"Stopping instance {ident}")
+    stop(config, ident)
+
+    instance_status = describe(config, ident)[0]["State"]
+    while instance_status != "stopped":
+        print(f"Waiting for instance {ident} to stop ...")
+        sleep(5)
+        instance_status = describe(config, ident)[0]["State"]
+
+    if type:
+        print(f"Changing instance type to {type}")
+        modify(config, ident, type)
+
+    return start(config, ident, wait_ssm=wait_ssm)
+
+
 def create_key_pair(config: Config, key_name: str, file_path: str) -> str:
     """Create a key pair."""
 
