@@ -8,13 +8,13 @@ keywords = ["AWS", "EC2", "command line", "cli"]
 classifiers = ["License :: OSI Approved :: MIT License"]
 requires-python = ">=3.9"
 dependencies = [
-    "boto3==1.37.24",
+    "boto3==1.38.6",
     "importlib_resources==6.5.2",
     "pytoml==0.1.21",
     "pytz==2025.2",
     "requests==2.32.3",
     "rich==14.0.0",
-    "typing_extensions==4.12.2",
+    "typing_extensions==4.13.2",
 ]
 
 [project.optional-dependencies]
@@ -39,7 +39,7 @@ aec = "aec.main:main"
 homepage = "https://github.com/seek-oss/aec"
 
 [build-system]
-requires = ["setuptools~=78.1", "setuptools_scm~=8.0", "wheel~=0.42"]
+requires = ["setuptools~=80.1", "setuptools_scm~=8.0", "wheel~=0.42"]
 
 # enable setuptools_scm to set the version based on git tags
 [tool.setuptools_scm]
