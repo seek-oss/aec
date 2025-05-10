@@ -11,7 +11,7 @@ from botocore.exceptions import ClientError
 from typing_extensions import Literal, TypedDict
 
 from aec.util.config import Config
-from aec.util.ec2 import describe_instances_names, describe_running_instances_names
+from aec.util.ec2_util import describe_instances_names, describe_running_instances_names
 
 if TYPE_CHECKING:
     from mypy_boto3_ssm.type_defs import InstanceInformationStringFilterTypeDef

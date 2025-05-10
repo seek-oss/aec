@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any, cast
 import boto3
 from typing_extensions import TypedDict
 
-from aec.util.ec2 import describe_running_instances_names
+from aec.util.ec2_util import describe_running_instances_names
 from aec.util.errors import NoInstancesError
 from aec.util.threads import executor
 
@@ -449,21 +449,26 @@ def start(
     return describe(config, ident)
 
 
-def stop(config: Config, ident: str) -> list[dict[str, Any]]:
-    """Stop EC2 instance."""
+def stop(config: Config, idents: str | list[str]) -> list[dict[str, Any]]:
+    """Stop EC2 instance(s)."""
 
+    if isinstance(idents, str):
+        idents = [idents]
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    if not ident:
-        # avoid stopping all instances when there's no name
-        raise NoInstancesError(name=ident)
+    all_instance_ids = []
+    for ident in idents:
+        instances = describe(config, ident)
+        if not instances:
+            print(f"Warning: No instances found for identifier '{ident}'")
+            continue
 
-    instances = describe(config, ident)
+        all_instance_ids.extend([instance["InstanceId"] for instance in instances])
 
-    if not instances:
-        raise NoInstancesError(name=ident)
+    if not all_instance_ids:
+        raise NoInstancesError(name=", ".join(idents))
 
-    response = ec2_client.stop_instances(InstanceIds=[instance["InstanceId"] for instance in instances])
+    response = ec2_client.stop_instances(InstanceIds=all_instance_ids)
 
     return [{"State": i["CurrentState"]["Name"], "InstanceId": i["InstanceId"]} for i in response["StoppingInstances"]]
 
@@ -513,7 +518,7 @@ def modify(config: Config, ident: str, type: str) -> list[Instance]:
 def restart(config: Config, ident: str, type: str | None = None, wait_ssm: bool = False) -> list[Instance]:
     """Restart EC2 instance, optionally changing the instance type."""
     print(f"Stopping instance {ident}")
-    stop(config, ident)
+    stop(config, [ident])
 
     instance_status = describe(config, ident)[0]["State"]
     while instance_status != "stopped":

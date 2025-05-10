@@ -217,13 +217,14 @@ def test_describe_terminated(mock_aws_config: Config):
 
 def test_describe_running_only(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
+    launch(mock_aws_config, "bob", ami_id)
     launch(mock_aws_config, "sam", ami_id)
-    stop(mock_aws_config, "sam")
+    stop(mock_aws_config, ["alice", "sam"])
 
     # show only running instances
     instances = describe(config=mock_aws_config, show_running_only=True)
     assert len(instances) == 1
-    assert instances[0]["Name"] == "alice"
+    assert instances[0]["Name"] == "bob"
 
 
 def test_describe_instance_id(mock_aws_config: Config):
@@ -350,7 +351,7 @@ def test_tags_filter(mock_aws_config: Config):
 def test_stop_start(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
 
-    stop(mock_aws_config, ident="alice")
+    stop(mock_aws_config, idents="alice")
 
     start(mock_aws_config, ident="alice")
 

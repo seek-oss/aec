@@ -84,7 +84,7 @@ ec2_cli = [
     ]),
     Cmd(ec2.stop, [
         config_arg,
-        Arg("ident", type=str, help="Name tag of instance or instance id")
+        Arg("idents", type=str, nargs="+", help="Name tags of instances or instance ids")
     ]),
     Cmd(ec2.restart, [
         config_arg,
