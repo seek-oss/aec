@@ -420,10 +420,6 @@ def start(
 ) -> list[Instance]:
     """Start EC2 instance."""
 
-    if not ident:
-        # avoid starting all instances when there's no name
-        raise ValueError("Missing instance identifier")
-
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     if ident.startswith("i-"):
@@ -452,10 +448,6 @@ def start(
 def stop(config: Config, ident: str) -> list[dict[str, Any]]:
     """Stop EC2 instance."""
 
-    if not ident:
-        # avoid stopping all instances when there's no name
-        raise ValueError("Missing instance identifier")
-
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     instances = describe(config, ident)
@@ -472,7 +464,8 @@ def terminate(config: Config, ident: str) -> list[dict[str, Any]]:
     """Terminate EC2 instance."""
 
     if not ident:
-        # avoid terminating all instances when there's no name
+        # avoid terminating all instances when there's no identifier
+        # we already args via arg parser, so this is defence in depth
         raise ValueError("Missing instance identifier")
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
@@ -491,10 +484,6 @@ def terminate(config: Config, ident: str) -> list[dict[str, Any]]:
 
 def modify(config: Config, ident: str, type: str) -> list[Instance]:
     """Change an instance's type."""
-    if not ident:
-        # avoid modifying all instances when there's no name
-        raise ValueError("Missing instance identifier")
-
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     instances = describe(config, ident)
@@ -543,11 +532,6 @@ def create_key_pair(config: Config, key_name: str, file_path: str) -> str:
 
 def logs(config: Config, ident: str) -> str:
     """Show the system logs."""
-
-    if not ident:
-        # avoid showing logs for all instances when there's no name
-        raise ValueError("Missing instance identifier")
-
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     instances = describe(config, ident)
@@ -690,10 +674,6 @@ def subnets(config: Config, vpc_id: str | None = None) -> list[dict[str, Any]]:
 
 def user_data(config: Config, ident: str) -> str | None:
     """Describe user data for an instance."""
-    if not ident:
-        # avoid describing all instances when there's no name
-        raise ValueError("Missing instance identifier")
-
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     instances = describe(config, ident)
