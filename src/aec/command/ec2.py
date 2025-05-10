@@ -451,8 +451,8 @@ def start(
 
 def stop(config: Config, idents: str | list[str]) -> list[dict[str, Any]]:
     """Stop EC2 instance(s)."""
-    if not idents:
-        # avoid stopping all instances when there's no name
+    if not idents or not idents[0]:
+        # avoid stopping all instances when '' or [''] is passed
         raise ValueError("Missing instance identifier")
 
     if isinstance(idents, str):
