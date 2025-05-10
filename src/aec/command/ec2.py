@@ -459,19 +459,15 @@ def stop(config: Config, idents: str | list[str]) -> list[dict[str, Any]]:
         idents = [idents]
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    all_instance_ids = []
+    instance_ids = []
     for ident in idents:
         instances = describe(config, ident)
-        if not instances:
-            print(f"Warning: No instances found for identifier '{ident}'")
-            continue
+        instance_ids.extend([instance["InstanceId"] for instance in instances])
 
-        all_instance_ids.extend([instance["InstanceId"] for instance in instances])
-
-    if not all_instance_ids:
+    if not instance_ids:
         raise NoInstancesError(name=", ".join(idents))
 
-    response = ec2_client.stop_instances(InstanceIds=all_instance_ids)
+    response = ec2_client.stop_instances(InstanceIds=instance_ids)
 
     return [{"State": i["CurrentState"]["Name"], "InstanceId": i["InstanceId"]} for i in response["StoppingInstances"]]
 
