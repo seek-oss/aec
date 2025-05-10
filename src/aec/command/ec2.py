@@ -445,11 +445,9 @@ def start(
     return describe(config, ident)
 
 
-def stop(config: Config, idents: str | list[str]) -> list[dict[str, Any]]:
+def stop(config: Config, idents: list[str]) -> list[dict[str, Any]]:
     """Stop EC2 instance(s)."""
 
-    if isinstance(idents, str):
-        idents = [idents]
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     instance_ids = []

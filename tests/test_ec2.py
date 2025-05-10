@@ -239,7 +239,7 @@ def test_describe_instance_id(mock_aws_config: Config):
 def test_describe_sort_by(mock_aws_config: Config):
     launch(mock_aws_config, "sam", ami_id)
     launch(mock_aws_config, "alice", ami_id)
-    stop(mock_aws_config, "alice")
+    stop(mock_aws_config, ["alice"])
 
     instances = describe(config=mock_aws_config, sort_by="Name")
     print(instances)
@@ -351,7 +351,7 @@ def test_tags_filter(mock_aws_config: Config):
 def test_stop_start(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
 
-    stop(mock_aws_config, idents="alice")
+    stop(mock_aws_config, idents=["alice"])
 
     start(mock_aws_config, ident="alice")
 
