@@ -18,7 +18,7 @@ def mock_aws_config(_mock_ec2: None) -> Config:
         "key_name": "test_key",
         "vpc": {
             "name": "test vpc",
-            "subnet": ec2_backends[DEFAULT_ACCOUNT_ID][region].get_default_subnet("us-east-1a").id,
+            "subnet": ec2_backends[DEFAULT_ACCOUNT_ID][region].get_default_subnets()["us-east-1a"].id,
             "security_group": "default",
         },
     }
