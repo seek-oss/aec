@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING, Any, cast
 import boto3
 from typing_extensions import TypedDict
 
-from aec.util.ec2 import describe_running_instances_names
+from aec.util.ec2_util import describe_running_instances_names
 from aec.util.errors import NoInstancesError
 from aec.util.threads import executor
 
@@ -191,7 +191,7 @@ def launch(
 
     # the response from run_instances above always contains an empty string
     # for PublicDnsName, so we call describe to get it
-    return describe(config=config, ident=instance_id)
+    return describe(config=config, idents=instance_id)
 
 
 def _wait_ssm_agent_online(config: Config, instance_ids: list[str]) -> None:
@@ -215,7 +215,7 @@ def _wait_ssm_agent_online(config: Config, instance_ids: list[str]) -> None:
 
 def describe(
     config: Config,
-    ident: str | None = None,
+    idents: str | list[str] | None = None,
     name_match: str | None = None,
     include_terminated: bool = False,
     show_running_only: bool = False,
@@ -226,7 +226,7 @@ def describe(
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    filters = to_filters(ident, name_match)
+    filters = to_filters(idents, name_match)
     if show_running_only:
         filters.append({"Name": "instance-state-name", "Values": ["pending", "running"]})
 
@@ -445,17 +445,20 @@ def start(
     return describe(config, ident)
 
 
-def stop(config: Config, ident: str) -> list[dict[str, Any]]:
-    """Stop EC2 instance."""
+def stop(config: Config, idents: list[str]) -> list[dict[str, Any]]:
+    """Stop EC2 instance(s)."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    instances = describe(config, ident)
+    instance_ids = []
+    for ident in idents:
+        instances = describe(config, ident)
+        instance_ids.extend([instance["InstanceId"] for instance in instances])
 
-    if not instances:
-        raise NoInstancesError(name=ident)
+    if not instance_ids:
+        raise NoInstancesError(name=idents)
 
-    response = ec2_client.stop_instances(InstanceIds=[instance["InstanceId"] for instance in instances])
+    response = ec2_client.stop_instances(InstanceIds=instance_ids)
 
     return [{"State": i["CurrentState"]["Name"], "InstanceId": i["InstanceId"]} for i in response["StoppingInstances"]]
 
@@ -501,7 +504,7 @@ def modify(config: Config, ident: str, type: str) -> list[Instance]:
 def restart(config: Config, ident: str, type: str | None = None, wait_ssm: bool = False) -> list[Instance]:
     """Restart EC2 instance, optionally changing the instance type."""
     print(f"Stopping instance {ident}")
-    stop(config, ident)
+    stop(config, [ident])
 
     instance_status = describe(config, ident)[0]["State"]
     while instance_status != "stopped":
@@ -690,15 +693,38 @@ def user_data(config: Config, ident: str) -> str | None:
         return None
 
 
-def to_filters(ident: str | None = None, name_match: str | None = None) -> list[FilterTypeDef]:
-    if ident and ident.startswith("i-"):
-        return [{"Name": "instance-id", "Values": [ident]}]
-    elif ident:
-        return [{"Name": "tag:Name", "Values": [ident]}]
-    elif name_match:
-        return [{"Name": "tag:Name", "Values": [f"*{name_match}*"]}]
-    else:
-        return []
+def to_filters(idents: str | list[str] | None = None, name_match: str | None = None) -> list[FilterTypeDef]:
+    if not idents:
+        if name_match:
+            return [{"Name": "tag:Name", "Values": [f"*{name_match}*"]}]
+        else:
+            return []
+
+    if isinstance(idents, str):
+        idents = [idents]
+
+    # Separate instance IDs and names
+    ids = []
+    names = []
+
+    for id_or_name in idents:
+        if id_or_name.startswith("i-"):
+            ids.append(id_or_name)
+        else:
+            names.append(id_or_name)
+
+    filters = []
+
+    if ids and names:
+        raise ValueError("Cannot specify both instance IDs and names, only one or the other")
+
+    if ids:
+        filters.append({"Name": "instance-id", "Values": ids})
+
+    if names:
+        filters.append({"Name": "tag:Name", "Values": names})
+
+    return filters
 
 
 def read_file(filepath: str) -> str:
