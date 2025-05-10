@@ -55,7 +55,7 @@ ec2_cli = [
     ]),
     Cmd(ec2.describe, [
         config_arg,
-        Arg("ident", type=non_empty, nargs="?", help="Filter to instances with this Name tag or instance id."),
+        Arg("idents", type=non_empty, nargs="*", help="Filter to instances with this Name tag or instance id."),
         Arg("-q", type=str, dest='name_match', help="Filter to instances with a Name tag containing NAME_MATCH."),
         Arg("-r", "--show-running-only", action='store_true', help="Show running or pending instances only"),
         Arg("-it", "--include-terminated", action='store_true', help="Include terminated instances"),

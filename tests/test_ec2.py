@@ -180,14 +180,15 @@ def test_describe_instance_without_tags(mock_aws_config: Config):
     assert len(instances) == 1
 
 
-def test_describe_by_name(mock_aws_config: Config):
+def test_describe_by_names(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
     launch(mock_aws_config, "alex", ami_id)
 
-    instances = describe(config=mock_aws_config, ident="alice")
+    instances = describe(config=mock_aws_config, idents=["alice", "alex"])
 
-    assert len(instances) == 1
-    assert instances[0]["Name"] == "alice"
+    assert len(instances) == 2
+    assert instances[0]["Name"] == "alex"
+    assert instances[1]["Name"] == "alice"
 
 
 def test_describe_by_name_match(mock_aws_config: Config):
@@ -227,13 +228,14 @@ def test_describe_running_only(mock_aws_config: Config):
     assert instances[0]["Name"] == "bob"
 
 
-def test_describe_instance_id(mock_aws_config: Config):
-    instances = launch(mock_aws_config, "alice", ami_id)
-    instance_id = instances[0]["InstanceId"]
+def test_describe_instance_ids(mock_aws_config: Config):
+    instance1 = launch(mock_aws_config, "alice", ami_id)
+    instance2 = launch(mock_aws_config, "bob", ami_id)
 
-    instances = describe(config=mock_aws_config, ident=instance_id)
-    assert len(instances) == 1
+    instances = describe(config=mock_aws_config, idents=[instance1[0]["InstanceId"], instance2[0]["InstanceId"]])
+    assert len(instances) == 2
     assert instances[0]["Name"] == "alice"
+    assert instances[1]["Name"] == "bob"
 
 
 def test_describe_sort_by(mock_aws_config: Config):
