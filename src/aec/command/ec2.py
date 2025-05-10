@@ -465,7 +465,7 @@ def terminate(config: Config, ident: str) -> list[dict[str, Any]]:
 
     if not ident:
         # avoid terminating all instances when there's no identifier
-        # we already args via arg parser, so this is defence in depth
+        # we already check args via arg parser, so this is defence in depth
         raise ValueError("Missing instance identifier")
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
