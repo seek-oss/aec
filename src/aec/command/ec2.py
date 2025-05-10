@@ -226,8 +226,6 @@ def describe(
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    if isinstance(idents, str):
-        idents = [idents]
     filters = to_filters(idents, name_match)
     if show_running_only:
         filters.append({"Name": "instance-state-name", "Values": ["pending", "running"]})
