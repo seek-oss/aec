@@ -23,7 +23,7 @@ tasks:
       - .python-version
     command: |
       # add uv to path
-      export PATH="/root/.cargo/bin/:$PATH"
+      export PATH="/root/.local/bin/:$PATH"
       # needed so the editable package (.pth) we install points at src
       mkdir src
       # needed to install hooks
