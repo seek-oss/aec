@@ -23,7 +23,7 @@ dev = [
     "boto3-stubs[ec2,compute-optimizer,ssm,s3]",
     "cogapp~=3.3",
     "dirty-equals~=0.6",
-    "moto[ec2]~=5.1.0",
+    "moto[ec2]~=5.1.4",
     "pre-commit~=4.1",
     "pyfakefs~=5.1",
     "pytest~=8.0",

@@ -43,7 +43,7 @@ def mock_aws_config(_mock_ec2: None) -> Config:
         "key_name": "test_key",
         "vpc": {
             "name": "test vpc",
-            "subnet": ec2_backends[DEFAULT_ACCOUNT_ID][region].get_default_subnet("us-east-1a").id,
+            "subnet": ec2_backends[DEFAULT_ACCOUNT_ID][region].get_default_subnets()["us-east-1a"].id,
             "security_group": "default",
         },
     }
@@ -112,7 +112,7 @@ def test_launch_no_region_specified(mock_aws_config: Config):
     os.environ["AWS_DEFAULT_REGION"] = "ap-southeast-2"
 
     mock_aws_config["vpc"]["subnet"] = (
-        ec2_backends["123456789012"]["ap-southeast-2"].get_default_subnet("ap-southeast-2a").id
+        ec2_backends["123456789012"]["ap-southeast-2"].get_default_subnets()["ap-southeast-2a"].id
     )
 
     instances = launch(mock_aws_config, "alice", ami_id)
@@ -434,7 +434,7 @@ def test_terminate_empty_name_does_not_delete_all_instances(mock_aws_config: Con
     with pytest.raises(ValueError) as exc_info:
         terminate(config=mock_aws_config, ident="")
     print(exc_info.value.args[0])
-    assert exc_info.value.args[0] == """Missing name or name_match"""
+    assert exc_info.value.args[0] == "Missing instance identifier"
 
     instances = describe(config=mock_aws_config)
     assert len(instances) == 1
