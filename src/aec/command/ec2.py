@@ -341,6 +341,10 @@ def tag(
     tags: Sequence[str] = [],
 ) -> list[dict[str, Any]]:
     """Tag EC2 instance(s)."""
+    if not ident and not name_match:
+        # avoid tagging all instances when there's no name
+        raise ValueError("Missing instance identifier or name_match")
+
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     tagdefs: list[TagTypeDef] = []
@@ -348,10 +352,6 @@ def tag(
     for t in tags:
         parts = t.split("=")
         tagdefs.append({"Key": parts[0], "Value": parts[1]})
-
-    if not ident and not name_match:
-        # avoid tagging all instances when there's no name
-        raise NoInstancesError(name=ident, name_match=name_match)
 
     instances = describe(config, ident, name_match)
 
@@ -420,16 +420,16 @@ def start(
 ) -> list[Instance]:
     """Start EC2 instance."""
 
+    if not ident:
+        # avoid starting all instances when there's no name
+        raise ValueError("Missing instance identifier")
+
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     if ident.startswith("i-"):
         print(f"Starting instance {ident} ... ")
     else:
         print(f"Starting instances named {ident} ... ")
-
-    if not ident:
-        # avoid starting all instances when there's no name
-        raise NoInstancesError(name=ident)
 
     instances = describe(config, ident)
 
@@ -452,11 +452,11 @@ def start(
 def stop(config: Config, ident: str) -> list[dict[str, Any]]:
     """Stop EC2 instance."""
 
-    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
-
     if not ident:
         # avoid stopping all instances when there's no name
-        raise NoInstancesError(name=ident)
+        raise ValueError("Missing instance identifier")
+
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     instances = describe(config, ident)
 
@@ -471,11 +471,11 @@ def stop(config: Config, ident: str) -> list[dict[str, Any]]:
 def terminate(config: Config, ident: str) -> list[dict[str, Any]]:
     """Terminate EC2 instance."""
 
-    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
-
     if not ident:
         # avoid terminating all instances when there's no name
-        raise NoInstancesError(name=ident)
+        raise ValueError("Missing instance identifier")
+
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     instances = describe(config, ident)
 
@@ -491,12 +491,11 @@ def terminate(config: Config, ident: str) -> list[dict[str, Any]]:
 
 def modify(config: Config, ident: str, type: str) -> list[Instance]:
     """Change an instance's type."""
-
-    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
-
     if not ident:
         # avoid modifying all instances when there's no name
-        raise NoInstancesError(name=ident)
+        raise ValueError("Missing instance identifier")
+
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     instances = describe(config, ident)
 
@@ -545,11 +544,11 @@ def create_key_pair(config: Config, key_name: str, file_path: str) -> str:
 def logs(config: Config, ident: str) -> str:
     """Show the system logs."""
 
-    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
-
     if not ident:
-        # avoid describing all instances when there's no name
-        raise NoInstancesError(name=ident)
+        # avoid showing logs for all instances when there's no name
+        raise ValueError("Missing instance identifier")
+
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     instances = describe(config, ident)
 
@@ -691,11 +690,11 @@ def subnets(config: Config, vpc_id: str | None = None) -> list[dict[str, Any]]:
 
 def user_data(config: Config, ident: str) -> str | None:
     """Describe user data for an instance."""
-    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
-
     if not ident:
         # avoid describing all instances when there's no name
-        raise NoInstancesError(name=ident)
+        raise ValueError("Missing instance identifier")
+
+    ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
     instances = describe(config, ident)
 

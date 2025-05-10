@@ -433,7 +433,7 @@ def test_terminate_empty_name_does_not_delete_all_instances(mock_aws_config: Con
     with pytest.raises(ValueError) as exc_info:
         terminate(config=mock_aws_config, ident="")
     print(exc_info.value.args[0])
-    assert exc_info.value.args[0] == """Missing name or name_match"""
+    assert exc_info.value.args[0] == "Missing instance identifier"
 
     instances = describe(config=mock_aws_config)
     assert len(instances) == 1
