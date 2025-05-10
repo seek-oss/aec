@@ -465,7 +465,7 @@ def stop(config: Config, idents: str | list[str]) -> list[dict[str, Any]]:
         instance_ids.extend([instance["InstanceId"] for instance in instances])
 
     if not instance_ids:
-        raise NoInstancesError(name=", ".join(idents))
+        raise NoInstancesError(name=idents)
 
     response = ec2_client.stop_instances(InstanceIds=instance_ids)
 
