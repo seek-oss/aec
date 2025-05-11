@@ -29,7 +29,7 @@ subcommands:
     launch              Launch a tagged EC2 instance with an EBS volume.
     logs                Show the system logs.
     modify              Change an instance's type.
-    start               Start EC2 instance.
+    start               Start EC2 instance(s).
     stop                Stop EC2 instance(s).
     restart             Restart EC2 instance, optionally changing the instance type.
     sec-groups          Describe security groups in the region, optionally filtered by VPC ID.
@@ -86,11 +86,11 @@ cog.out(f"```\n{docs('aec ec2 describe', ec2.describe(config))}\n```")
 ]]] -->
 ```
 aec ec2 describe
-                                                                                                                                            
-  InstanceId            State     Name    Type       DnsName                                      LaunchTime                  ImageId       
- ────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
-  i-3c81f4baf1763fc76   running   alice   t3.small   ec2-54-214-145-240.compute-1.amazonaws.com   2025-05-10 10:29:19+00:00   ami-03cf127a  
-  i-7324e333ab713a150   running   sam     t3.small   ec2-54-214-228-25.compute-1.amazonaws.com    2025-05-10 10:29:19+00:00   ami-03cf127a
+                                                                                                                                           
+  InstanceId            State     Name    Type       DnsName                                     LaunchTime                  ImageId       
+ ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
+  i-f5f62b4f8ee14ba77   running   alice   t3.small   ec2-54-214-231-240.compute-1.amazonaws.c…   2025-05-11 00:28:08+00:00   ami-03cf127a  
+  i-bd110f76b37a02f3a   running   sam     t3.small   ec2-54-214-120-161.compute-1.amazonaws.c…   2025-05-11 00:28:09+00:00   ami-03cf127a
 ```
 <!-- [[[end]]] -->
 
@@ -128,8 +128,8 @@ aec ec2 describe -c Name,SubnetId,Volumes,Image.CreationDate
                                                                                  
   Name    SubnetId                   Volumes           Image.CreationDate        
  ─────────────────────────────────────────────────────────────────────────────── 
-  alice   subnet-eff31034f82ebb276   ['Size=15 GiB']   2025-05-10T10:29:19.000Z  
-  sam     subnet-eff31034f82ebb276   ['Size=15 GiB']   2025-05-10T10:29:19.000Z
+  alice   subnet-95980e3e545b185d9   ['Size=15 GiB']   2025-05-11T00:28:08.000Z  
+  sam     subnet-95980e3e545b185d9   ['Size=15 GiB']   2025-05-11T00:28:08.000Z
 ```
 <!-- [[[end]]] -->
 
@@ -224,12 +224,12 @@ aec ec2 subnets
                                                                                                
   SubnetId                   VpcId                   AvailabilityZone   CidrBlock        Name  
  ───────────────────────────────────────────────────────────────────────────────────────────── 
-  subnet-eff31034f82ebb276   vpc-ed023aad22efc6916   us-east-1a         172.31.0.0/20          
-  subnet-c191584009df68576   vpc-ed023aad22efc6916   us-east-1b         172.31.16.0/20         
-  subnet-ef2108df55e002790   vpc-ed023aad22efc6916   us-east-1c         172.31.32.0/20         
-  subnet-cf0bc8d11501089f8   vpc-ed023aad22efc6916   us-east-1d         172.31.48.0/20         
-  subnet-5fc264ecaed2f6b3d   vpc-ed023aad22efc6916   us-east-1e         172.31.64.0/20         
-  subnet-e12a2619727fbb5a9   vpc-ed023aad22efc6916   us-east-1f         172.31.80.0/20
+  subnet-95980e3e545b185d9   vpc-cc971908ad58e17d7   us-east-1a         172.31.0.0/20          
+  subnet-ce7090c4676ce357a   vpc-cc971908ad58e17d7   us-east-1b         172.31.16.0/20         
+  subnet-eedaf105d9a0f1ab5   vpc-cc971908ad58e17d7   us-east-1c         172.31.32.0/20         
+  subnet-24451565e7860536b   vpc-cc971908ad58e17d7   us-east-1d         172.31.48.0/20         
+  subnet-48784ce7b6cfc5902   vpc-cc971908ad58e17d7   us-east-1e         172.31.64.0/20         
+  subnet-3267039bf2adefbc7   vpc-cc971908ad58e17d7   us-east-1f         172.31.80.0/20
 ```
 <!-- [[[end]]] -->
 
@@ -243,8 +243,8 @@ aec ec2 sec-groups
                                                                                          
   GroupId                GroupName   Description                  VpcId                  
  ─────────────────────────────────────────────────────────────────────────────────────── 
-  sg-45f8404fc0675f68f   default     default VPC security group   vpc-ed023aad22efc6916  
-  default                default     default                      vpc-ed023aad22efc6916
+  sg-552a759c799ac8eae   default     default VPC security group   vpc-cc971908ad58e17d7  
+  default                default     default                      vpc-cc971908ad58e17d7
 ```
 <!-- [[[end]]] -->
 

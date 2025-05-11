@@ -352,10 +352,17 @@ def test_tags_filter(mock_aws_config: Config):
 
 def test_stop_start(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
+    launch(mock_aws_config, "bob", ami_id)
+    launch(mock_aws_config, "cathy", ami_id)
 
-    stop(mock_aws_config, idents=["alice"])
+    stop(mock_aws_config, idents=["alice", "bob", "cathy"])
 
-    start(mock_aws_config, ident="alice")
+    start(mock_aws_config, idents=["alice", "bob"])
+
+    instances = describe(config=mock_aws_config, show_running_only=True)
+    assert len(instances) == 2
+    assert instances[0]["Name"] == "alice"
+    assert instances[1]["Name"] == "bob"
 
 
 def test_restart_new_type(mock_aws_config: Config):

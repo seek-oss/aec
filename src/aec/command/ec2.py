@@ -415,34 +415,35 @@ def volume_tags(
 
 def start(
     config: Config,
-    ident: str,
+    idents: str | list[str],
     wait_ssm: bool = False,
 ) -> list[Instance]:
-    """Start EC2 instance."""
+    """Start EC2 instance(s)."""
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    if ident.startswith("i-"):
-        print(f"Starting instance {ident} ... ")
-    else:
-        print(f"Starting instances named {ident} ... ")
-
-    instances = describe(config, ident)
+    instances = describe(config, idents)
 
     if not instances:
-        raise NoInstancesError(name=ident)
+        raise NoInstancesError(idents)
+
+    for i in instances:
+        name_or_id = i.get("Name") or i["InstanceId"]
+        print(f"Starting instance {name_or_id} ... ")
 
     instance_ids = [instance["InstanceId"] for instance in instances]
+
     ec2_client.start_instances(InstanceIds=instance_ids)
 
     waiter = ec2_client.get_waiter("instance_running")
     waiter.wait(InstanceIds=instance_ids)
 
     if wait_ssm:
-        print(f"Instance {', '.join(instance_ids)} running. Waiting for SSM agent to come online ...")
+        instances_text = "Instances" if len(instance_ids) > 1 else "Instance"
+        print(f"{instances_text} running. Waiting for SSM agent to come online ...")
         _wait_ssm_agent_online(config, instance_ids)
 
-    return describe(config, ident)
+    return describe(config, idents)
 
 
 def stop(config: Config, idents: list[str]) -> list[dict[str, Any]]:
