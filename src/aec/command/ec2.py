@@ -439,7 +439,8 @@ def start(
     waiter.wait(InstanceIds=instance_ids)
 
     if wait_ssm:
-        print(f"Instance {', '.join(instance_ids)} running. Waiting for SSM agent to come online ...")
+        instances_text = "Instances" if len(instance_ids) > 1 else "Instance"
+        print(f"{instances_text} running. Waiting for SSM agent to come online ...")
         _wait_ssm_agent_online(config, instance_ids)
 
     return describe(config, idents)
