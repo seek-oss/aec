@@ -85,7 +85,7 @@ ec2_cli = [
     ]),
     Cmd(ec2.start, [
         config_arg,
-        Arg("ident", type=non_empty, help="Name tag of instance or instance id"),
+        Arg("idents", type=non_empty, nargs="+", help="Name tags of instances or instance ids"),
         Arg("-w", "--wait-ssm", action='store_true', help="Wait until the SSM agent is online before exiting"),
     ]),
     Cmd(ec2.stop, [
