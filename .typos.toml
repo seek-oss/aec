@@ -1,0 +1,3 @@
+[default]
+# ignore EC2 identifiers in the docs
+extend-ignore-re = ["i-[0-9a-f]{16}"]

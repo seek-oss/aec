@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import os
 from collections.abc import Iterator
 from contextlib import redirect_stdout
 from typing import Any
@@ -12,6 +13,11 @@ from moto.ec2.models.amis import AMIS
 import aec.command.ec2 as ec2
 import aec.util.display as display
 from aec.util.config import Config
+
+# avoid stale creds causing
+# RuntimeError: Credentials were refreshed, but the refreshed credentials are still expired.
+if "AWS_CREDENTIAL_EXPIRATION" in os.environ:
+    del os.environ["AWS_CREDENTIAL_EXPIRATION"]
 
 # fixtures
 mock_aws().start()
