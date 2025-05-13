@@ -8,7 +8,8 @@ from aec.main import build_parser
 cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ssm'].format_help()}```")
 ]]] -->
 ```
-usage: aec ssm [-h] {commands,compliance-summary,describe,invocations,output,patch,patch-summary,run} ...
+usage: aec ssm [-h]
+               {commands,compliance-summary,describe,invocations,output,patch,patch-summary,run} ...
 
 optional arguments:
   -h, --help            show this help message and exit

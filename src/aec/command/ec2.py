@@ -477,6 +477,20 @@ def terminate(config: Config, idents: list[str]) -> list[dict[str, Any]]:
     if not instances:
         raise NoInstancesError(name=idents)
 
+    print("The following instances will be terminated:")
+    for instance in instances:
+        name = instance.get("Name")
+        instance_id = instance["InstanceId"]
+        if name:
+            print(f"- {name} ({instance_id})")
+        else:
+            print(f"- {instance_id}")
+
+    confirm = input("Are you sure you want to terminate these instances? (y/n): ")
+    if confirm.lower() != "y":
+        print("Termination cancelled.")
+        return []
+
     instance_ids = [instance["InstanceId"] for instance in instances]
     response = ec2_client.terminate_instances(InstanceIds=instance_ids)
 
