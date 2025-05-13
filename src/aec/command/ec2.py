@@ -451,35 +451,34 @@ def stop(config: Config, idents: list[str]) -> list[dict[str, Any]]:
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    instance_ids = []
-    for ident in idents:
-        instances = describe(config, ident)
-        instance_ids.extend([instance["InstanceId"] for instance in instances])
+    instances = describe(config, idents)
 
-    if not instance_ids:
+    if not instances:
         raise NoInstancesError(name=idents)
 
+    instance_ids = [instance["InstanceId"] for instance in instances]
     response = ec2_client.stop_instances(InstanceIds=instance_ids)
 
     return [{"State": i["CurrentState"]["Name"], "InstanceId": i["InstanceId"]} for i in response["StoppingInstances"]]
 
 
-def terminate(config: Config, ident: str) -> list[dict[str, Any]]:
-    """Terminate EC2 instance."""
+def terminate(config: Config, idents: list[str]) -> list[dict[str, Any]]:
+    """Terminate EC2 instance(s)."""
 
-    if not ident:
+    if not idents or not idents[0]:
         # avoid terminating all instances when there's no identifier
         # we already check args via arg parser, so this is defence in depth
         raise ValueError("Missing instance identifier")
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    instances = describe(config, ident)
+    instances = describe(config, idents)
 
     if not instances:
-        raise NoInstancesError(name=ident)
+        raise NoInstancesError(name=idents)
 
-    response = ec2_client.terminate_instances(InstanceIds=[instance["InstanceId"] for instance in instances])
+    instance_ids = [instance["InstanceId"] for instance in instances]
+    response = ec2_client.terminate_instances(InstanceIds=instance_ids)
 
     return [
         {"State": i["CurrentState"]["Name"], "InstanceId": i["InstanceId"]} for i in response["TerminatingInstances"]
