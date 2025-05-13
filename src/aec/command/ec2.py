@@ -462,7 +462,7 @@ def stop(config: Config, idents: list[str]) -> list[dict[str, Any]]:
     return [{"State": i["CurrentState"]["Name"], "InstanceId": i["InstanceId"]} for i in response["StoppingInstances"]]
 
 
-def terminate(config: Config, idents: list[str]) -> list[dict[str, Any]]:
+def terminate(config: Config, idents: list[str], yes: bool = True) -> list[dict[str, Any]]:
     """Terminate EC2 instance(s)."""
 
     if not idents or not idents[0]:
@@ -486,10 +486,11 @@ def terminate(config: Config, idents: list[str]) -> list[dict[str, Any]]:
         else:
             print(f"- {instance_id}")
 
-    confirm = input("Are you sure you want to terminate these instances? (y/n): ")
-    if confirm.lower() != "y":
-        print("Termination cancelled.")
-        return []
+    if not yes:
+        confirm = input("Are you sure you want to terminate these instances? (y/n): ")
+        if confirm.lower() != "y":
+            print("Termination cancelled.")
+            return []
 
     instance_ids = [instance["InstanceId"] for instance in instances]
     response = ec2_client.terminate_instances(InstanceIds=instance_ids)
