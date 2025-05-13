@@ -204,7 +204,7 @@ def test_describe_by_name_match(mock_aws_config: Config):
 def test_describe_terminated(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
     launch(mock_aws_config, "sam", ami_id)
-    terminate(mock_aws_config, "sam")
+    terminate(mock_aws_config, ["sam"])
 
     # by default don't show terminated instances
     instances = describe(config=mock_aws_config)
@@ -433,15 +433,21 @@ def test_status_match(mock_aws_config: Config):
 
 def test_terminate(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
+    launch(mock_aws_config, "bob", ami_id)
+    launch(mock_aws_config, "sam", ami_id)
 
-    terminate(config=mock_aws_config, ident="alice")
+    terminate(config=mock_aws_config, idents=["alice", "bob"])
+
+    instances = describe(config=mock_aws_config)
+    assert len(instances) == 1
+    assert instances[0]["Name"] == "sam"
 
 
 def test_terminate_empty_name_does_not_delete_all_instances(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
 
     with pytest.raises(ValueError) as exc_info:
-        terminate(config=mock_aws_config, ident="")
+        terminate(config=mock_aws_config, idents=[""])
     print(exc_info.value.args[0])
     assert exc_info.value.args[0] == "Missing instance identifier"
 
