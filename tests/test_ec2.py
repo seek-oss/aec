@@ -204,7 +204,7 @@ def test_describe_by_name_match(mock_aws_config: Config):
 def test_describe_terminated(mock_aws_config: Config):
     launch(mock_aws_config, "alice", ami_id)
     launch(mock_aws_config, "sam", ami_id)
-    terminate(mock_aws_config, "sam")
+    terminate(mock_aws_config, ["sam"])
 
     # by default don't show terminated instances
     instances = describe(config=mock_aws_config)
