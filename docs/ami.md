@@ -36,11 +36,11 @@ cog.out(f"```\n{docs('aec ami describe', ami.describe(config, owner='09972010947
 ]]] -->
 ```
 aec ami describe
-                                                                                                                                     
-  Name                                                              ImageId        CreationDate               RootDeviceName   Size  
- ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────── 
-  ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-20170727   ami-1e749f67   2025-05-11T00:28:08.000Z   /dev/sda1        15    
-  ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20170721   ami-785db401   2025-05-11T00:28:08.000Z   /dev/sda1        15
+                                                                                                        
+  Name                                 ImageId        CreationDate               RootDeviceName   Size  
+ ────────────────────────────────────────────────────────────────────────────────────────────────────── 
+  ubuntu/images/hvm-ssd/ubuntu-trus…   ami-1e749f67   2025-05-13T22:42:49.000Z   /dev/sda1        15    
+  ubuntu/images/hvm-ssd/ubuntu-xeni…   ami-785db401   2025-05-13T22:42:49.000Z   /dev/sda1        15
 ```
 <!-- [[[end]]] -->
 

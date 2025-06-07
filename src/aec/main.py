@@ -134,7 +134,8 @@ ec2_cli = [
     ]),
     Cmd(ec2.terminate, [
         config_arg,
-        Arg("ident", type=non_empty, help="Name tag of instance or instance id")
+        Arg("idents", type=non_empty, nargs="+", help="Name tags of instances or instance ids"),
+        Arg("-y", "--yes", action='store_true', help="Confirm termination without prompting")
     ]),
     Cmd(ec2.user_data, [
         config_arg,
