@@ -109,7 +109,7 @@ def compliance_summary(config: Config) -> Iterator[dict[str, Any]]:
                 "Name": instances_names.get(i["ResourceId"], None),
                 "Status": i["Status"],
                 "NonCompliantCount": i["NonCompliantSummary"]["NonCompliantCount"],
-                "Last operation time": i["ExecutionSummary"]["ExecutionTime"],
+                "Last operation time": i["ExecutionSummary"].get("ExecutionTime", None),
             }
 
         next_token = response.get("NextToken", None)
