@@ -1,37 +1,25 @@
 MAKEFLAGS += --warn-undefined-variables --check-symlink-times
 SHELL = /bin/bash -o pipefail
 .DEFAULT_GOAL := help
-.PHONY: help clean install format check pyright test dist hooks install-hooks
+.PHONY: help .uv .sync clean install check format pyright test dist hooks install-hooks
 
 ## display help message
 help:
 	@awk '/^##.*$$/,/^[~\/\.0-9a-zA-Z_-]+:/' $(MAKEFILE_LIST) | awk '!(NR%2){print $$0p}{p=$$0}' | awk 'BEGIN {FS = ":.*?##"}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' | sort
 
-venv ?= .venv
-# this is a symlink so we set the --check-symlink-times makeflag above
-python := $(venv)/bin/python
-# use uv if present, else fall back to pip
-pip = $(shell command -v uv >/dev/null && echo "uv pip" || echo "$(venv)/bin/pip")
+## check that uv is installed
+.uv:
+	@uv --version || { echo 'Please install uv: https://docs.astral.sh/uv/getting-started/installation/' && exit 13 ;}
 
-$(python): $(if $(value CI),|,) .python-version
-# create venv using system python even when another venv is active
-	PATH=$${PATH#$${VIRTUAL_ENV}/bin:} python3 -m venv --clear $(venv)
-	$(python) --version
-
-$(venv): $(if $(value CI),|,) pyproject.toml $(python)
-	$(pip) install -e '.[dev]'
-	touch $(venv)
-
-node_modules: package.json
-	npm install --no-save
-	touch node_modules
+.sync:
+	uv sync
 
 # delete the venv
 clean:
-	rm -rf $(venv)
+	rm -rf .venv
 
 ## create venv and install this package and hooks
-install: $(venv) node_modules $(if $(value CI),,install-hooks)
+install: .uv .sync $(if $(value CI),,install-hooks)
 
 ## format, lint and type check
 check: export SKIP=test
@@ -42,28 +30,29 @@ format: export SKIP=pyright,test
 format: hooks
 
 ## pyright type check
-pyright: node_modules $(venv)
-	node_modules/.bin/pyright
+pyright:
+	PYRIGHT_PYTHON_IGNORE_WARNINGS=1 uv run pyright
 
 ## run tests
-test: $(venv)
-	$(venv)/bin/pytest
+test:
+	uv run pytest
 
 ## build python distribution
-dist: $(venv)
+dist:
+# start with a clean slate (see setuptools/#2347)
 	# start with a clean slate (see setuptools/#2347)
-	rm -rf dist src/*.egg-info
-	$(venv)/bin/python -m build --sdist --wheel
+	rm -rf build dist src/*.egg-info
+	uv run -m build --wheel
 
 ## publish to pypi
-publish: $(venv)
-	$(venv)/bin/twine upload dist/*
+publish:
+	uv run twine upload dist/*
 
 ## run pre-commit git hooks on all files
-hooks: node_modules $(venv)
-	$(venv)/bin/pre-commit run --color=always --all-files --hook-stage push
+hooks:
+	uv run pre-commit run --color=always --all-files --hook-stage pre-push
 
 install-hooks: .git/hooks/pre-push
 
-.git/hooks/pre-push: $(venv)
-	$(venv)/bin/pre-commit install --install-hooks -t pre-push
+.git/hooks/pre-push:
+	uv run pre-commit install --install-hooks -t pre-push

@@ -17,7 +17,7 @@ dependencies = [
     "typing_extensions==4.14.1",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "build~=1.0",
     "boto3-stubs[ec2,compute-optimizer,ssm,s3]",
@@ -26,11 +26,12 @@ dev = [
     # pinned because of https://github.com/getmoto/moto/issues/9160
     "moto[ec2]==5.1.8",
     "pre-commit~=4.1",
+    "pyright==1.1.403",
     "pyfakefs~=5.1",
     "pytest~=8.0",
     "pytest-mock~=3.11",
     "ruff~=0.12.1",
-    "twine~=6.0",
+    "twine~=6.1",
 ]
 
 [project.scripts]
@@ -45,7 +46,6 @@ requires = ["setuptools~=80.1", "setuptools_scm~=8.0", "wheel~=0.42"]
 # enable setuptools_scm to set the version based on git tags
 [tool.setuptools_scm]
 fallback_version = "0.0.0"
-
 
 
 [tool.pyright]
@@ -71,26 +71,25 @@ show-fixes = true
 [tool.ruff.lint]
 # rules to enable/ignore
 select = [
-    "F",    # pyflakes
-    "E",    # pycodestyle
-    "W",    # pycodestyle
-    "ANN",  # type annotations
-    "N",    # pep8-naming
-    "B",    # bugbear
-    "I",    # isort
-    "ARG",  # flake8-unused-arguments
-    "SLF",  # flake8-self
-    "UP",   # pyupgrade
-    "PERF", # perflint
-    "RUF",  # ruff-specific
-    "SIM",  # flake8-simplify
-    "S113", # request-without-timeout
-    "FA",   # flake8-future-annotations (for python 3.7/8/9)
+    "F",     # pyflakes
+    "E",     # pycodestyle
+    "W",     # pycodestyle
+    "ANN",   # type annotations
+    "N",     # pep8-naming
+    "B",     # bugbear
+    "I",     # isort
+    "ARG",   # flake8-unused-arguments
+    "SLF",   # flake8-self
+    "UP",    # pyupgrade
+    "PERF",  # perflint
+    "RUF",   # ruff-specific
+    "SIM",   # flake8-simplify
+    "S113",  # request-without-timeout
+    "FA",    # flake8-future-annotations (for python 3.7/8/9)
+    "ASYNC", # flake8-async
 ]
+
 ignore = [
-    # allow untyped self and cls args
-    "ANN101",
-    "ANN102",
     # allow no return type from dunder methods
     "ANN204",
     # allow == True because pandas dataframes overload equality
