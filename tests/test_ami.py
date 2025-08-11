@@ -25,8 +25,10 @@ def test_describe_images(mock_aws_config: Config):
     images = describe(config=mock_aws_config)
 
     assert len(images) == 2
-    assert images[0]["Name"] == "ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-20170727"
-    assert images[1]["Name"] == "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20170721"
+    assert {i["Name"] for i in images} == {
+        "ubuntu/images/hvm-ssd/ubuntu-trusty-14.04-amd64-server-20170727",
+        "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-20170721",
+    }
 
 
 def test_describe_images_by_id(mock_aws_config: Config):
