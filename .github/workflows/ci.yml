@@ -24,10 +24,10 @@ jobs:
       with:
         path: ~/.cache/pre-commit
         key: ${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+    - name: install uv
+      run: curl -LsSf https://astral.sh/uv/install.sh | sh
     - name: make install
       if: steps.cache-venv.outputs.cache-hit != 'true'
-      run: |
-        curl -LsSf https://astral.sh/uv/install.sh | sh
-        make install
+      run: make install
     - name: make hooks
       run: make hooks
