@@ -248,28 +248,35 @@ def commands(config: Config, ident: str | None = None) -> Iterator[dict[str, str
             break
 
 
-def invocations(config: Config, command_id: str) -> list[dict[str, Any]]:
+def invocations(config: Config, command_id: str) -> Iterator[dict[str, Any]]:
     """List invocations of a command across instances."""
 
     client = boto3.client("ssm", region_name=config.get("region", None))
     region = client.meta.region_name
 
     command = client.list_commands(CommandId=command_id)["Commands"][0]
-    invocations = client.list_command_invocations(CommandId=command_id)
     instances_names = describe_instances_names(config)
+    kwargs: ListCommandInvocationsRequestTypeDef = {"CommandId": command_id}
 
-    return [
-        {
-            "RequestedDateTime": i["RequestedDateTime"].strftime("%Y-%m-%d %H:%M"),
-            "InstanceId": i["InstanceId"],
-            "Name": instances_names.get(i["InstanceId"], None),
-            "StatusDetails": i["StatusDetails"],
-            "DocumentName": i["DocumentName"],
-            "Operation": ",".join(command["Parameters"]["Operation"]),
-            "ConsoleLink": f"https://{region}.console.aws.amazon.com/systems-manager/run-command/{command_id}/{i['InstanceId']}?region={region}",
-        }
-        for i in invocations["CommandInvocations"]
-    ]
+    while True:
+        response = client.list_command_invocations(**kwargs)
+
+        for i in response["CommandInvocations"]:
+            yield {
+                "RequestedDateTime": i["RequestedDateTime"].strftime("%Y-%m-%d %H:%M"),
+                "InstanceId": i["InstanceId"],
+                "Name": instances_names.get(i["InstanceId"], None),
+                "StatusDetails": i["StatusDetails"],
+                "DocumentName": i["DocumentName"],
+                "Operation": ",".join(command["Parameters"]["Operation"]),
+                "ConsoleLink": f"https://{region}.console.aws.amazon.com/systems-manager/run-command/{command_id}/{i['InstanceId']}?region={region}",
+            }
+
+        next_token = response.get("NextToken", None)
+        if next_token:
+            kwargs["NextToken"] = next_token
+        else:
+            break
 
 
 DOC_PATHS = {"AWS-RunPatchBaseline": "PatchLinux", "AWS-RunShellScript": "0.awsrunShellScript"}
