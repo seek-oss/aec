@@ -268,7 +268,7 @@ def invocations(config: Config, command_id: str) -> Iterator[dict[str, Any]]:
                 "Name": instances_names.get(i["InstanceId"], None),
                 "StatusDetails": i["StatusDetails"],
                 "DocumentName": i["DocumentName"],
-                "Operation": ",".join(command["Parameters"]["Operation"]),
+                "Operation": ",".join(command["Parameters"].get("Operation", "")),
                 "ConsoleLink": f"https://{region}.console.aws.amazon.com/systems-manager/run-command/{command_id}/{i['InstanceId']}?region={region}",
             }
 
