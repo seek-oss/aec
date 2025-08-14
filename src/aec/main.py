@@ -195,7 +195,7 @@ ssm_cli = [
     Cmd(ssm.output, [
         config_arg,
         Arg("command_id", type=str, help="Command id"),
-        Arg("instance_id", type=str, help="Instance id"),
+        Arg("ident", type=str, help="Instance id or Name tag"),
         Arg("-e", "--stderr", action='store_true', help="Show stderr instead of stdout"),
     ]),
     Cmd(ssm.patch, [

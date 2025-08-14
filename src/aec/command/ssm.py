@@ -14,7 +14,7 @@ from aec.util.config import Config
 from aec.util.ec2_util import describe_instances_names, describe_running_instances_names
 
 if TYPE_CHECKING:
-    from mypy_boto3_ssm.type_defs import InstanceInformationStringFilterTypeDef
+    from mypy_boto3_ssm.type_defs import InstanceInformationStringFilterTypeDef, ListCommandInvocationsRequestTypeDef
 
 
 class Agent(TypedDict):
@@ -282,7 +282,7 @@ def invocations(config: Config, command_id: str) -> Iterator[dict[str, Any]]:
 DOC_PATHS = {"AWS-RunPatchBaseline": "PatchLinux", "AWS-RunShellScript": "0.awsrunShellScript"}
 
 
-def output(config: Config, command_id: str, instance_id: str, stderr: bool) -> None:
+def output(config: Config, command_id: str, ident: str, stderr: bool) -> None:
     """Fetch output of a command from S3."""
     ssm_client = boto3.client("ssm", region_name=config.get("region", None))
 
@@ -293,12 +293,14 @@ def output(config: Config, command_id: str, instance_id: str, stderr: bool) -> N
 
     bucket = command["OutputS3BucketName"]
 
+    instance_id = fetch_instance_id(config, ident)
+
     try:
         doc_path = DOC_PATHS[command["DocumentName"]]
     except KeyError:
+        prefix = command.get("OutputS3KeyPrefix", "")
         raise NotImplementedError(
-            f"for {command['DocumentName']}. "
-            + "Run aws s3 ls {command['OutputS3KeyPrefix']}/{command_id}/{instance_id}/awsrunShellScript/"
+            f"for {command['DocumentName']}. Run aws s3 ls {prefix}/{command_id}/{instance_id}/awsrunShellScript/"
         ) from None
 
     std = "stderr" if stderr else "stdout"
