@@ -9,7 +9,8 @@ cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ssm'].format_hel
 ]]] -->
 ```
 usage: aec ssm [-h]
-               {commands,compliance-summary,describe,invocations,output,patch,patch-summary,run} ...
+               {commands,compliance-summary,describe,invocations,output,patch,patch-summary,run}
+               ...
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -52,7 +53,7 @@ Run a hello world command on multiple instances:
 echo 'echo Hello World' | aec ssm run awesome-instance i-0f194c8d697f35240
 ```
 
-Fetch stdout of the hello world command for the invocation on i-0f194c8d697f35240 (requires S3 bucket [configuration](##Config)):
+Fetch stdout of the hello world command for the invocation on i-0f194c8d697f35240 (requires S3 bucket [configuration](#config)):
 
 ```
 aec ssm output 3dd3482e-20f2-4a4a-a9f6-0989a0d38ced i-0f194c8d697f35240

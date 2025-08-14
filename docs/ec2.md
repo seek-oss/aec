@@ -86,13 +86,13 @@ cog.out(f"```\n{docs('aec ec2 describe', ec2.describe(config))}\n```")
 ]]] -->
 ```
 aec ec2 describe
-                                                                                                        
-  InstanceId          State     Name    Type       DnsName             LaunchTime         ImageId       
- ────────────────────────────────────────────────────────────────────────────────────────────────────── 
-  i-15d4cf7d9a7008…   running   alice   t3.small   ec2-54-214-187-1…   2025-05-13         ami-03cf127a  
-                                                                       22:42:49+00:00                   
-  i-e5d3514eed0e47…   running   sam     t3.small   ec2-54-214-107-5…   2025-05-13         ami-03cf127a  
-                                                                       22:42:49+00:00
+                                                                                                    
+  InstanceId        State     Name    Type       DnsName           LaunchTime         ImageId       
+ ────────────────────────────────────────────────────────────────────────────────────────────────── 
+  i-3b5bebc056a7…   running   alice   t3.small   ec2-54-214-122…   2025-08-14         ami-03cf127a  
+                                                                   10:56:57+00:00                   
+  i-a17f9da75f28…   running   sam     t3.small   ec2-54-214-204…   2025-08-14         ami-03cf127a  
+                                                                   10:56:58+00:00
 ```
 <!-- [[[end]]] -->
 
@@ -130,8 +130,8 @@ aec ec2 describe -c Name,SubnetId,Volumes,Image.CreationDate
                                                                                  
   Name    SubnetId                   Volumes           Image.CreationDate        
  ─────────────────────────────────────────────────────────────────────────────── 
-  alice   subnet-c81a1f650287f8197   ['Size=15 GiB']   2025-05-13T22:42:49.000Z  
-  sam     subnet-c81a1f650287f8197   ['Size=15 GiB']   2025-05-13T22:42:49.000Z
+  alice   subnet-ac913213719479a73   ['Size=15 GiB']   2025-08-14T10:56:57.000Z  
+  sam     subnet-ac913213719479a73   ['Size=15 GiB']   2025-08-14T10:56:57.000Z
 ```
 <!-- [[[end]]] -->
 
@@ -226,12 +226,12 @@ aec ec2 subnets
                                                                                                
   SubnetId                   VpcId                   AvailabilityZone   CidrBlock        Name  
  ───────────────────────────────────────────────────────────────────────────────────────────── 
-  subnet-c81a1f650287f8197   vpc-acabf60113c89f0c6   us-east-1a         172.31.0.0/20          
-  subnet-46d34fb041b1b64fb   vpc-acabf60113c89f0c6   us-east-1b         172.31.16.0/20         
-  subnet-581dd50c68be1a670   vpc-acabf60113c89f0c6   us-east-1c         172.31.32.0/20         
-  subnet-d6b4177275f65e247   vpc-acabf60113c89f0c6   us-east-1d         172.31.48.0/20         
-  subnet-b9e95c8fd989fcb6d   vpc-acabf60113c89f0c6   us-east-1e         172.31.64.0/20         
-  subnet-5698e544afe4b19a0   vpc-acabf60113c89f0c6   us-east-1f         172.31.80.0/20
+  subnet-ac913213719479a73   vpc-76a1f3589d22c1414   us-east-1a         172.31.0.0/20          
+  subnet-b0dea71934899b14c   vpc-76a1f3589d22c1414   us-east-1b         172.31.16.0/20         
+  subnet-e54ce09a059ebac91   vpc-76a1f3589d22c1414   us-east-1c         172.31.32.0/20         
+  subnet-ecbae6ec4b5eda0b1   vpc-76a1f3589d22c1414   us-east-1d         172.31.48.0/20         
+  subnet-663cffd6fdd7a7629   vpc-76a1f3589d22c1414   us-east-1e         172.31.64.0/20         
+  subnet-de8185767c806f58a   vpc-76a1f3589d22c1414   us-east-1f         172.31.80.0/20
 ```
 <!-- [[[end]]] -->
 
@@ -245,8 +245,8 @@ aec ec2 sec-groups
                                                                                          
   GroupId                GroupName   Description                  VpcId                  
  ─────────────────────────────────────────────────────────────────────────────────────── 
-  sg-52942a07731a22b10   default     default VPC security group   vpc-acabf60113c89f0c6  
-  default                default     default                      vpc-acabf60113c89f0c6
+  sg-e0a58c46b21931676   default     default VPC security group   vpc-76a1f3589d22c1414  
+  default                default     default                      vpc-76a1f3589d22c1414
 ```
 <!-- [[[end]]] -->
 
