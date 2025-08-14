@@ -25,6 +25,8 @@ jobs:
           path: .venv
           # same as used in the ci workflow for reuse across workflows
           key: ${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-venv-${{ hashFiles('pyproject.toml') }}
+      - name: install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
       - name: make install
         if: steps.cache-venv.outputs.cache-hit != 'true'
         run: make install
