@@ -11,7 +11,7 @@ from botocore.exceptions import ClientError
 from typing_extensions import Literal, TypedDict
 
 from aec.util.config import Config
-from aec.util.ec2_util import describe_instances_names, describe_running_instances_names
+from aec.util.ec2_util import describe_instances, describe_instances_names, describe_running_instances_names
 
 if TYPE_CHECKING:
     from mypy_boto3_ssm.type_defs import InstanceInformationStringFilterTypeDef, ListCommandInvocationsRequestTypeDef
@@ -70,8 +70,8 @@ def describe(
 
 def patch_summary(config: Config) -> Iterator[dict[str, Any]]:
     """Patch summary for all instances that have run the patch baseline."""
-    instances_names = describe_instances_names(config)
-    instance_ids = list(instances_names.keys())
+    instances = describe_instances(config)
+    instance_ids = list(instances.keys())
 
     client = boto3.client("ssm", region_name=config.get("region", None))
 
@@ -83,7 +83,8 @@ def patch_summary(config: Config) -> Iterator[dict[str, Any]]:
         for i in response["InstancePatchStates"]:
             yield {
                 "InstanceId": i["InstanceId"],
-                "Name": instances_names.get(i["InstanceId"], None),
+                "Name": (instances.get(i["InstanceId"], None) or {}).get("Name", None),
+                "State": (instances.get(i["InstanceId"], None) or {}).get("State", None),
                 "Needed": i["MissingCount"],
                 "Pending Reboot": i["InstalledPendingRebootCount"],
                 "Errored": i["FailedCount"],
