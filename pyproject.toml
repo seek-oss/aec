@@ -8,7 +8,7 @@ keywords = ["AWS", "EC2", "command line", "cli"]
 classifiers = ["License :: OSI Approved :: MIT License"]
 requires-python = ">=3.9"
 dependencies = [
-    "boto3==1.40.21",
+    "boto3==1.40.42",
     "importlib_resources==6.5.2",
     "pytoml==0.1.21",
     "pytz==2025.2",
@@ -24,13 +24,13 @@ dev = [
     "cogapp~=3.3",
     "dirty-equals~=0.6",
     # pinned because of https://github.com/getmoto/moto/issues/9160
-    "moto[ec2]==5.1.11",
+    "moto[ec2]==5.1.13",
     "pre-commit~=4.1",
-    "pyright==1.1.404",
+    "pyright==1.1.405",
     "pyfakefs~=5.1",
     "pytest~=8.0",
     "pytest-mock~=3.11",
-    "ruff~=0.12.1",
+    "ruff~=0.13.2",
     "twine~=6.1",
 ]
 
