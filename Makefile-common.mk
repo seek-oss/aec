@@ -48,11 +48,11 @@ dist:
 publish:
 	uv run twine upload dist/*
 
-## run pre-commit git hooks on all files
+## run prek git hooks on all files
 hooks:
-	uv run pre-commit run --color=always --all-files --hook-stage pre-push
+	uv run prek run --color=always --all-files --hook-stage pre-push
 
 install-hooks: .git/hooks/pre-push
 
 .git/hooks/pre-push:
-	uv run pre-commit install --install-hooks -t pre-push
+	uv run prek install --install-hooks -t pre-push

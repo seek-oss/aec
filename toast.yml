@@ -39,6 +39,8 @@ tasks:
       - src/
       - tests/
     command: |
-      # needed for pre-commit to work and see files
+      # add uv to path
+      export PATH="/root/.local/bin/:$PATH"
+      # needed for prek to see files to run hooks on
       git add src tests
       make hooks

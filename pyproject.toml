@@ -25,7 +25,7 @@ dev = [
     "dirty-equals~=0.6",
     # pinned because of https://github.com/getmoto/moto/issues/9160
     "moto[ec2]==5.1.13",
-    "pre-commit~=4.1",
+    "prek~=0.2.11",
     "pyright==1.1.405",
     "pyfakefs~=5.1",
     "pytest~=8.0",

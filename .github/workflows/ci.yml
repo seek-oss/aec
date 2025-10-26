@@ -18,12 +18,12 @@ jobs:
       with:
         path: .venv
         key: ${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-venv-${{ hashFiles('pyproject.toml') }}
-    - name: Cache pre-commit
-      id: cache-pre-commit
+    - name: Cache prek
+      id: cache-prek
       uses: actions/cache@v3
       with:
-        path: ~/.cache/pre-commit
-        key: ${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-pre-commit-${{ hashFiles('.pre-commit-config.yaml') }}
+        path: ~/.cache/prek
+        key: ${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-prek-${{ hashFiles('.prek-config.yaml') }}
     - name: install uv
       run: curl -LsSf https://astral.sh/uv/install.sh | sh
     - name: make install

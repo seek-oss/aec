@@ -5,7 +5,7 @@ include *.mk
 docs:
 	COLUMNS=100 uv run cog -r docs/*.md
 # trim trailing whitespace so hooks are happy
-	uv run pre-commit run --files docs/* --hook-stage push trailing-whitespace > /dev/null || true
+	uv run prek run --files docs/* --hook-stage pre-push > /dev/null || true
 
 ## test the wheel is correctly packaged
 test-dist: tmp_dir:=$(shell mktemp -d)
