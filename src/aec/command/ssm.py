@@ -4,11 +4,10 @@ import codecs
 import sys
 import uuid
 from collections.abc import Iterator, Sequence
-from typing import IO, TYPE_CHECKING, Any, TypeVar, cast
+from typing import IO, TYPE_CHECKING, Any, Literal, TypedDict, TypeVar, cast
 
 import boto3
 from botocore.exceptions import ClientError
-from typing_extensions import Literal, TypedDict
 
 from aec.util.config import Config
 from aec.util.ec2_util import describe_instances, describe_instances_names, describe_running_instances_names
