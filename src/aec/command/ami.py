@@ -53,7 +53,7 @@ def fetch(config: Config, ami: str) -> Image:
     else:
         try:
             # lookup by ami id
-            ami_details = describe(config, ident=ami)[0]
+            ami_details = describe(config, idents=ami)[0]
         except IndexError:
             raise RuntimeError(f"Could not find {ami}") from None
     return ami_details
@@ -61,51 +61,68 @@ def fetch(config: Config, ami: str) -> Image:
 
 def _describe_images(
     config: Config,
-    ident: str | None = None,
+    idents: str | Sequence[str] | None = None,
     owner: str | None = None,
     name_match: str | None = None,
 ) -> DescribeImagesResultTypeDef:
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    if ident and ident.startswith("ami-"):
-        return ec2_client.describe_images(ImageIds=[ident])
+    # If idents are AMI IDs, lookup by ID
+    ids: list[str] = []
+    names: list[str] = []
+
+    if idents:
+        idents_list = [idents] if isinstance(idents, str) else list(idents)
+        ids = [v for v in idents_list if v.startswith("ami-")]
+        names = [v for v in idents_list if not v.startswith("ami-")]
+
+        if ids and names:
+            raise ValueError("Cannot mix AMI IDs and image names")
+
+        if ids:
+            return ec2_client.describe_images(ImageIds=ids)
+
+    # Determine owners filter
     if owner:
         owners_filter = [owner]
     else:
         describe_images_owners = config.get("describe_images_owners", None)
-
         if not describe_images_owners:
             owners_filter = ["self"]
         elif isinstance(describe_images_owners, str):
             owners_filter = [describe_images_owners]
         else:
-            owners_filter: list[str] = describe_images_owners
+            owners_filter = describe_images_owners
 
-    if name_match is None:
-        name_match = config.get("describe_images_name_match", None)
+    # Build name filters and description message
+    filters: list[FilterTypeDef] = []
+    match_desc = ""
 
-    if name_match is None:
-        filters = [{"Name": "name", "Values": [f"{ident}"]}] if ident else []
-        match_desc = f" named {ident}" if ident else ""
+    if names:
+        filters = [{"Name": "name", "Values": names}]
+        match_desc = f" named {names[0]}" if len(names) == 1 else f" named one of {', '.join(names)}"
     else:
-        filters: list[FilterTypeDef] = [{"Name": "name", "Values": [f"*{name_match}*"]}]
-        match_desc = f" with name containing {name_match}"
+        if name_match is None:
+            name_match = config.get("describe_images_name_match", None)
+
+        if name_match:
+            filters = [{"Name": "name", "Values": [f"*{name_match}*"]}]
+            match_desc = f" with name containing {name_match}"
 
     print(f"Describing images owned by {owners_filter}{match_desc}")
-
     return ec2_client.describe_images(Owners=owners_filter, Filters=filters)
 
 
 def describe(
     config: Config,
-    ident: str | None = None,
+    idents: str | Sequence[str] | None = None,
     owner: str | None = None,
     name_match: str | None = None,
     show_snapshot_id: bool = False,
 ) -> list[Image]:
     """List AMIs."""
 
-    response = _describe_images(config, ident, owner, name_match)
+    response = _describe_images(config, idents=idents, owner=owner, name_match=name_match)
 
     images = []
     for i in response["Images"]:
@@ -125,14 +142,14 @@ def describe(
 
 def describe_tags(
     config: Config,
-    ident: str | None = None,
+    idents: str | Sequence[str] | None = None,
     owner: str | None = None,
     name_match: str | None = None,
     keys: Sequence[str] = [],
 ) -> list[dict[str, Any]]:
     """List AMI images with their tags."""
 
-    response = _describe_images(config, ident, owner, name_match)
+    response = _describe_images(config, idents=idents, owner=owner, name_match=name_match)
 
     images = []
     for i in response["Images"]:
@@ -153,7 +170,7 @@ def delete(config: Config, ami: str) -> None:
 
     ec2_client = boto3.client("ec2", region_name=config.get("region", None))
 
-    response = describe(config, ami, show_snapshot_id=True)
+    response = describe(config, idents=ami, show_snapshot_id=True)
 
     ec2_client.deregister_image(ImageId=ami)
 

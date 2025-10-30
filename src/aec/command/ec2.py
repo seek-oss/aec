@@ -731,7 +731,7 @@ def to_filters(idents: str | list[str] | None = None, name_match: str | None = N
     filters = []
 
     if ids and names:
-        raise ValueError("Cannot specify both instance IDs and names, only one or the other")
+        raise ValueError("Cannot mix instance IDs and names")
 
     if ids:
         filters.append({"Name": "instance-id", "Values": ids})

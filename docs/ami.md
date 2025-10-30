@@ -39,15 +39,15 @@ aec ami describe
                                                                                                     
   Name                             ImageId        CreationDate               RootDeviceName   Size  
  ────────────────────────────────────────────────────────────────────────────────────────────────── 
-  ubuntu/images/hvm-ssd/ubuntu-…   ami-1e749f67   2025-08-14T10:56:57.000Z   /dev/sda1        15    
-  ubuntu/images/hvm-ssd/ubuntu-…   ami-785db401   2025-08-14T10:56:57.000Z   /dev/sda1        15
+  ubuntu/images/hvm-ssd/ubuntu-…   ami-1e749f67   2025-10-30T10:58:45.000Z   /dev/sda1        15    
+  ubuntu/images/hvm-ssd/ubuntu-…   ami-785db401   2025-10-30T10:58:45.000Z   /dev/sda1        15
 ```
 <!-- [[[end]]] -->
 
-List image by id
+List image by ids
 
 ```
-aec ami describe ami-025b9fd66d61d093a
+aec ami describe ami-1e749f67 ami-785db401
 ```
 
 List Amazon Deep Learning images:
@@ -62,12 +62,13 @@ List ubuntu focal images owned by Canonical:
 aec ami describe --owner 099720109477 -q ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64
 ```
 
-List tags for image
+List tags for images
 
 ```
-aec ami tags ami-1234567890abcef12
+aec ami tags 1234567890abcdef1 ami-abcdef12345678901
 
  ImageId                Name                  Tags
  ────────────────────────────────────────────────────────────────────────────────────
-ami-1234567890abcef12   Best Awesome Ubuntu   Team=Engineering, Source AMI=ami-12345
+ami-1234567890abcdef1   Best Awesome Ubuntu   Team=Engineering, Source AMI=ami-12345
+ami-abcdef12345678901   Best Awesome Linux    Team=Engineering, Source AMI=ami-67890
 ```
