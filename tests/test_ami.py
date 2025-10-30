@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import boto3
 import pytest
 from moto.ec2.models.amis import AMIS

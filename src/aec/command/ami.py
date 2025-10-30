@@ -8,7 +8,9 @@ import boto3
 if TYPE_CHECKING:
     from mypy_boto3_ec2.type_defs import DescribeImagesResultTypeDef, FilterTypeDef
 
-from typing_extensions import NotRequired, TypedDict
+from typing import TypedDict
+
+from typing_extensions import NotRequired
 
 import aec.util.tags as util_tags
 from aec.util.config import Config

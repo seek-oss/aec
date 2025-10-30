@@ -1,11 +1,9 @@
-from __future__ import annotations
-
 import os.path
 from argparse import Namespace
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any, TypedDict
 
 import pytoml as toml
-from typing_extensions import TypedDict
 
 
 class SsmConfig(TypedDict, total=False):

@@ -6,10 +6,9 @@ import os.path
 from collections import defaultdict
 from collections.abc import Sequence
 from time import sleep
-from typing import TYPE_CHECKING, Any, cast
+from typing import TYPE_CHECKING, Any, TypedDict, cast
 
 import boto3
-from typing_extensions import TypedDict
 
 from aec.util.ec2_util import describe_running_instances_names
 from aec.util.errors import NoInstancesError
