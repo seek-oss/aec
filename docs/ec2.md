@@ -89,10 +89,10 @@ aec ec2 describe
                                                                                                     
   InstanceId        State     Name    Type       DnsName           LaunchTime         ImageId       
  ────────────────────────────────────────────────────────────────────────────────────────────────── 
-  i-3b5bebc056a7…   running   alice   t3.small   ec2-54-214-122…   2025-08-14         ami-03cf127a  
-                                                                   10:56:57+00:00                   
-  i-a17f9da75f28…   running   sam     t3.small   ec2-54-214-204…   2025-08-14         ami-03cf127a  
-                                                                   10:56:58+00:00
+  i-97c9b6ee4191…   running   alice   t3.small   ec2-54-214-223…   2025-10-30         ami-03cf127a  
+                                                                   10:58:45+00:00                   
+  i-35d370847c54…   running   sam     t3.small   ec2-54-214-203…   2025-10-30         ami-03cf127a  
+                                                                   10:58:45+00:00
 ```
 <!-- [[[end]]] -->
 
@@ -130,8 +130,8 @@ aec ec2 describe -c Name,SubnetId,Volumes,Image.CreationDate
                                                                                  
   Name    SubnetId                   Volumes           Image.CreationDate        
  ─────────────────────────────────────────────────────────────────────────────── 
-  alice   subnet-ac913213719479a73   ['Size=15 GiB']   2025-08-14T10:56:57.000Z  
-  sam     subnet-ac913213719479a73   ['Size=15 GiB']   2025-08-14T10:56:57.000Z
+  alice   subnet-b6bc1bfbbb9a31514   ['Size=15 GiB']   2025-10-30T10:58:45.000Z  
+  sam     subnet-b6bc1bfbbb9a31514   ['Size=15 GiB']   2025-10-30T10:58:45.000Z
 ```
 <!-- [[[end]]] -->
 
@@ -226,12 +226,12 @@ aec ec2 subnets
                                                                                                
   SubnetId                   VpcId                   AvailabilityZone   CidrBlock        Name  
  ───────────────────────────────────────────────────────────────────────────────────────────── 
-  subnet-ac913213719479a73   vpc-76a1f3589d22c1414   us-east-1a         172.31.0.0/20          
-  subnet-b0dea71934899b14c   vpc-76a1f3589d22c1414   us-east-1b         172.31.16.0/20         
-  subnet-e54ce09a059ebac91   vpc-76a1f3589d22c1414   us-east-1c         172.31.32.0/20         
-  subnet-ecbae6ec4b5eda0b1   vpc-76a1f3589d22c1414   us-east-1d         172.31.48.0/20         
-  subnet-663cffd6fdd7a7629   vpc-76a1f3589d22c1414   us-east-1e         172.31.64.0/20         
-  subnet-de8185767c806f58a   vpc-76a1f3589d22c1414   us-east-1f         172.31.80.0/20
+  subnet-b6bc1bfbbb9a31514   vpc-64eb839c583341b04   us-east-1a         172.31.0.0/20          
+  subnet-ad6db8132f6b4bdfa   vpc-64eb839c583341b04   us-east-1b         172.31.16.0/20         
+  subnet-0dc4a481866c6030b   vpc-64eb839c583341b04   us-east-1c         172.31.32.0/20         
+  subnet-9f18b794c510972b0   vpc-64eb839c583341b04   us-east-1d         172.31.48.0/20         
+  subnet-8b6028013929dddad   vpc-64eb839c583341b04   us-east-1e         172.31.64.0/20         
+  subnet-9ac17c4327b83dcc8   vpc-64eb839c583341b04   us-east-1f         172.31.80.0/20
 ```
 <!-- [[[end]]] -->
 
@@ -245,8 +245,8 @@ aec ec2 sec-groups
                                                                                          
   GroupId                GroupName   Description                  VpcId                  
  ─────────────────────────────────────────────────────────────────────────────────────── 
-  sg-e0a58c46b21931676   default     default VPC security group   vpc-76a1f3589d22c1414  
-  default                default     default                      vpc-76a1f3589d22c1414
+  sg-ae0b14e8e26305fe2   default     default VPC security group   vpc-64eb839c583341b04  
+  default                default     default                      vpc-64eb839c583341b04
 ```
 <!-- [[[end]]] -->
 

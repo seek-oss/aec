@@ -150,14 +150,14 @@ ami_cli = [
     ]),
     Cmd(ami.describe, [
         config_arg,
-        Arg("ident", type=non_empty, nargs="?", help="Filter to this AMI name or id"),
+        Arg("idents", type=non_empty, nargs="*", help="Filter to these AMI names or ids"),
         Arg("--owner", type=str, help="Filter to this owning account"),
         Arg("-q", type=str, dest='name_match', help="Filter to images with a name containing NAME_MATCH."),
         Arg("--show-snapshot-id", action='store_true', help="Show snapshot id")
     ]),
     Cmd(ami.describe_tags, [
         config_arg,
-        Arg("ident", type=non_empty, nargs="?", help="Filter to this AMI id"),
+        Arg("idents", type=non_empty, nargs="*", help="Filter to these AMI names or ids"),
         Arg("--owner", type=str, help="Filter to this owning account"),
         Arg("-q", type=str, dest='name_match', help="Filter to images with a name containing NAME_MATCH."),
         Arg("-k", "--keys", type=str, action="append", metavar="KEY", help="Filter tags to display. This flag can be repeated multiple times.", default = []),
