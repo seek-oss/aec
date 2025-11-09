@@ -23,7 +23,7 @@ For examples see:
 
 ## Install
 
-Run the following to install the latest master version using pip:
+Run the following to install the latest version using pip:
 
 ```
 pip install aec-cli
