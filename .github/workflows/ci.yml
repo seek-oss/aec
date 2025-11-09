@@ -14,13 +14,13 @@ jobs:
       uses: actions/setup-python@v6
     - name: Cache virtualenv
       id: cache-venv
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: .venv
         key: ${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-venv-${{ hashFiles('pyproject.toml') }}
     - name: Cache prek
       id: cache-prek
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/.cache/prek
         key: ${{ runner.os }}-py${{ steps.setup-python.outputs.python-version }}-prek-${{ hashFiles('.prek-config.yaml') }}
