@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 # HandledErrors are caught and their message printed without a stack trace
 
 

@@ -6,7 +6,7 @@ readme = "README.md"
 license = { file = "LICENSE" }
 keywords = ["AWS", "EC2", "command line", "cli"]
 classifiers = ["License :: OSI Approved :: MIT License"]
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 dependencies = [
     "boto3==1.40.64",
     "importlib_resources==6.5.2",
@@ -85,7 +85,6 @@ select = [
     "RUF",   # ruff-specific
     "SIM",   # flake8-simplify
     "S113",  # request-without-timeout
-    "FA",    # flake8-future-annotations (for python 3.7/8/9)
     "ASYNC", # flake8-async
 ]
 

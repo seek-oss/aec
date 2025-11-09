@@ -1,10 +1,9 @@
 """Helper functions for describing and building a CLI with command groups, which contain many subcommands."""
 
-from __future__ import annotations
-
 import inspect
 from argparse import ArgumentDefaultsHelpFormatter, ArgumentParser, Namespace, _SubParsersAction
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from aec.util.display import OutputFormat
 

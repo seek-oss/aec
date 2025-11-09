@@ -27,7 +27,7 @@ if TYPE_CHECKING:
         TagSpecificationTypeDef,
     )
 
-from typing_extensions import TypedDict
+from typing import TypedDict
 
 
 class _RequiredRunArgs(TypedDict, total=True):
