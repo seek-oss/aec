@@ -12,7 +12,7 @@ dependencies = [
     "importlib_resources==6.5.2",
     "pytoml==0.1.21",
     "pytz==2025.2",
-    "requests==2.32.5",
+    "requests==2.33.0",
     "rich==14.3.3",
     "typing_extensions==4.15.0",
 ]
