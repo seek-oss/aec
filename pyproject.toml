@@ -8,7 +8,7 @@ keywords = ["AWS", "EC2", "command line", "cli"]
 classifiers = ["License :: OSI Approved :: MIT License"]
 requires-python = ">=3.10"
 dependencies = [
-    "boto3==1.43.19",
+    "boto3==1.43.38",
     "importlib_resources==7.1.0",
     "pytoml==0.1.21",
     "pytz==2026.2",
@@ -24,13 +24,13 @@ dev = [
     "cogapp~=3.6",
     "dirty-equals~=0.11",
     # pinned because of https://github.com/getmoto/moto/issues/9160
-    "moto[ec2]==5.2.1",
-    "prek~=0.4.3",
-    "pyright==1.1.410",
+    "moto[ec2]==5.2.2",
+    "prek~=0.4.6",
+    "pyright==1.1.411",
     "pyfakefs~=6.2",
-    "pytest~=9.0",
+    "pytest~=9.1",
     "pytest-mock~=3.15",
-    "ruff~=0.15.15",
+    "ruff~=0.15.20",
     "twine~=6.2",
 ]
 
@@ -41,7 +41,7 @@ aec = "aec.main:main"
 homepage = "https://github.com/seek-oss/aec"
 
 [build-system]
-requires = ["setuptools~=82.0", "setuptools_scm~=10.0", "wheel~=0.47"]
+requires = ["setuptools~=82.0", "setuptools_scm~=10.2", "wheel~=0.47"]
 
 # enable setuptools_scm to set the version based on git tags
 [tool.setuptools_scm]
