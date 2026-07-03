@@ -275,7 +275,7 @@ def describe(
                         elif col == "Type":
                             desc[col] = i["InstanceType"]
                         elif col == "DnsName":
-                            desc[col] = i["PublicDnsName"] or i["PrivateDnsName"]
+                            desc[col] = i.get("PublicDnsName") or i.get("PrivateDnsName", "")
                         elif col == "Volumes":
                             desc[col] = volumes.get(i["InstanceId"], [])
                         elif "Image." in col:

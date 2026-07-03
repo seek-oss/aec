@@ -18,4 +18,10 @@ updates:
 - package-ecosystem: github-actions
   directory: "/"
   schedule:
-    interval: monthly
+    interval: "monthly"
+  groups:
+    github-actions:
+      patterns:
+      - "*"
+  commit-message:
+    prefix: "ci(deps)"
