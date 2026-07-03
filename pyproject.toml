@@ -8,13 +8,13 @@ keywords = ["AWS", "EC2", "command line", "cli"]
 classifiers = ["License :: OSI Approved :: MIT License"]
 requires-python = ">=3.10"
 dependencies = [
-    "boto3==1.43.38",
+    "boto3==1.43.40",
     "importlib_resources==7.1.0",
     "pytoml==0.1.21",
     "pytz==2026.2",
     "requests==2.34.2",
     "rich==15.0.0",
-    "typing_extensions==4.15.0",
+    "typing_extensions==4.16.0",
 ]
 
 [dependency-groups]
