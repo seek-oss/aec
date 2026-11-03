@@ -12,7 +12,7 @@ usage: aec ssm [-h]
                {commands,compliance-summary,describe,invocations,output,patch,patch-summary,run}
                ...
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
 
 subcommands:

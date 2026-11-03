@@ -3,6 +3,8 @@ from __future__ import annotations
 import base64
 import os
 import os.path
+import shlex
+import sys
 from collections import defaultdict
 from collections.abc import Sequence
 from time import sleep
@@ -11,7 +13,7 @@ from typing import TYPE_CHECKING, Any, TypedDict, cast
 import boto3
 
 from aec.util.ec2_util import describe_running_instances_names
-from aec.util.errors import NoInstancesError
+from aec.util.errors import HandledError, NoInstancesError
 from aec.util.threads import executor
 
 if TYPE_CHECKING:
@@ -43,6 +45,8 @@ Instance = TypedDict(
         "Name": "str | None",
         "Type": "str",
         "DnsName": "str",
+        "PublicDnsName": "str",
+        "PrivateIpAddress": "str",
         "SubnetId": "str",
         "Volumes": "list[str]",
         "Image.CreationDate": "str",
@@ -297,6 +301,78 @@ def describe(
         instances,
         key=lambda i: "".join(str(i[field]) for field in sort_cols),
     )
+
+
+# OpenSSH options that consume a value; these must be skipped when locating the destination.
+_SSH_OPTIONS_WITH_ARGUMENTS = frozenset("BbcDEeFIiJLlmOoPpQRSWw")
+
+
+def _ssh_destination_index(ssh_args: list[str]) -> int | None:
+    """Find OpenSSH's destination argument while skipping options and their values."""
+    index = 0
+    while index < len(ssh_args):
+        argument = ssh_args[index]
+        if argument == "--":
+            return index + 1 if index + 1 < len(ssh_args) else None
+        if argument == "-" or not argument.startswith("-"):
+            return index
+        if argument.startswith("--"):
+            index += 1
+            continue
+
+        options = argument[1:]
+        while options:
+            option, options = options[0], options[1:]
+            if option in _SSH_OPTIONS_WITH_ARGUMENTS:
+                if not options:
+                    index += 1
+                break
+        index += 1
+
+    return None
+
+
+def exec_ssh(ssh_args: list[str]) -> None:
+    """Print and execute an OpenSSH command."""
+    command = ["ssh", *ssh_args]
+    print(shlex.join(command), file=sys.stderr, flush=True)
+    os.execvp("ssh", command)
+
+
+def ssh(config: Config, ssh_args: list[str]) -> None:
+    """Connect to an EC2 instance by name using OpenSSH."""
+    if not ssh_args or ssh_args[0] != "--":
+        raise HandledError("Separate aec arguments from SSH arguments with `--`.")
+    ssh_args = ssh_args[1:]
+
+    destination_index = _ssh_destination_index(ssh_args)
+    if destination_index is None:
+        raise HandledError("SSH command requires an EC2 destination in [username@]EC2_NAME form.")
+
+    destination = ssh_args[destination_index]
+    username, separator, instance_name = destination.partition("@")
+    ident = instance_name if separator else destination
+    if (separator and not username) or not ident:
+        raise HandledError("SSH destination must be [username@]EC2_NAME.")
+    username_prefix = f"{username}@" if separator else ""
+
+    instances = describe(
+        config,
+        idents=ident,
+        columns="InstanceId,Name,PublicDnsName,PrivateIpAddress",
+    )
+    if not instances:
+        raise NoInstancesError(name=ident)
+    if len(instances) > 1:
+        raise HandledError(f"More than one EC2 instance matches {ident!r}; use an instance ID instead.")
+
+    instance = instances[0]
+    host = instance.get("PublicDnsName") or instance.get("PrivateIpAddress")
+    if not host:
+        raise HandledError(f"EC2 instance {ident!r} has no public DNS name or private IP address.")
+
+    ssh_args[destination_index] = f"{username_prefix}{host}"
+    exec_ssh(ssh_args)
 
 
 def describe_tags(

@@ -10,7 +10,7 @@ cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['co'].format_help
 ```
 usage: aec co [-h] {over-provisioned} ...
 
-optional arguments:
+options:
   -h, --help          show this help message and exit
 
 subcommands:

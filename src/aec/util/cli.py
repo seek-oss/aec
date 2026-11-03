@@ -21,6 +21,8 @@ class Cmd:
         args: list[Arg] | None = None,
         name: str | None = None,
         help: str | None = None,
+        usage: str | None = None,
+        add_output: bool = True,
     ):
         # dispatch() will call this function
         self.call_me = call_me
@@ -30,6 +32,8 @@ class Cmd:
         self.name: str = self.call_me.__name__.replace("_", "-") if name is None else name
         # fallback to call_me's docstring for help
         self.help = inspect.getdoc(self.call_me) if help is None else help
+        self.usage = usage
+        self.add_output = add_output
 
         # check all function params have args specified
         call_me_num_args = len(inspect.signature(self.call_me).parameters)
@@ -65,17 +69,25 @@ def add_command_group(
 
     for cmd in cmds:
         parser = subcommands.add_parser(
-            cmd.name, help=cmd.help, description=cmd.help, formatter_class=ArgumentDefaultsHelpFormatter
+            cmd.name,
+            help=cmd.help,
+            description=cmd.help,
+            formatter_class=ArgumentDefaultsHelpFormatter,
+            usage=cmd.usage,
         )
         parser.set_defaults(call_me=cmd.call_me)
         if cmd.args:
             for arg in cmd.args:
                 parser.add_argument(*arg.args, **arg.kwargs)
 
-        # add output arg to every command
-        parser.add_argument(
-            "-o", "--output", choices=OutputFormat.__members__, help="Output format", default=OutputFormat.table.value
-        )
+        if cmd.add_output:
+            parser.add_argument(
+                "-o",
+                "--output",
+                choices=OutputFormat.__members__,
+                help="Output format",
+                default=OutputFormat.table.value,
+            )
 
 
 def dispatch(parser: ArgumentParser, args: list[str]) -> tuple[Any, OutputFormat]:

@@ -17,7 +17,7 @@ cog.out(f"```\n{build_parser()._subparsers._actions[1].choices['ami'].format_hel
 ```
 usage: aec ami [-h] {delete,describe,tags,share} ...
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
 
 subcommands:
@@ -39,8 +39,8 @@ aec ami describe
                                                                                                     
   Name                             ImageId        CreationDate               RootDeviceName   Size  
  ────────────────────────────────────────────────────────────────────────────────────────────────── 
-  ubuntu/images/hvm-ssd/ubuntu-…   ami-1e749f67   2025-10-30T10:58:45.000Z   /dev/sda1        15    
-  ubuntu/images/hvm-ssd/ubuntu-…   ami-785db401   2025-10-30T10:58:45.000Z   /dev/sda1        15
+  ubuntu/images/hvm-ssd/ubuntu-…   ami-1e749f67   2026-11-03T11:09:34.000Z   /dev/sda1        15    
+  ubuntu/images/hvm-ssd/ubuntu-…   ami-785db401   2026-11-03T11:09:34.000Z   /dev/sda1        15
 ```
 <!-- [[[end]]] -->
 
