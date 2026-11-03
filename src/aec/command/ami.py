@@ -39,6 +39,8 @@ ami_keywords = {
     "ubuntu1804": AmiMatcher(canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64"),
     "ubuntu2004": AmiMatcher(canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-focal-20.04-amd64"),
     "ubuntu2204": AmiMatcher(canonical_account_id, "ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64"),
+    "ubuntu2404": AmiMatcher(canonical_account_id, "ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64"),
+    "ubuntu2604": AmiMatcher(canonical_account_id, "ubuntu/images/hvm-ssd-gp3/ubuntu-resolute-26.04-amd64"),
 }
 
 
