@@ -60,6 +60,16 @@ ec2_cli = [
         Arg("-s", "--sort-by", type=str, help="Sort by one or more fields", default=parameter_defaults(ec2.describe)["sort_by"]),
         Arg("-c", "--columns", type=str, help="Customise the columns shown", default=parameter_defaults(ec2.describe)["columns"]),
     ]),
+    Cmd(
+        ec2.ssh,
+        [
+            config_arg,
+            Arg("ssh_args", nargs=argparse.REMAINDER, metavar="SSH_ARGS", help="OpenSSH arguments to pass after --"),
+        ],
+        help="Connect to an EC2 instance by name using OpenSSH.",
+        usage="%(prog)s [--config PROFILE] -- [SSH_OPTIONS ...] [username@]EC2_NAME [REMOTE_COMMAND ...]",
+        add_output=False,
+    ),
     Cmd(ec2.launch, [
         config_arg,
         Arg("name", type=str, help="Name tag of instance"),
@@ -234,6 +244,9 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main(args: list[str] = sys.argv[1:]) -> None:
+    if args == ["ec2", "ssh"]:
+        args = ["ec2", "ssh", "--help"]
+
     try:
         result, output_format = cli.dispatch(build_parser(), args)
         display.pretty_print(result, output_format)
